@@ -1,0 +1,6 @@
+# Run profiles. Heavy profiles require an explicit choice and print resource estimates first (scripts/run_pipeline.py).
+smoke_test: {tickers: 5, years: [2015, 2019], fusion_epochs: 1, purpose: "contracts and plumbing on CPU in minutes"}
+debug:      {tickers: 25, years: [2010, 2019], fusion_epochs: 3}
+small:      {tickers: 100, years: [2003, 2022], fusion_epochs: 10}
+research:   {tickers: 500, years: [2003, 2022], fusion_epochs: 20, note: "what was run locally (s500 frame, cached embeddings)"}
+full:       {tickers: 979, years: [2003, 2022], fusion_epochs: 30, gpu: required, note: "needs re-rendering/embedding 979 stocks on Colab"}

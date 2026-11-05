@@ -73,5 +73,8 @@
   }
  },
  "started_utc": "2026-11-05T14:18:02Z",
- "status": "RUNNING"
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T15:34:37Z",
+ "elapsed_s": 4610.3,
+ "summary": "best frozen backbone (valid, WDH, linear): vit_small_patch14_dinov2; images-only valid log loss WDH vs prior-free 1D 1.0415, 2D 1.0580, 5D 1.0678, 10D 1.0744, 20D 1.0787, 1M 1.0796"
 }

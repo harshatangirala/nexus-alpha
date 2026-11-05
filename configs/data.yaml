@@ -1,0 +1,15 @@
+# Data sources and point-in-time settings (docs/POINT_IN_TIME_POLICY.md). Paths are overridable by NEXUS_* env vars.
+seal_date: "2023-01-03"            # first sealed session (inherits TriFrame HOLDOUT_START)
+decision_time_new_york: "09:00"    # on session t+1; bars complete through the close of t
+sample_frame: triframe_s500        # 236,520 chart sets, 500 stocks, 2001-10-22..2022-12-01
+news:
+  dataset: Brianferrell787/financial-news-multisource
+  revision: c25780f336280adb57c64bda7aed605d065c672d
+  minute_latency_minutes: 15
+  day_level_available: "next calendar day 08:00 UTC"
+  lookback_days: 5
+  max_articles: 7
+  ticker_mapping: explicit_tags_only
+sec:
+  source: sec-filings-price-impact 500-firm CPU part (S07 events, S09 event text)
+  availability: "decision_time = acceptance + 35 min; quality C bounded by filing date 18:05 New York"

@@ -1,0 +1,11 @@
+# NLP registry. Local CPU profile uses classical text; transformer adapters are for the GPU profile.
+local_cpu:
+  news: {representation: tfidf_svd_64_plus_lm_tone, fit_before: "2016-01-01"}
+  sec:  {representation: tfidf_svd_32_plus_lm_tone_plus_structured, fit_before: "2016-01-01"}
+  lexicon: Loughran-McDonald 1993-2025 (read in place, not redistributed)
+gpu_profile_adapters:
+  ProsusAI/finbert:            {status: registered_adapter_not_run, cached_locally: true}
+  yiyanghkust/finbert-tone:    {status: registered_adapter_not_run, cached_locally: true}
+  BAAI/bge-base-en-v1.5:       {status: registered_adapter_not_run, cached_locally: true}
+  nlpaueb/sec-bert-base:       {status: registered_adapter_not_run, cached_locally: true}
+  manelalab/chrono-bert-v1-20101231: {status: registered_adapter_not_run, note: "time-stamped pretraining, point-in-time friendly"}

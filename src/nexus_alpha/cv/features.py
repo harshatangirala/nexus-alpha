@@ -30,5 +30,10 @@ class ViewPCA:
             cols += [f"img_{self.backbone}_{v}_{i}" for i in range(self.k)]
         return pd.DataFrame(np.concatenate(mats, axis=1), columns=cols)
 
+    def transform_embeddings(self, emb: dict) -> dict:
+        """Freshly computed embeddings {view: (n, dim)} -> {view: (n, k)} with the frozen training transform."""
+        return {v: self.pca[v].transform((np.asarray(e, np.float32) - self.mu[v]) / self.sd[v]).astype(np.float32)
+                for v, e in emb.items()}
+
     def explained(self) -> dict:
         return {v: float(p.explained_variance_ratio_.sum()) for v, p in self.pca.items()}

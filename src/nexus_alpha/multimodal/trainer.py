@@ -84,7 +84,7 @@ def train(cfg: FusionConfig, tr: ModalityData, es: ModalityData, ckpt_dir: Path,
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
-            run_loss += float(loss); nb += 1
+            run_loss += loss.item(); nb += 1
         val = evaluate_loss(model, es, cfg, device)
         hist.append({"epoch": ep, "train_loss": run_loss / max(nb, 1), "inner_ce": val, "seconds": round(time.time() - t0, 1)})
         if val < best - 1e-5:

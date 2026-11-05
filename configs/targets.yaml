@@ -1,0 +1,7 @@
+# Frozen label rule (docs/LABEL_ENGINEERING.md, D-005)
+horizons: {1D: 1, 2D: 2, 5D: 5, 10D: 10, 20D: 20, 1M: 21}
+return: "close[t+h] / open[t+1] - 1"
+k_sigma: 0.5
+cost_floor: 0.0010
+ewma_alpha: 0.06
+classes: [DOWN, SIDEWAYS, UP]

@@ -45,7 +45,10 @@ class RiskConfig:
 
 def plan_trade(horizon: str, sessions: int, probs: dict | None, calibrated: bool, skill_validated: bool,
                levels_available: bool, weekly: dict, setups: list[dict], trigger_by_side: dict, atr: float | None,
-               close: float | None, risk: RiskConfig, data_gate_reasons: list[str] | None = None) -> TradePlan:
+               close: float | None, risk: RiskConfig, data_gate_reasons: list[str] | None = None,
+               side_override: str | None = None) -> TradePlan:
+    """side_override (research backtests only): take the side from a rule setup and skip the model gates 2-4; used for
+    the rule-only baseline P0. The live engine never sets it."""
     cost = CostModel.from_scenario(risk.cost_scenario)
     reasons = list(data_gate_reasons or [])
     if reasons:
@@ -53,16 +56,19 @@ def plan_trade(horizon: str, sessions: int, probs: dict | None, calibrated: bool
     if not levels_available or close is None or atr is None or not math.isfinite(atr) or atr <= 0:
         return TradePlan(decision="NO_SIGNAL", reasons=["exact price levels unavailable: structured OHLCV for the as-of "
                                                          "session is required (screenshot-only input gives no numeric plan)"])
-    if probs is None:
-        return TradePlan(decision="NO_SIGNAL", reasons=["no forecast for this horizon"])
-    if not calibrated:
-        reasons.append("forecast is not calibrated")
-    if not skill_validated:
-        reasons.append("no validated directional skill at this horizon (validation up-vs-down AUROC interval includes 0.5)")
-    edge = probs["up"] - probs["down"]
-    side = "LONG" if edge > 0 else "SHORT"
-    if abs(edge) < risk.min_edge:
-        reasons.append(f"edge |P(UP)-P(DOWN)| = {abs(edge):.3f} below the frozen minimum {risk.min_edge:.2f}")
+    if side_override is not None:
+        side = side_override
+    else:
+        if probs is None:
+            return TradePlan(decision="NO_SIGNAL", reasons=["no forecast for this horizon"])
+        if not calibrated:
+            reasons.append("forecast is not calibrated")
+        if not skill_validated:
+            reasons.append("no validated directional skill at this horizon (validation up-vs-down AUROC interval includes 0.5)")
+        edge = probs["up"] - probs["down"]
+        side = "LONG" if edge > 0 else "SHORT"
+        if abs(edge) < risk.min_edge:
+            reasons.append(f"edge |P(UP)-P(DOWN)| = {abs(edge):.3f} below the frozen minimum {risk.min_edge:.2f}")
     if side == "SHORT" and not risk.allow_short:
         reasons.append("short selling disabled in the risk configuration")
     perm = weekly.get("permission", "NONE")

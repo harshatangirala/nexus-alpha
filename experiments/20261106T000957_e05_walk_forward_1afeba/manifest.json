@@ -1,0 +1,51 @@
+{
+ "run_id": "20261106T000957_e05_walk_forward_1afeba",
+ "name": "e05_walk_forward",
+ "profile": "local-cpu",
+ "config": {
+  "model": "lgbm_struct_x33",
+  "horizons": [
+   "1D",
+   "5D",
+   "20D"
+  ],
+  "folds": [
+   2008,
+   2009,
+   2010,
+   2011,
+   2012,
+   2013,
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2021,
+   2022
+  ],
+  "num_threads": 2
+ },
+ "config_hash": "1afebaefe4fe1d9b",
+ "git_commit": "1b171682a097eeb1653523f845ead9b7008e7810",
+ "git_dirty": true,
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {},
+ "started_utc": "2026-11-05T18:40:09Z",
+ "status": "RUNNING"
+}

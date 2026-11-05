@@ -57,7 +57,8 @@ def build(fr: pd.DataFrame, train_mask: np.ndarray, modalities=ALL_MODALITIES, b
     x33 = [c for c in fr.columns if c.startswith("x_")]
     if fit:
         pre = Preprocessor(backbone=backbone, num_cols=list(STRUCTURED_ALL) + x33,
-                           news_cols=[c for c in fr.columns if c.startswith("news_") and c != "news_present"],
+                           news_cols=[c for c in fr.columns if c.startswith("news_")
+                                      and c not in ("news_present", "news_n_selected_no_text")],
                            sec_cols=[c for c in fr.columns if c.startswith("sec_") and c not in ("sec_covered",)],
                            rule_cols=[c for c in fr.columns if c.startswith("rule_")])
     rows_fit = np.flatnonzero(train_mask) if fit else None

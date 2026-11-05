@@ -1,0 +1,14 @@
+mode: research_paper_trading_only
+account_capital: 100000
+risk_pct_per_trade: 0.005
+max_position_pct: 0.10
+max_portfolio_gross_pct: 1.0
+max_daily_loss_pct: 0.02
+allow_short: true
+min_edge: 0.10
+min_net_rr: 1.5
+stop_atr_buffer: 0.25
+chase_atr: 1.0
+costs_round_trip_bps: {base: 10, stressed: 15, severe: 20}
+borrow_annual: 0.005
+direction_skill_gate: "validation up-vs-down AUROC 95% CI lower bound > 0.5"

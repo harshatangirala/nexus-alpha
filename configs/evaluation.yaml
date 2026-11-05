@@ -1,0 +1,6 @@
+primary_metric: mean six-horizon multiclass log loss (calibrated)
+ece_bins: 15
+bootstrap: {blocks: calendar months of the as-of date, resamples: 1000}
+multiple_testing: holm
+hypotheses: [H1_triframe, H2_nlp_matched, H3_indicators, H4_fusion_vs_late, H5_calibration]
+calibration: {methods: [none, temperature, vector], chosen_on: chronological halves of calib, isotonic: excluded}

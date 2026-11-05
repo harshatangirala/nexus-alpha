@@ -1,0 +1,14 @@
+# CV registry (docs/MODEL_REGISTRY.md). Embeddings reused from TriFrame s500 (verified parity).
+renderer: r1   # binary OHLC bars, 104 W / 126 D / 140 H, r1.1 early-close rule
+input: "bilinear antialiased resize to 224x224, 3 channels, backbone normalisation"
+backbones:
+  convnext_tiny:            {status: included_frozen_used_in_fusion (TriFrame s500 winner; DINOv2 marginally better images-only in E02), timm: convnext_tiny.in12k_ft_in1k}
+  vit_small_patch14_dinov2: {status: included_frozen_evaluated (best frozen images-only on valid in E02), timm: vit_small_patch14_dinov2.lvd142m}
+  resnet18:                 {status: included_frozen_evaluated, timm: resnet18.a1_in1k}
+  resnet18_random_s0:       {status: control_random_weights}
+  ft_convnext_tiny:         {status: included_finetuned_eval_from_2017, source: KrishnaHarshaTangirala/triframe-cv-model-s500}
+  efficientnet_b0:          {status: registered_not_fetched}
+  vit_base_patch16_224:     {status: registered_not_fetched}
+  swin_tiny_patch4_window7_224: {status: registered_not_fetched}
+  mobilenetv3_large_100:    {status: registered_not_fetched}
+pca_per_view: 64

@@ -1,0 +1,10 @@
+# Causal indicators, TriFrame conventions (verified against final/meta/indicators to < 1e-9)
+sma: [20, 50]
+macd: {fast: 12, slow: 26, signal: 9, ewm_adjust: false}
+rsi: {period: 14, smoothing: wilder_ewm}
+bollinger: {period: 20, k: 2, ddof: 0}
+atr: {period: 14, smoothing: wilder_ewm}
+volume_ma: 20
+warm_bars: 200
+timeframes: {daily: as_of_close, weekly: completed_weeks_only_plus_week_to_date_return, hourly: as_of_session_bars_only}
+feature_version: nexus-structured-v1

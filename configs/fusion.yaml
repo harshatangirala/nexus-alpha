@@ -1,0 +1,10 @@
+variants: [late, concat, attention, gated, hybrid]
+selection: "lowest mean validation log loss over six horizons; ties within 0.0005 -> simpler"
+d_model: 64
+hidden: 128
+n_layers: 2
+n_heads: 4
+dropout: 0.1
+modality_dropout: 0.15
+quantiles: [0.1, 0.5, 0.9]
+quantile_weight: 0.2

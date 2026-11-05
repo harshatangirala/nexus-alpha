@@ -1,0 +1,116 @@
+{
+ "run_id": "20261106T000935_e03_fusion_8ddffb",
+ "name": "e03_fusion",
+ "profile": "local-cpu",
+ "config": {
+  "variants": [
+   "late",
+   "concat",
+   "attention",
+   "gated",
+   "hybrid"
+  ],
+  "ablations": {
+   "a01_img_W": [
+    "img_W"
+   ],
+   "a02_img_D": [
+    "img_D"
+   ],
+   "a03_img_H": [
+    "img_H"
+   ],
+   "a04_img_WDH": [
+    "img_W",
+    "img_D",
+    "img_H"
+   ],
+   "a05_num": [
+    "num"
+   ],
+   "a06_img_num": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "num"
+   ],
+   "a07_news": [
+    "news"
+   ],
+   "a08_sec": [
+    "sec"
+   ],
+   "a09_news_sec": [
+    "news",
+    "sec"
+   ],
+   "a10_img_news": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "news"
+   ],
+   "a11_img_sec": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "sec"
+   ],
+   "a12_img_news_sec": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "news",
+    "sec"
+   ],
+   "a13_full": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "num",
+    "news",
+    "sec"
+   ],
+   "a17_full_rules": [
+    "img_W",
+    "img_D",
+    "img_H",
+    "num",
+    "news",
+    "sec",
+    "rules"
+   ]
+  },
+  "backbone": "convnext_tiny",
+  "pca_per_view": 64,
+  "d_model": 64,
+  "epochs_max": 20,
+  "patience": 3,
+  "batch": 2048,
+  "lr": 0.001,
+  "modality_dropout": 0.15,
+  "seed": 7,
+  "registered_in_commit": "1b17168",
+  "quick": false
+ },
+ "config_hash": "8ddffb180d37117b",
+ "git_commit": "1b171682a097eeb1653523f845ead9b7008e7810",
+ "git_dirty": true,
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {},
+ "started_utc": "2026-11-05T18:40:09Z",
+ "status": "RUNNING"
+}

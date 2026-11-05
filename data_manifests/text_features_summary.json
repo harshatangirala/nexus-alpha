@@ -1,0 +1,10 @@
+{
+ "news_present_share": 0.3887028581092508,
+ "news_tfidf_explained": 0.10726982355117798,
+ "samples_with_untexted_articles": 0,
+ "sec_covered_share": 0.524082530018603,
+ "sec_8k_present_share": 0.3341958396752917,
+ "sec_periodic_present_share": 0.5199222053103332,
+ "sec_tfidf_explained": 0.11470582336187363,
+ "elapsed_s": 505.4
+}

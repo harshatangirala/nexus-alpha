@@ -1,0 +1,78 @@
+{
+ "pca_explained": {
+  "convnext_tiny": {
+   "W": 0.9229442477226257,
+   "D": 0.9087206721305847,
+   "H": 0.8930532932281494
+  },
+  "resnet18": {
+   "W": 0.6130311489105225,
+   "D": 0.6177771687507629,
+   "H": 0.6454304456710815
+  },
+  "vit_small_patch14_dinov2": {
+   "W": 0.9404061436653137,
+   "D": 0.9395318031311035,
+   "H": 0.9406684637069702
+  },
+  "resnet18_random_s0": {
+   "W": 0.742064893245697,
+   "D": 0.7318711876869202,
+   "H": 0.7277012467384338
+  },
+  "ft_convnext_tiny": {
+   "W": 0.8974770307540894,
+   "D": 0.877764105796814,
+   "H": 0.8844082355499268
+  }
+ },
+ "best_frozen_backbone_by_valid": "vit_small_patch14_dinov2",
+ "lgbm_num_img__vit_small_patch14_dinov2|1D": {
+  "best_iteration": 114,
+  "inner_logloss": 1.0142045552678203
+ },
+ "lgbm_num_img__vit_small_patch14_dinov2|2D": {
+  "best_iteration": 146,
+  "inner_logloss": 1.0422650865305505
+ },
+ "lgbm_num_img__vit_small_patch14_dinov2|5D": {
+  "best_iteration": 168,
+  "inner_logloss": 1.0557479931666747
+ },
+ "lgbm_num_img__vit_small_patch14_dinov2|10D": {
+  "best_iteration": 61,
+  "inner_logloss": 1.063041580421472
+ },
+ "lgbm_num_img__vit_small_patch14_dinov2|20D": {
+  "best_iteration": 29,
+  "inner_logloss": 1.061298810861322
+ },
+ "lgbm_num_img__vit_small_patch14_dinov2|1M": {
+  "best_iteration": 24,
+  "inner_logloss": 1.0605416603700761
+ },
+ "lgbm_num_img__ft_convnext_tiny|1D": {
+  "best_iteration": 153,
+  "inner_logloss": 1.0145272727596406
+ },
+ "lgbm_num_img__ft_convnext_tiny|2D": {
+  "best_iteration": 99,
+  "inner_logloss": 1.0443676425845425
+ },
+ "lgbm_num_img__ft_convnext_tiny|5D": {
+  "best_iteration": 72,
+  "inner_logloss": 1.0601848841744455
+ },
+ "lgbm_num_img__ft_convnext_tiny|10D": {
+  "best_iteration": 18,
+  "inner_logloss": 1.0669080926667602
+ },
+ "lgbm_num_img__ft_convnext_tiny|20D": {
+  "best_iteration": 10,
+  "inner_logloss": 1.063927701925576
+ },
+ "lgbm_num_img__ft_convnext_tiny|1M": {
+  "best_iteration": 11,
+  "inner_logloss": 1.0628617922806372
+ }
+}

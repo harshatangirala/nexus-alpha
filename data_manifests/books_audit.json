@@ -1,0 +1,467 @@
+{
+ "audited_utc": "2026-11-05T13:57:27Z",
+ "pymupdf": "PyMuPDF 2.1: Python bindings for the MuPDF 1.28.6 library.\nPython 3.12 running on win32 (64-bit).\n",
+ "documents": {
+  "complete_guide_to_trading": {
+   "path": "C:\\Users\\harsh\\Downloads\\The-Complete-Guide-to-Trading.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "50f6e16003682e96f7bd5fc05d5947fcbcc3efba5e8c37afdca908f802251049",
+   "bytes": 2753542,
+   "pages": 116,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.7",
+    "author": "Colis Cheng",
+    "creator": "Microsoft\u00ae Word 2016",
+    "producer": "Microsoft\u00ae Word 2016",
+    "creationDate": "D:20180123120657-08'00'",
+    "modDate": "D:20180123120657-08'00'"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 215268,
+   "chars_per_page_median": 2241,
+   "low_text_pages": 4,
+   "low_text_share": 0.034,
+   "low_text_page_numbers_head": [
+    1,
+    7,
+    44,
+    69
+   ]
+  },
+  "tsam": {
+   "path": "C:\\Users\\harsh\\Downloads\\TSaM.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "76fb56032e9974cfcc004676c4b012a160a3d77fc8d1cea89cc77989969e5d6b",
+   "bytes": 42670338,
+   "pages": 1232,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.5",
+    "title": "Trading Systems and Methods",
+    "author": "Kaufman, Perry J.",
+    "creator": "Adobe Acrobat 7.0",
+    "producer": "Acrobat Distiller 9.4.0 (Macintosh)",
+    "creationDate": "D:20130324084423Z",
+    "modDate": "D:20171018182811+05'00'"
+   },
+   "toc_entries": 883,
+   "toc_max_level": 3,
+   "toc_head": [
+    [
+     1,
+     "Trading Systems and Methods",
+     3
+    ],
+    [
+     1,
+     "Contents",
+     9
+    ],
+    [
+     1,
+     "Preface to the Fifth Edition",
+     17
+    ],
+    [
+     1,
+     "CHAPTER 1 Introduction",
+     21
+    ],
+    [
+     2,
+     "THE EXPANDING ROLE OF TECHNICAL ANALYSIS",
+     21
+    ],
+    [
+     2,
+     "CONVERGENCE OF TRADING STYLES IN STOCKS AND FUTURES",
+     22
+    ],
+    [
+     2,
+     "A LINE IN THE SAND BETWEEN FUNDAMENTALS AND TECHNICAL ANALYSIS",
+     24
+    ],
+    [
+     2,
+     "PROFESSIONAL AND AMATEUR",
+     25
+    ],
+    [
+     2,
+     "RANDOM WALK",
+     26
+    ],
+    [
+     2,
+     "DECIDING ON A TRADING STYLE",
+     28
+    ],
+    [
+     2,
+     "MEASURING NOISE",
+     30
+    ],
+    [
+     3,
+     "Other Measurements of Noise",
+     31
+    ]
+   ],
+   "chars_total": 2724328,
+   "chars_per_page_median": 2307,
+   "low_text_pages": 27,
+   "low_text_share": 0.022,
+   "low_text_page_numbers_head": [
+    1,
+    2,
+    3,
+    5,
+    7,
+    8,
+    20,
+    98,
+    200,
+    235,
+    254,
+    328,
+    663,
+    681,
+    688,
+    704,
+    770,
+    798,
+    820,
+    924,
+    1002,
+    1118,
+    1166,
+    1167,
+    1194,
+    1210,
+    1212
+   ]
+  },
+  "nison_candlesticks": {
+   "path": "C:\\Users\\harsh\\Downloads\\Japanese Candlestick Charting Techniques, 2nd Edition, Steve Nison_text.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "817beff9efd1994422b1e69a6b40e646e5d4b88933ccb973f74c9e9b11a81413",
+   "bytes": 10260730,
+   "pages": 298,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.5",
+    "title": "Japanese Candlestick Charting Techniques, 2nd Edition, Steve Nison",
+    "creator": "Internet Archive",
+    "producer": "Recoded by LuraDocument PDF v2.68",
+    "creationDate": "D:20190325182128Z",
+    "modDate": "D:20190325185300Z"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 418627,
+   "chars_per_page_median": 1258,
+   "low_text_pages": 20,
+   "low_text_share": 0.067,
+   "low_text_page_numbers_head": [
+    1,
+    2,
+    33,
+    35,
+    41,
+    83,
+    95,
+    99,
+    103,
+    110,
+    111,
+    126,
+    158,
+    161,
+    187,
+    199,
+    218,
+    226,
+    241,
+    289
+   ]
+  },
+  "ta_workbook": {
+   "path": "C:\\Users\\harsh\\Downloads\\TA_wrkbk.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "1e6c8e771a4fbbf3dd452adf71dd683cbbbdb6693b7e4d0d470d04d21c007889",
+   "bytes": 4630383,
+   "pages": 172,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.4",
+    "title": "untitled",
+    "producer": "Acrobat Distiller 7.0 (Windows)",
+    "creationDate": "D:20130110165744+05'30'",
+    "modDate": "D:20130812184156+05'30'"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 268282,
+   "chars_per_page_median": 1498,
+   "low_text_pages": 7,
+   "low_text_share": 0.041,
+   "low_text_page_numbers_head": [
+    1,
+    8,
+    37,
+    40,
+    92,
+    145,
+    156
+   ]
+  },
+  "identifying_chart_patterns": {
+   "path": "C:\\Users\\harsh\\Downloads\\Idenitfying-Chart-Patterns.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "b73cb370d65bcef1ddc960e97e62a1a74702441f9004cd886bd2b83b046e99eb",
+   "bytes": 1682832,
+   "pages": 49,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.7",
+    "title": "Identifying Chart Patterns  with Technical Analysis",
+    "creator": "Microsoft\u00ae PowerPoint\u00ae for Office 365",
+    "producer": "Microsoft\u00ae PowerPoint\u00ae for Office 365",
+    "creationDate": "D:20200424144828-04'00'",
+    "modDate": "D:20200424144828-04'00'"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 25759,
+   "chars_per_page_median": 508,
+   "low_text_pages": 9,
+   "low_text_share": 0.184,
+   "low_text_page_numbers_head": [
+    1,
+    4,
+    5,
+    8,
+    9,
+    12,
+    17,
+    32,
+    48
+   ]
+  },
+  "fundamentals_of_investments_wk2": {
+   "path": "C:\\Users\\harsh\\Downloads\\B.Com(Hons)_IIIyearVIsem_FundamentalsofInvestments_Week2_DrKanuJain.pdf",
+   "exists": true,
+   "kind": "lecture_notes",
+   "supplied_for": "technical analysis RAG",
+   "sha256": "e283d02cfe150736d1b967be030f1d912aa830369ed7fc0d82fabf1d84d17f42",
+   "bytes": 1306079,
+   "pages": 67,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.5",
+    "title": "PowerPoint Presentation",
+    "author": "user",
+    "creator": "Microsoft\u00ae PowerPoint\u00ae 2010",
+    "producer": "Microsoft\u00ae PowerPoint\u00ae 2010",
+    "creationDate": "D:20200325213927+05'30'",
+    "modDate": "D:20200325213927+05'30'"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 13871,
+   "chars_per_page_median": 168,
+   "low_text_pages": 35,
+   "low_text_share": 0.522,
+   "low_text_page_numbers_head": [
+    1,
+    5,
+    6,
+    10,
+    11,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    25,
+    27,
+    29,
+    30,
+    32,
+    33,
+    36,
+    38,
+    39,
+    41,
+    43,
+    45,
+    47,
+    49,
+    51,
+    52,
+    55,
+    56,
+    57,
+    59,
+    61,
+    62,
+    64,
+    66
+   ]
+  },
+  "essentials_of_quant_finance": {
+   "path": "C:\\Users\\harsh\\Downloads\\Essentials Of Quantitative Finance_1.pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "related reading (user message)",
+   "sha256": "47dde85099e52572b4a96c29cc02b654ea72afebc788199bec54e9729e839df7",
+   "bytes": 6647190,
+   "pages": 259,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.5",
+    "title": "Chapter 1",
+    "author": "Frank Columbus",
+    "creator": "Microsoft\u00ae Office Word 2007",
+    "producer": "Microsoft\u00ae Office Word 2007",
+    "creationDate": "D:20150203134412",
+    "modDate": "D:20150203134412"
+   },
+   "toc_entries": 0,
+   "toc_max_level": 0,
+   "toc_head": [],
+   "chars_total": 561704,
+   "chars_per_page_median": 2098,
+   "low_text_pages": 4,
+   "low_text_share": 0.015,
+   "low_text_page_numbers_head": [
+    1,
+    12,
+    196,
+    227
+   ]
+  },
+  "dobelman_williams_qfa": {
+   "path": "C:\\Users\\harsh\\Downloads\\Dobelman, John A._Williams, Edward E - Quantitative financial analytics_ the path to investment profits-World Scientific (2018).pdf",
+   "exists": true,
+   "kind": "book",
+   "supplied_for": "related reading (user message)",
+   "sha256": "44078548107de840f5f943e6003bb6ae507e04294ecd6f6c84f7f3f577218f03",
+   "bytes": 5326684,
+   "pages": 621,
+   "encrypted": false,
+   "pdf_metadata": {
+    "format": "PDF 1.6",
+    "title": "Quantitative Financial Analytics: The Path To Investment Profits",
+    "author": "Williams, Edward E; Dobelman, John A; ",
+    "creator": "Adobe Acrobat Pro 10.0.0",
+    "producer": "Adobe Acrobat Pro 10.0.0",
+    "creationDate": "D:20170704132934+05'30'",
+    "modDate": "D:20170717113044+05'30'"
+   },
+   "toc_entries": 199,
+   "toc_max_level": 3,
+   "toc_head": [
+    [
+     1,
+     "Contents",
+     16
+    ],
+    [
+     1,
+     "Dedication",
+     6
+    ],
+    [
+     1,
+     "Preface",
+     8
+    ],
+    [
+     1,
+     "About the Authors",
+     12
+    ],
+    [
+     1,
+     "About the Cover",
+     14
+    ],
+    [
+     1,
+     "1. The Challenge: Can You Attain Wealth in\rToday\u2019s Investment Environment?",
+     24
+    ],
+    [
+     2,
+     "INTRODUCTION",
+     24
+    ],
+    [
+     2,
+     "THE NATURE OF INVESTMENT MANAGEMENT",
+     26
+    ],
+    [
+     2,
+     "INVESTMENT MEDIA AND THE ENVIRONMENT",
+     28
+    ],
+    [
+     2,
+     "CAN YOU MAKE MONEY IN THE STOCK\rMARKET?",
+     29
+    ],
+    [
+     2,
+     "THE STOCK MARKET AS A SPECULATIVE\rINSTITUTION",
+     31
+    ],
+    [
+     2,
+     "FINANCIAL INFORMATION",
+     36
+    ]
+   ],
+   "chars_total": 1014694,
+   "chars_per_page_median": 1651,
+   "low_text_pages": 14,
+   "low_text_share": 0.023,
+   "low_text_page_numbers_head": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    11,
+    131,
+    193,
+    283,
+    419,
+    543,
+    575,
+    605
+   ]
+  }
+ }
+}

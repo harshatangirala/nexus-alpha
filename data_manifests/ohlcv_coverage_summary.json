@@ -1,0 +1,153 @@
+{
+ "created_utc": "2026-11-05T13:47:10Z",
+ "seal_date": "2023-01-03",
+ "n_tickers": 979,
+ "n_original_941": 941,
+ "exchange_counts": {
+  "NYSE": 606,
+  "NASDAQ": 329,
+  "unknown (38 additions)": 38,
+  "NYSE American": 4,
+  "F": 2
+ },
+ "adr_count": 32,
+ "daily": {
+  "rows_dev": 5143695,
+  "rows_after_seal_count_only": 926134,
+  "first_min": "2001-01-02",
+  "first_max": "2021-11-10",
+  "last_min": "2022-12-30",
+  "last_max": "2022-12-30",
+  "tickers_full_2001_2022": 764,
+  "missing_sessions_total": 0,
+  "tickers_with_missing_sessions": 0,
+  "duplicates_total": 0,
+  "ohlc_violations_total": 0,
+  "source_1min": 5140601,
+  "source_yahoo": 3094,
+  "source_yahoo_ext": 0,
+  "zero_volume_days": 1718,
+  "years_per_ticker_quantiles": {
+   "0.0": 2.0,
+   "0.1": 19.0,
+   "0.25": 22.0,
+   "0.5": 22.0,
+   "0.75": 22.0,
+   "0.9": 22.0,
+   "1.0": 22.0
+  }
+ },
+ "hourly": {
+  "rows_dev": 35693557,
+  "rows_after_seal_count_only": 6435958,
+  "first_min": "2001-01-02",
+  "first_max": "2021-11-10",
+  "sessions_total": 5140601,
+  "sessions_incomplete": 79422,
+  "sessions_over_expected": 9018,
+  "sessions_missing_vs_daily": 3094,
+  "offgrid_bars": 0,
+  "duplicates_total": 0,
+  "ohlc_violations_total": 0,
+  "daily_vs_hourly_close_relerr_median_of_medians": 0.0,
+  "share_days_close_relerr_gt_0p5pct_mean": 0.0,
+  "share_days_open_relerr_gt_0p5pct_mean": 0.0
+ },
+ "weekly": {
+  "rows_dev": 1066802,
+  "mismatch_vs_daily_total": 0,
+  "only_in_frozen": 0,
+  "only_in_derived": 0
+ },
+ "per_year_dev": {
+  "2001": {
+   "tickers_daily": 789,
+   "tickers_hourly": 789
+  },
+  "2002": {
+   "tickers_daily": 826,
+   "tickers_hourly": 826
+  },
+  "2003": {
+   "tickers_daily": 857,
+   "tickers_hourly": 857
+  },
+  "2004": {
+   "tickers_daily": 900,
+   "tickers_hourly": 900
+  },
+  "2005": {
+   "tickers_daily": 934,
+   "tickers_hourly": 934
+  },
+  "2006": {
+   "tickers_daily": 942,
+   "tickers_hourly": 942
+  },
+  "2007": {
+   "tickers_daily": 944,
+   "tickers_hourly": 944
+  },
+  "2008": {
+   "tickers_daily": 945,
+   "tickers_hourly": 945
+  },
+  "2009": {
+   "tickers_daily": 945,
+   "tickers_hourly": 945
+  },
+  "2010": {
+   "tickers_daily": 946,
+   "tickers_hourly": 946
+  },
+  "2011": {
+   "tickers_daily": 946,
+   "tickers_hourly": 946
+  },
+  "2012": {
+   "tickers_daily": 950,
+   "tickers_hourly": 950
+  },
+  "2013": {
+   "tickers_daily": 950,
+   "tickers_hourly": 950
+  },
+  "2014": {
+   "tickers_daily": 951,
+   "tickers_hourly": 951
+  },
+  "2015": {
+   "tickers_daily": 955,
+   "tickers_hourly": 955
+  },
+  "2016": {
+   "tickers_daily": 956,
+   "tickers_hourly": 956
+  },
+  "2017": {
+   "tickers_daily": 960,
+   "tickers_hourly": 960
+  },
+  "2018": {
+   "tickers_daily": 962,
+   "tickers_hourly": 962
+  },
+  "2019": {
+   "tickers_daily": 967,
+   "tickers_hourly": 967
+  },
+  "2020": {
+   "tickers_daily": 972,
+   "tickers_hourly": 972
+  },
+  "2021": {
+   "tickers_daily": 979,
+   "tickers_hourly": 979
+  },
+  "2022": {
+   "tickers_daily": 979,
+   "tickers_hourly": 979
+  }
+ },
+ "elapsed_s": 28.3
+}

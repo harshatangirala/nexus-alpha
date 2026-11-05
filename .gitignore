@@ -1,0 +1,28 @@
+# Environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.streamlit/secrets.toml
+
+# Secrets: never commit real values (see .env.example)
+.env
+*.token
+
+# Large artifacts. Data licences forbid publishing data, features, embeddings, article text, book text or weights.
+artifacts/
+*.npy
+*.npz
+*.safetensors
+*.pt
+*.ckpt
+*.parquet
+!tests/fixtures/**/*.parquet
+
+# Holdout access log stays local (it records owner unlocks)
+governance/
+
+# OS
+Thumbs.db
+.DS_Store

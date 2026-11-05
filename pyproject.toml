@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus-alpha"
+version = "0.1.0"
+description = "NEXUS Alpha: point-in-time multimodal research system (tri-timeframe charts, indicators, news, SEC filings, RAG) with a separate risk-aware decision engine. Research and paper-trading use only."
+requires-python = ">=3.11"
+authors = [{ name = "Krishna Harsha Tangirala" }]
+dependencies = [
+  "numpy>=2.0",
+  "pandas>=2.2",
+  "pyarrow>=16",
+  "scipy>=1.13",
+  "scikit-learn>=1.5",
+  "statsmodels>=0.14",
+  "pyyaml>=6",
+  "pydantic>=2.7",
+  "lightgbm>=4.3",
+  "huggingface_hub>=0.30",
+]
+
+[project.optional-dependencies]
+ml = ["torch>=2.3", "torchvision>=0.18", "timm>=1.0", "transformers>=4.44", "safetensors>=0.4", "optuna>=3.6"]
+rag = ["pymupdf>=1.24"]
+app = ["streamlit>=1.40", "plotly>=5.22", "matplotlib>=3.8"]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "source_data: needs the local TriFrame/SEC source data (skipped when absent)",
+  "network: needs network access (skipped unless NEXUS_ALLOW_NETWORK=1)",
+  "slow: takes more than ~30 s on a laptop CPU",
+]

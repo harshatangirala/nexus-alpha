@@ -1,0 +1,1337 @@
+{
+ "dataset": "Brianferrell787/financial-news-multisource",
+ "revision": "c25780f336280adb57c64bda7aed605d065c672d",
+ "probed_utc": "2026-11-05T13:35:26Z",
+ "subsets": {
+  "all_the_news_2": {
+   "n_shards": 4,
+   "rows_per_shard": {
+    "data/all_the_news_2/all_the_news_2.000.parquet": 500000,
+    "data/all_the_news_2/all_the_news_2.001.parquet": 500000,
+    "data/all_the_news_2/all_the_news_2.002.parquet": 500000,
+    "data/all_the_news_2/all_the_news_2.003.parquet": 472976
+   },
+   "errors": [],
+   "n_rows": 1972976,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2016-01-01T00:00:00Z",
+    "date_max": "2016-01-02T00:00:00Z",
+    "extra_keys": {
+     "publication": 400,
+     "author": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400,
+     "date_raw": 138,
+     "date_trading": 138,
+     "anchor_policy": 138
+    },
+    "time_precision": {
+     "minute": 262,
+     "day": 138
+    },
+    "tz_hint": {
+     "America/New_York": 262,
+     "UTC": 138
+    },
+    "source_top": {
+     "All the News (curation)": 400
+    },
+    "dataset_field": {
+     "all_the_news_2": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 251,
+     "03:20": 9,
+     "07:00": 4,
+     "10:00": 4,
+     "08:00": 3,
+     "09:00": 3
+    }
+   }
+  },
+  "american_news_jonasbecker": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/american_news_jonasbecker/american_news_jonasbecker.000.parquet": 265552
+   },
+   "errors": [],
+   "n_rows": 265552,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2016-02-05T21:51:32Z",
+    "date_max": "2016-02-05T22:25:15Z",
+    "extra_keys": {
+     "authors": 400,
+     "source_domain": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "US news (multi-outlet)": 400
+    },
+    "dataset_field": {
+     "american_news_jonasbecker": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "22:24": 40,
+     "22:23": 35,
+     "22:22": 32,
+     "22:21": 28,
+     "22:20": 25,
+     "22:19": 24
+    }
+   }
+  },
+  "benzinga_6000stocks": {
+   "n_shards": 4,
+   "rows_per_shard": {
+    "data/benzinga_6000stocks/benzinga_6000stocks.000.parquet": 500000,
+    "data/benzinga_6000stocks/benzinga_6000stocks.001.parquet": 500000,
+    "data/benzinga_6000stocks/benzinga_6000stocks.002.parquet": 500000,
+    "data/benzinga_6000stocks/benzinga_6000stocks.003.parquet": 68363
+   },
+   "errors": [],
+   "n_rows": 1568363,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2009-02-14T19:02:00Z",
+    "date_max": "2009-08-10T12:00:00Z",
+    "extra_keys": {
+     "text_type": 400,
+     "time_precision": 400,
+     "tz_hint": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "stocks": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "Benzinga": 400
+    },
+    "dataset_field": {
+     "benzinga_6000stocks": 400
+    },
+    "share_with_stocks": 1.0,
+    "mean_stocks_when_present": 2.27,
+    "top_hh_mm_utc": {
+     "12:00": 36,
+     "13:00": 20,
+     "11:00": 18,
+     "10:00": 9,
+     "12:30": 7,
+     "15:00": 7
+    }
+   }
+  },
+  "bloomberg_reuters": {
+   "n_shards": 17,
+   "rows_per_shard": {
+    "data/bloomberg_reuters/bloomberg_reuters.000.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.001.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.002.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.003.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.004.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.005.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.006.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.007.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.008.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.009.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.010.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.011.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.012.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.013.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.014.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.015.parquet": 500000,
+    "data/bloomberg_reuters/bloomberg_reuters.016.parquet": 203282
+   },
+   "errors": [],
+   "n_rows": 8203282,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2006-10-20T20:16:16Z",
+    "date_max": "2007-01-02T00:00:00Z",
+    "extra_keys": {
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400,
+     "date_raw": 307,
+     "date_trading": 307,
+     "anchor_policy": 307,
+     "author": 93
+    },
+    "time_precision": {
+     "minute": 93,
+     "day": 307
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Reuters": 307,
+     "Bloomberg": 93
+    },
+    "dataset_field": {
+     "reuters_titles_2007_2013": 307,
+     "bloomberg_2006_2013": 93
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 307,
+     "21:08": 3,
+     "16:24": 3,
+     "17:54": 2,
+     "01:08": 2,
+     "20:16": 1
+    }
+   }
+  },
+  "cnbc_headlines": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/cnbc_headlines/cnbc_headlines.000.parquet": 553
+   },
+   "errors": [],
+   "n_rows": 553,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2006-11-30T14:25:19Z",
+    "date_max": "2019-04-18T04:49:41Z",
+    "extra_keys": {
+     "author": 400,
+     "publisher": 400,
+     "category": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "CNBC": 400
+    },
+    "dataset_field": {
+     "cnbc_headlines_2017_2020": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "17:49": 3,
+     "13:53": 3,
+     "15:24": 3,
+     "19:46": 3,
+     "17:08": 3,
+     "15:00": 3
+    }
+   }
+  },
+  "djia_stock_headlines": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/djia_stock_headlines/djia_stock_headlines.000.parquet": 102324
+   },
+   "errors": [],
+   "n_rows": 102324,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2000-01-03T00:00:00Z",
+    "date_max": "2000-01-26T00:00:00Z",
+    "extra_keys": {
+     "top_index": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "DJIA_daily_headlines": 400
+    },
+    "dataset_field": {
+     "djia_stock_headlines": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "finsen_us_2007_2023": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/finsen_us_2007_2023/finsen_us_2007_2023.000.parquet": 15523
+   },
+   "errors": [],
+   "n_rows": 15523,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2007-06-04T00:00:00Z",
+    "date_max": "2008-06-25T00:00:00Z",
+    "extra_keys": {
+     "category": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "tz_hint": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "FinSen (US subset)": 400
+    },
+    "dataset_field": {
+     "finsen_us_2007_2023": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "fnspid_news": {
+   "n_shards": 59,
+   "rows_per_shard": {
+    "data/fnspid_news/fnspid_news.000.parquet": 500000,
+    "data/fnspid_news/fnspid_news.001.parquet": 500000,
+    "data/fnspid_news/fnspid_news.002.parquet": 499995,
+    "data/fnspid_news/fnspid_news.003.parquet": 500000,
+    "data/fnspid_news/fnspid_news.004.parquet": 500000,
+    "data/fnspid_news/fnspid_news.005.parquet": 500000,
+    "data/fnspid_news/fnspid_news.006.parquet": 499999,
+    "data/fnspid_news/fnspid_news.007.parquet": 500000,
+    "data/fnspid_news/fnspid_news.008.parquet": 500000,
+    "data/fnspid_news/fnspid_news.009.parquet": 500000,
+    "data/fnspid_news/fnspid_news.010.parquet": 500000,
+    "data/fnspid_news/fnspid_news.011.parquet": 500000,
+    "data/fnspid_news/fnspid_news.012.parquet": 500000,
+    "data/fnspid_news/fnspid_news.013.parquet": 500000,
+    "data/fnspid_news/fnspid_news.014.parquet": 500000,
+    "data/fnspid_news/fnspid_news.015.parquet": 500000,
+    "data/fnspid_news/fnspid_news.016.parquet": 500000,
+    "data/fnspid_news/fnspid_news.017.parquet": 500000,
+    "data/fnspid_news/fnspid_news.018.parquet": 500000,
+    "data/fnspid_news/fnspid_news.019.parquet": 500000,
+    "data/fnspid_news/fnspid_news.020.parquet": 500000,
+    "data/fnspid_news/fnspid_news.021.parquet": 500000,
+    "data/fnspid_news/fnspid_news.022.parquet": 500000,
+    "data/fnspid_news/fnspid_news.023.parquet": 500000,
+    "data/fnspid_news/fnspid_news.024.parquet": 500000,
+    "data/fnspid_news/fnspid_news.025.parquet": 500000,
+    "data/fnspid_news/fnspid_news.026.parquet": 57514,
+    "data/fnspid_news/fnspid_news.027.parquet": 500000,
+    "data/fnspid_news/fnspid_news.028.parquet": 500000,
+    "data/fnspid_news/fnspid_news.029.parquet": 500000,
+    "data/fnspid_news/fnspid_news.030.parquet": 500000,
+    "data/fnspid_news/fnspid_news.031.parquet": 500000,
+    "data/fnspid_news/fnspid_news.032.parquet": 500000,
+    "data/fnspid_news/fnspid_news.033.parquet": 500000,
+    "data/fnspid_news/fnspid_news.034.parquet": 499995,
+    "data/fnspid_news/fnspid_news.035.parquet": 500000,
+    "data/fnspid_news/fnspid_news.036.parquet": 500000,
+    "data/fnspid_news/fnspid_news.037.parquet": 500000,
+    "data/fnspid_news/fnspid_news.038.parquet": 499999,
+    "data/fnspid_news/fnspid_news.039.parquet": 500000,
+    "data/fnspid_news/fnspid_news.040.parquet": 500000,
+    "data/fnspid_news/fnspid_news.041.parquet": 500000,
+    "data/fnspid_news/fnspid_news.042.parquet": 500000,
+    "data/fnspid_news/fnspid_news.043.parquet": 500000,
+    "data/fnspid_news/fnspid_news.044.parquet": 500000,
+    "data/fnspid_news/fnspid_news.045.parquet": 500000,
+    "data/fnspid_news/fnspid_news.046.parquet": 500000,
+    "data/fnspid_news/fnspid_news.047.parquet": 500000,
+    "data/fnspid_news/fnspid_news.048.parquet": 500000,
+    "data/fnspid_news/fnspid_news.049.parquet": 500000,
+    "data/fnspid_news/fnspid_news.050.parquet": 500000,
+    "data/fnspid_news/fnspid_news.051.parquet": 500000,
+    "data/fnspid_news/fnspid_news.052.parquet": 500000,
+    "data/fnspid_news/fnspid_news.053.parquet": 500000,
+    "data/fnspid_news/fnspid_news.054.parquet": 500000,
+    "data/fnspid_news/fnspid_news.055.parquet": 500000,
+    "data/fnspid_news/fnspid_news.056.parquet": 500000,
+    "data/fnspid_news/fnspid_news.057.parquet": 500000,
+    "data/fnspid_news/fnspid_news.058.parquet": 49299
+   },
+   "errors": [],
+   "n_rows": 28606801,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2015-05-19T00:00:00Z",
+    "date_max": "2020-06-05T06:30:54Z",
+    "extra_keys": {
+     "stocks": 400,
+     "publisher": 400,
+     "author": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "None": 400
+    },
+    "dataset_field": {
+     "fnspid_news": 400
+    },
+    "share_with_stocks": 1.0,
+    "mean_stocks_when_present": 1.0,
+    "top_hh_mm_utc": {
+     "00:00": 390,
+     "06:30": 1,
+     "06:45": 1,
+     "00:30": 1,
+     "08:45": 1,
+     "07:38": 1
+    }
+   }
+  },
+  "frontpage_news": {
+   "n_shards": 10,
+   "rows_per_shard": {
+    "data/frontpage_news/frontpage_news.000.parquet": 500000,
+    "data/frontpage_news/frontpage_news.001.parquet": 500000,
+    "data/frontpage_news/frontpage_news.002.parquet": 500000,
+    "data/frontpage_news/frontpage_news.003.parquet": 500000,
+    "data/frontpage_news/frontpage_news.004.parquet": 500000,
+    "data/frontpage_news/frontpage_news.005.parquet": 500000,
+    "data/frontpage_news/frontpage_news.006.parquet": 500000,
+    "data/frontpage_news/frontpage_news.007.parquet": 500000,
+    "data/frontpage_news/frontpage_news.008.parquet": 500000,
+    "data/frontpage_news/frontpage_news.009.parquet": 494950
+   },
+   "errors": [],
+   "n_rows": 4994950,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2015-07-16T00:00:00Z",
+    "date_max": "2015-07-17T00:00:00Z",
+    "extra_keys": {
+     "outlet": 400,
+     "new_article_id": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Frontpage (multi-outlet)": 400
+    },
+    "dataset_field": {
+     "frontpage_news": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "gold_news_kaggle": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/gold_news_kaggle/gold_news_kaggle.000.parquet": 10404
+   },
+   "errors": [],
+   "n_rows": 10404,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2000-02-15T00:00:00Z",
+    "date_max": "2004-07-27T00:00:00Z",
+    "extra_keys": {
+     "date_raw": 400,
+     "date_trading": 400,
+     "url": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "None": 400
+    },
+    "dataset_field": {
+     "gold_news_kaggle": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "headlines_10sites_2007_2022": {
+   "n_shards": 9,
+   "rows_per_shard": {
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.000.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.001.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.002.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.003.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.004.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.005.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.006.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.007.parquet": 500000,
+    "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.008.parquet": 405397
+   },
+   "errors": [],
+   "n_rows": 4405397,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2007-01-01T00:00:00Z",
+    "date_max": "2007-01-01T00:00:00Z",
+    "extra_keys": {
+     "publication": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "url": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "None": 400
+    },
+    "dataset_field": {
+     "headlines_10sites_2007_2022": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "huffpost_news": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/huffpost_news/huffpost_news.000.parquet": 209415
+   },
+   "errors": [],
+   "n_rows": 209415,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2012-01-28T00:00:00Z",
+    "date_max": "2012-02-01T00:00:00Z",
+    "extra_keys": {
+     "category": 400,
+     "authors": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "url": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "HuffPost": 400
+    },
+    "dataset_field": {
+     "huffpost_news_categories": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "mind_news_2019": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/mind_news_2019/mind_news_2019.000.parquet": 128621
+   },
+   "errors": [],
+   "n_rows": 128621,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2019-11-09T00:00:00Z",
+    "date_max": "2019-11-09T00:00:00Z",
+    "extra_keys": {
+     "category": 400,
+     "subcategory": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "url": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "MSN": 400
+    },
+    "dataset_field": {
+     "mind_news_2019": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "nyt_articles_2000_present": {
+   "n_shards": 5,
+   "rows_per_shard": {
+    "data/nyt_articles_2000_present/nyt_articles_2000_present.000.parquet": 500000,
+    "data/nyt_articles_2000_present/nyt_articles_2000_present.001.parquet": 500000,
+    "data/nyt_articles_2000_present/nyt_articles_2000_present.002.parquet": 500000,
+    "data/nyt_articles_2000_present/nyt_articles_2000_present.003.parquet": 500000,
+    "data/nyt_articles_2000_present/nyt_articles_2000_present.004.parquet": 175632
+   },
+   "errors": [],
+   "n_rows": 2175632,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2000-01-01T05:00:00Z",
+    "date_max": "2000-01-02T05:00:00Z",
+    "extra_keys": {
+     "byline_norm": 400,
+     "keywords_norm": 400,
+     "source_norm": 400,
+     "web_url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "New York Times": 400
+    },
+    "dataset_field": {
+     "nyt_articles_2000_present": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "05:00": 400
+    }
+   }
+  },
+  "nyt_headlines_1990_2020": {
+   "n_shards": 6,
+   "rows_per_shard": {
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.000.parquet": 500000,
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.001.parquet": 500000,
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.002.parquet": 500000,
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.003.parquet": 500000,
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.004.parquet": 500000,
+    "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.005.parquet": 302355
+   },
+   "errors": [],
+   "n_rows": 2802355,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "1990-01-01T05:00:00Z",
+    "date_max": "1990-01-03T05:00:00Z",
+    "extra_keys": {
+     "news_desk": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "New York Times": 400
+    },
+    "dataset_field": {
+     "nyt_headlines_1990_2020": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "05:00": 400
+    }
+   }
+  },
+  "nyt_headlines_2010_2021": {
+   "n_shards": 2,
+   "rows_per_shard": {
+    "data/nyt_headlines_2010_2021/nyt_headlines_2010_2021.000.parquet": 500000,
+    "data/nyt_headlines_2010_2021/nyt_headlines_2010_2021.001.parquet": 97708
+   },
+   "errors": [],
+   "n_rows": 597708,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2007-07-07T14:46:20Z",
+    "date_max": "2010-01-05T03:55:40Z",
+    "extra_keys": {
+     "news_desk": 400,
+     "section": 400,
+     "section_name": 400,
+     "byline": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "New York Times": 400
+    },
+    "dataset_field": {
+     "nyt_headlines_2010_2021": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "03:10": 7,
+     "02:09": 5,
+     "01:20": 4,
+     "02:20": 4,
+     "02:22": 4,
+     "01:10": 4
+    }
+   }
+  },
+  "reddit_finance_sp500": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/reddit_finance_sp500/reddit_finance_sp500.000.parquet": 48029
+   },
+   "errors": [],
+   "n_rows": 48029,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2008-11-11T01:35:09Z",
+    "date_max": "2015-12-08T21:52:46Z",
+    "extra_keys": {
+     "subreddit": 400,
+     "author": 400,
+     "flair": 400,
+     "score": 400,
+     "num_comments": 400,
+     "upvote_ratio": 400,
+     "permalink": 400,
+     "domain": 400,
+     "id": 400,
+     "created_datetime": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400,
+     "stocks": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Reddit (finance subs)": 400
+    },
+    "dataset_field": {
+     "reddit_finance_sp500": 400
+    },
+    "share_with_stocks": 1.0,
+    "mean_stocks_when_present": 1.64,
+    "top_hh_mm_utc": {
+     "17:13": 3,
+     "14:40": 3,
+     "12:49": 3,
+     "15:54": 2,
+     "18:11": 2,
+     "20:54": 2
+    }
+   }
+  },
+  "reddit_worldnews_2008_2016": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/reddit_worldnews_2008_2016/reddit_worldnews_2008_2016.000.parquet": 73578
+   },
+   "errors": [],
+   "n_rows": 73578,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2008-06-08T00:00:00Z",
+    "date_max": "2008-06-23T00:00:00Z",
+    "extra_keys": {
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Reddit (r/worldnews)": 400
+    },
+    "dataset_field": {
+     "reddit_worldnews_2008_2016": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "sentarl_combined": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/sentarl_combined/sentarl_combined.000.parquet": 318307
+   },
+   "errors": [],
+   "n_rows": 318307,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "1997-01-03T14:39:00Z",
+    "date_max": "1997-12-11T23:00:00Z",
+    "extra_keys": {
+     "stocks": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "SentARL": 400
+    },
+    "dataset_field": {
+     "sentarl_20assets": 400
+    },
+    "share_with_stocks": 0.905,
+    "mean_stocks_when_present": 8.53,
+    "top_hh_mm_utc": {
+     "23:00": 218,
+     "04:01": 50,
+     "03:59": 36,
+     "05:01": 36,
+     "04:59": 9,
+     "14:39": 2
+    }
+   }
+  },
+  "sp500_daily_headlines": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/sp500_daily_headlines/sp500_daily_headlines.000.parquet": 18153
+   },
+   "errors": [],
+   "n_rows": 18153,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2008-01-02T00:00:00Z",
+    "date_max": "2010-09-30T00:00:00Z",
+    "extra_keys": {
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "market_recaps": 400
+    },
+    "dataset_field": {
+     "sp500_daily_headlines": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "us_financial_news_2018_jeet": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/us_financial_news_2018_jeet/us_financial_news_2018_jeet.000.parquet": 305947
+   },
+   "errors": [],
+   "n_rows": 305947,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2017-12-07T04:58:00Z",
+    "date_max": "2018-01-02T00:13:00Z",
+    "extra_keys": {
+     "source_norm": 400,
+     "author": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "U.S. Financial News (multi-outlet)": 400
+    },
+    "dataset_field": {
+     "us_financial_news_2018_jeet": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 29,
+     "12:00": 10,
+     "13:00": 10,
+     "22:17": 6,
+     "16:30": 4,
+     "21:22": 4
+    }
+   }
+  },
+  "wikinews_articles": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/wikinews_articles/wikinews_articles.000.parquet": 21397
+   },
+   "errors": [],
+   "n_rows": 21397,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2002-04-01T00:00:00Z",
+    "date_max": "2005-02-02T00:00:00Z",
+    "extra_keys": {
+     "categories_norm": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Wikinews": 400
+    },
+    "dataset_field": {
+     "wikinews_articles": 400
+    },
+    "share_with_stocks": 0.0,
+    "mean_stocks_when_present": null,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "yahoo_finance_articles": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/yahoo_finance_articles/yahoo_finance_articles.000.parquet": 198926
+   },
+   "errors": [],
+   "n_rows": 198926,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2025-03-11T00:00:00Z",
+    "date_max": "2025-03-13T00:00:00Z",
+    "extra_keys": {
+     "publisher": 400,
+     "type": 400,
+     "date_raw": 400,
+     "date_trading": 400,
+     "link": 400,
+     "text_type": 400,
+     "dataset_source": 400,
+     "time_precision": 400,
+     "anchor_policy": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400,
+     "stocks": 400
+    },
+    "time_precision": {
+     "day": 400
+    },
+    "tz_hint": {
+     "UTC": 400
+    },
+    "source_top": {
+     "Yahoo Finance": 400
+    },
+    "dataset_field": {
+     "yahoo_finance_articles": 400
+    },
+    "share_with_stocks": 1.0,
+    "mean_stocks_when_present": 1.42,
+    "top_hh_mm_utc": {
+     "00:00": 400
+    }
+   }
+  },
+  "yahoo_finance_felixdrinkall": {
+   "n_shards": 1,
+   "rows_per_shard": {
+    "data/yahoo_finance_felixdrinkall/yahoo_finance_felixdrinkall.000.parquet": 70286
+   },
+   "errors": [],
+   "n_rows": 70286,
+   "columns": [
+    "date",
+    "text",
+    "extra_fields"
+   ],
+   "sample": {
+    "n": 400,
+    "date_min": "2017-01-03T00:00:00Z",
+    "date_max": "2018-02-25T17:00:09Z",
+    "extra_keys": {
+     "source_domain": 400,
+     "news_outlet": 400,
+     "authors": 400,
+     "mentioned_companies": 400,
+     "related_companies": 400,
+     "industries": 400,
+     "named_entities": 400,
+     "url": 400,
+     "text_type": 400,
+     "time_precision": 400,
+     "dataset_source": 400,
+     "dataset": 400,
+     "source": 400,
+     "raw_type": 400,
+     "tz_hint": 400,
+     "stocks": 400
+    },
+    "time_precision": {
+     "minute": 400
+    },
+    "tz_hint": {
+     "America/New_York": 400
+    },
+    "source_top": {
+     "Yahoo Finance": 400
+    },
+    "dataset_field": {
+     "yahoo_finance_felixdrinkall_2017_2023": 400
+    },
+    "share_with_stocks": 1.0,
+    "mean_stocks_when_present": 1.89,
+    "top_hh_mm_utc": {
+     "00:00": 125,
+     "17:48": 3,
+     "22:09": 3,
+     "20:03": 3,
+     "12:00": 3,
+     "15:05": 3
+    }
+   }
+  }
+ },
+ "total_rows": 57114479
+}

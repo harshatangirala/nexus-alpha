@@ -1,0 +1,917 @@
+{
+ "dataset": "Brianferrell787/financial-news-multisource",
+ "queried_utc": "2026-11-05T13:33:46Z",
+ "sha": "c25780f336280adb57c64bda7aed605d065c672d",
+ "last_modified": "2025-11-29 21:31:56+00:00",
+ "private": false,
+ "gated": "auto",
+ "disabled": false,
+ "downloads": 1331,
+ "tags": [
+  "task_categories:text-classification",
+  "task_categories:text-retrieval",
+  "task_categories:other",
+  "task_ids:language-modeling",
+  "task_ids:document-retrieval",
+  "task_ids:topic-classification",
+  "task_ids:news-articles-summarization",
+  "task_ids:document-question-answering",
+  "language:en",
+  "license:other",
+  "size_categories:10M<n<100M",
+  "format:parquet",
+  "modality:text",
+  "library:datasets",
+  "library:dask",
+  "library:mlcroissant",
+  "library:polars",
+  "arxiv:2112.02095",
+  "doi:10.57967/hf/6432",
+  "region:us",
+  "finance",
+  "markets",
+  "trading",
+  "backtesting",
+  "time-series",
+  "news",
+  "headlines",
+  "parquet",
+  "multisource",
+  "llm",
+  "reinforcement-learning",
+  "retrieval",
+  "dataset-card"
+ ],
+ "card_data": {
+  "language": [
+   "en"
+  ],
+  "license": "other",
+  "size_categories": [
+   "10M<n<100M"
+  ],
+  "task_categories": [
+   "text-classification",
+   "text-retrieval",
+   "other"
+  ],
+  "task_ids": [
+   "language-modeling",
+   "document-retrieval",
+   "topic-classification",
+   "news-articles-summarization",
+   "document-question-answering"
+  ],
+  "pretty_name": "Multi-Source Financial & General News",
+  "extra_gated_heading": "Request access to Multi-Source Financial & General News",
+  "extra_gated_description": "This corpus aggregates third-party news for research use. Please acknowledge the terms below.",
+  "extra_gated_prompt": "By requesting access you confirm that:\n\u2022 You will use the data **for non-commercial research/education** only.\n\u2022 You will **respect each original source\u2019s terms** and remove items upon rightsholder request.\n\u2022 You will **cite** this corpus and the original sources in any publication.\n",
+  "extra_gated_fields": {
+   "Name / Email": "text",
+   "How did you hear about this dataset?": {
+    "type": "select",
+    "options": [
+     "Google search",
+     "Hugging Face search",
+     "Word of mouth",
+     "Citation in a paper",
+     "Twitter / X",
+     "Reddit",
+     "Other"
+    ]
+   },
+   "If \"Other\", please specify (optional)": {
+    "type": "text",
+    "required": false
+   },
+   "Intended use": {
+    "type": "select",
+    "options": [
+     "Research",
+     "Education",
+     {
+      "label": "Other",
+      "value": "other"
+     }
+    ]
+   },
+   "I agree to non-commercial, research-only use": "checkbox",
+   "I will not redistribute article text": "checkbox",
+   "I will cite this corpus and original sources": "checkbox"
+  },
+  "extra_gated_button_content": "Agree & Request Access",
+  "tags": [
+   "finance",
+   "markets",
+   "trading",
+   "backtesting",
+   "time-series",
+   "news",
+   "headlines",
+   "parquet",
+   "multisource",
+   "llm",
+   "reinforcement-learning",
+   "retrieval",
+   "dataset-card"
+  ],
+  "configs": [
+   {
+    "config_name": "data",
+    "data_files": [
+     "data/*/*.parquet"
+    ]
+   }
+  ]
+ },
+ "n_files": 157,
+ "total_bytes": 21410263184,
+ "files": [
+  {
+   "path": ".gitattributes",
+   "bytes": 617,
+   "lfs_sha256": null
+  },
+  {
+   "path": "README.md",
+   "bytes": 60553,
+   "lfs_sha256": null
+  },
+  {
+   "path": "data/all_the_news_2/all_the_news_2.000.parquet",
+   "bytes": 927694506,
+   "lfs_sha256": "eee560b1d702e845d36358bd22cf880252743dae4f55f676830e74b01a63e5e5"
+  },
+  {
+   "path": "data/all_the_news_2/all_the_news_2.001.parquet",
+   "bytes": 927797076,
+   "lfs_sha256": "a93e052e5009e2eb9b8369629be856e40a0912fb0d66c1791c8edd55703ace4c"
+  },
+  {
+   "path": "data/all_the_news_2/all_the_news_2.002.parquet",
+   "bytes": 1120972423,
+   "lfs_sha256": "48f18e8473c6aa2a2aa8ed7fe34309ab2402f14cc3186753315b7d8e4c73189a"
+  },
+  {
+   "path": "data/all_the_news_2/all_the_news_2.003.parquet",
+   "bytes": 937524403,
+   "lfs_sha256": "91ab2b87e6a8773df192a3617caaa1239682fa9471535790ebaf2a5d44181a58"
+  },
+  {
+   "path": "data/american_news_jonasbecker/american_news_jonasbecker.000.parquet",
+   "bytes": 1049846726,
+   "lfs_sha256": "113d690b959ac89515973d1246158e29d55cd29fcdfef8881c843632b7ade5d7"
+  },
+  {
+   "path": "data/benzinga_6000stocks/benzinga_6000stocks.000.parquet",
+   "bytes": 43621309,
+   "lfs_sha256": "5106cbd61ad10a88ffdca90a6f1a0d64cdf36a7a92b4f178744a7a68cafdd1c0"
+  },
+  {
+   "path": "data/benzinga_6000stocks/benzinga_6000stocks.001.parquet",
+   "bytes": 56213847,
+   "lfs_sha256": "527f98bef7a82568ff5fb06af7ee8c5105db21e3324b99a2f968613d3533215e"
+  },
+  {
+   "path": "data/benzinga_6000stocks/benzinga_6000stocks.002.parquet",
+   "bytes": 61679735,
+   "lfs_sha256": "dec5af37387a427d48191ac885f6fb7e71066d7a5a40770257fb6df747a304b4"
+  },
+  {
+   "path": "data/benzinga_6000stocks/benzinga_6000stocks.003.parquet",
+   "bytes": 8688707,
+   "lfs_sha256": "065e9a797aa72fa287b513b827ed0a63f8c2b1481aff6794728c333286dd0357"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.000.parquet",
+   "bytes": 38534230,
+   "lfs_sha256": "8c0481ec51d3fb900001d49f867cfd46eabbd4abd91c8b7c450896e40784b122"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.001.parquet",
+   "bytes": 39981354,
+   "lfs_sha256": "738992c4416880feb085cbf1efcb0d00c477a044f041c4055dd667fa0b2f4b6e"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.002.parquet",
+   "bytes": 42462837,
+   "lfs_sha256": "64f89f368810b2d138190bcd603dc7ba8f2c4242c0ca1806f20ee34654e2c3e4"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.003.parquet",
+   "bytes": 43027426,
+   "lfs_sha256": "03de6dddac73d11d0d260cceca0e998fa092382e1d369aeb2785f24822405bee"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.004.parquet",
+   "bytes": 46491960,
+   "lfs_sha256": "805b7d4b61b6f6091d8008396b543accbd33b9df80c20dc65c0443f9d65b7911"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.005.parquet",
+   "bytes": 114413843,
+   "lfs_sha256": "64ea1a63515f1991fbbd5ce17de27470e3a9ee4aff9863b430a8ed2c4bf36903"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.006.parquet",
+   "bytes": 69036026,
+   "lfs_sha256": "cc7118283b2c07ac069150197f01e046eb29cd8e5cc1f7133aaf6ad482c27147"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.007.parquet",
+   "bytes": 41214281,
+   "lfs_sha256": "4df16f78a345600434392e739d8e00f4891b49b6a48a6b977fecf58823d3632b"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.008.parquet",
+   "bytes": 97615959,
+   "lfs_sha256": "2624ae7f7c8948dba549241389fd9cf410b2c9a5a630e60bb0fe44ddb98b0811"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.009.parquet",
+   "bytes": 137950679,
+   "lfs_sha256": "115ea0fc853c62e6c83dba290f3e2db6140f71b794d44acb22cf3d1454ace80d"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.010.parquet",
+   "bytes": 153242611,
+   "lfs_sha256": "470c6b04c51bb83dcdd7b2f89dfb10800b0291c5d5e0c8621b9e0b59777ff873"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.011.parquet",
+   "bytes": 189064183,
+   "lfs_sha256": "aa7159e20bbb86743a71b4006de58eefa4741b1291620cfa5a6e975ed9725469"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.012.parquet",
+   "bytes": 122857726,
+   "lfs_sha256": "7bdceb8a43d451e748fa0db303c51f68cd812c69e565fcaa1f30e95f6cb2f4eb"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.013.parquet",
+   "bytes": 51107656,
+   "lfs_sha256": "be979eea86aad1c25b834524dbcd36abf65ce969ee81a3c81c62fa924d99fbb1"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.014.parquet",
+   "bytes": 50540183,
+   "lfs_sha256": "d86edcf3b307bc72199dbd214c4bbe8331dc1b5889afa6fe15d5734715a5f70a"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.015.parquet",
+   "bytes": 49581201,
+   "lfs_sha256": "4f1c80640c195a4b85efa9490cf37ebfa9f9d9e71e5853a287e60580b6aa2d5e"
+  },
+  {
+   "path": "data/bloomberg_reuters/bloomberg_reuters.016.parquet",
+   "bytes": 17077234,
+   "lfs_sha256": "b062db95838c6ddfddf968ed6c3933230ab7e487d1f5204ee4104390e17d525f"
+  },
+  {
+   "path": "data/cnbc_headlines/cnbc_headlines.000.parquet",
+   "bytes": 1161400,
+   "lfs_sha256": "c80592e78164c37fc4e23f4fed68f76003610057b193a86be009279299e0c4b3"
+  },
+  {
+   "path": "data/djia_stock_headlines/djia_stock_headlines.000.parquet",
+   "bytes": 8405996,
+   "lfs_sha256": "c29fecc554e29fae3c7f62e15dd436d97d05d7896cb34286b2c8d0a3427e6570"
+  },
+  {
+   "path": "data/finsen_us_2007_2023/finsen_us_2007_2023.000.parquet",
+   "bytes": 3959038,
+   "lfs_sha256": "b91b47bb143df02f2c75a9efa28785fcb2b2b4c0d3a8e5d58cefd33630b53816"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.000.parquet",
+   "bytes": 51426323,
+   "lfs_sha256": "c3c928a58b1011c4583c8a68d921c67610455d177577002354e517869f6a676b"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.001.parquet",
+   "bytes": 51820838,
+   "lfs_sha256": "42ca0b48a2e698b9297513c1d5c339fa0b4a80d4b09547929968c6742643b316"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.002.parquet",
+   "bytes": 148051455,
+   "lfs_sha256": "ebd5dc3378cdb68c8d92af6c0ad2309c99aa49c26729919b94884d1a7259fc99"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.003.parquet",
+   "bytes": 662991433,
+   "lfs_sha256": "a03c0a538a08c4e8e8ab1655e6f2c256ceba815f3dceaa9cb76d89579bbc22d0"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.004.parquet",
+   "bytes": 287906943,
+   "lfs_sha256": "2d4206c2a6c93a4ba409af2d0e18fe3ace96496b3c02771b22c6ebe7e7d2dbb7"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.005.parquet",
+   "bytes": 46320654,
+   "lfs_sha256": "ad2236db5a8f596102f875d72af1fee130a3e503d26a693f7d59bbda34e584cb"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.006.parquet",
+   "bytes": 46450241,
+   "lfs_sha256": "e00a0b66c74c2e52517d1750c7992218684dab62eb32212364d6d26734de9621"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.007.parquet",
+   "bytes": 46479767,
+   "lfs_sha256": "39910e58d9fb95ad98f23fbd42cb506f2315fd5ceec3313041fe9c7d1c477322"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.008.parquet",
+   "bytes": 38949063,
+   "lfs_sha256": "7486d4b19d241696e4de9207e164f05f42106bd3a816b3bb3cb518e28f298c29"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.009.parquet",
+   "bytes": 38076075,
+   "lfs_sha256": "7195d6cfe928fa02756107114a4660f0f22291e88e7e258a435f8aeb76766834"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.010.parquet",
+   "bytes": 38080761,
+   "lfs_sha256": "7f7befee34ab957f45dbb90db4928dcae26f77b448714565c2202784b6e113e0"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.011.parquet",
+   "bytes": 38326091,
+   "lfs_sha256": "0cd1d10de5446bb4eda9b70b7e884721f1a47cd075778f425fbb00d220f060e7"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.012.parquet",
+   "bytes": 38157806,
+   "lfs_sha256": "92f4997cb576375f9c88c9e8561fcb80369671bce14c478dc28cae3e1a99487f"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.013.parquet",
+   "bytes": 37944070,
+   "lfs_sha256": "c87bf86a3c6474a633719ea9b6816c95a366779ec9ab9231b7ef7bf86aba9cb4"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.014.parquet",
+   "bytes": 38082490,
+   "lfs_sha256": "619ab40ad4d53a37254b54e1de9f2bd6851714d0d65179275d03c069b1f52250"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.015.parquet",
+   "bytes": 38527740,
+   "lfs_sha256": "cb5e7dff98e9df850a5a99394af4785a05cc90fdd753e83e9c730439fdc01ccc"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.016.parquet",
+   "bytes": 38189722,
+   "lfs_sha256": "9de57d6ab75dcc06dc3c3618faf048c7fcb60176ef91beb060c42003462b2b52"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.017.parquet",
+   "bytes": 38591120,
+   "lfs_sha256": "2c2dc0b983d22d8b0b05abd7e95f9618d3e134e16f27f12eeefa74dd80e709ab"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.018.parquet",
+   "bytes": 38576610,
+   "lfs_sha256": "deb7c9bc31fb415e5d875cd29b5596e8634d890333aa38c2a4e3337bc20417b6"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.019.parquet",
+   "bytes": 37946170,
+   "lfs_sha256": "b9aacca002b28621ed6ec801f941e6af2c99e269ed0c4239d825079dab9fe94d"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.020.parquet",
+   "bytes": 38139023,
+   "lfs_sha256": "6c75e915e9b2c724cd25988368a4b8dd6c56aafc2f24f9eda46a772a8c074b0a"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.021.parquet",
+   "bytes": 38362543,
+   "lfs_sha256": "703eba8a2dcbc3fdd905118db3c60a7296be8fccad2eddd3b2c2304d9e4e7be5"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.022.parquet",
+   "bytes": 38236095,
+   "lfs_sha256": "f8246ab85461c0778c9bffe88deb0c9b5a11abc98963a862eced0e1118ad1041"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.023.parquet",
+   "bytes": 38270175,
+   "lfs_sha256": "e6b4e9e204723120e0c4490f7e751b2075063de8c45361e6ce49c529ae6af499"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.024.parquet",
+   "bytes": 38483888,
+   "lfs_sha256": "0f7ff05f784fd9046c2178ffc04983e7c8f5f593a05f3b451b2a0b2f1ebc4acf"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.025.parquet",
+   "bytes": 721228198,
+   "lfs_sha256": "66cd89be48505a7d95c5d7cfa3b35bc9b51dd243f3dea8177069a5848ad36011"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.026.parquet",
+   "bytes": 103691612,
+   "lfs_sha256": "941e9a2bbc2b5910fe551ee2743d7c4f0bf943ba07e05b2393d7987eeb18a149"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.027.parquet",
+   "bytes": 1117754330,
+   "lfs_sha256": "63aa7ef72017ba500e29147341b4084e8984cc32938269994054db3660d0c881"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.028.parquet",
+   "bytes": 1091862078,
+   "lfs_sha256": "4a2f6e74d16082830487fdac88138c6a02da69bd03d41e5187b2b7885c622656"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.029.parquet",
+   "bytes": 1083377526,
+   "lfs_sha256": "77a0532d399d690033b4773ed041c403578322ad75ea05792f1297f7eb9a9996"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.030.parquet",
+   "bytes": 1097851730,
+   "lfs_sha256": "60ed526c17d27d9be0286e9ff5f1fd3443a3b4743efe4a9aa1b664b7906be7bc"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.031.parquet",
+   "bytes": 1051492924,
+   "lfs_sha256": "a2a10bd4805a9e4987cab0dd77c3e1b58424abdb27ac6809171c2de496e895d4"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.032.parquet",
+   "bytes": 51405127,
+   "lfs_sha256": "a78bac1ecf832277a90669e2a87d6f87e0783770557069e4904aa7c7352cf0fb"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.033.parquet",
+   "bytes": 51821800,
+   "lfs_sha256": "77fae572a262be02c3134f4d2467324f4f51990940395664eb94c9c81ff42964"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.034.parquet",
+   "bytes": 157504058,
+   "lfs_sha256": "569b7520737271ab24406651e8f8e89f203b579c1b6da24a1c27fcd9781faba0"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.035.parquet",
+   "bytes": 663562478,
+   "lfs_sha256": "a7aa5b4a3ecaaff6ca6ea9b4c6f7e5ec2ddda8dc6f8a3b1b36dc3f0601207254"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.036.parquet",
+   "bytes": 277818891,
+   "lfs_sha256": "ce4882cb4a9e3fa09eb0b60bbb3c284b6bf4b47d7ec9efd810f16cf1ad056f35"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.037.parquet",
+   "bytes": 46313575,
+   "lfs_sha256": "f4da8036de86dcca8a8fe51f56083ced969fcd4f4258d33603fe1dac63817555"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.038.parquet",
+   "bytes": 46358598,
+   "lfs_sha256": "6a384b5583d1e3940a74183b6645425f03f8ced4b9d24cb148904508a31b0e12"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.039.parquet",
+   "bytes": 46561975,
+   "lfs_sha256": "ef17df923ef6781cdf92fc17a349897d6edea2c4164d359f0e29416ddbe3ac4e"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.040.parquet",
+   "bytes": 38806413,
+   "lfs_sha256": "ba36cdb0a727daf6fb430f40042a1ad36e308370d0af23eacef19a2a74f2fa48"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.041.parquet",
+   "bytes": 38121319,
+   "lfs_sha256": "89b59c1b44abc5a93e52616fad2acb1c971618c69f1aec176efa4ff72649be66"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.042.parquet",
+   "bytes": 38032430,
+   "lfs_sha256": "d508f0b7699deb4bf101b3ac280edc88e8af8a86939b36039416998e589e1edd"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.043.parquet",
+   "bytes": 38256552,
+   "lfs_sha256": "4fbc51507bc685d96715c7707dba18c81d6fb1e2ab83e6e8f928ee8f733ef3bd"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.044.parquet",
+   "bytes": 38198427,
+   "lfs_sha256": "8324de3023999173b0dbe0bfe783e0dc5d635c7da4d8a3bc3f26b871d1b872f5"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.045.parquet",
+   "bytes": 37874742,
+   "lfs_sha256": "519d7b7bed8e3fc48a86d1b8f967b9b3e9da519a38dce93d983a3a2155b00880"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.046.parquet",
+   "bytes": 38050473,
+   "lfs_sha256": "27f8bfe5f8749819fa9c30425fe08a28926f6d111d372c1b62824f06242239b8"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.047.parquet",
+   "bytes": 38539152,
+   "lfs_sha256": "7f1f3b56ede64b3daeb481f042fbdb57989c6a66573f746c641f6a166ba13403"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.048.parquet",
+   "bytes": 38068741,
+   "lfs_sha256": "9b4c738a366ee246c02d54967110d0a3899ae047fd531bfb53628c9ebf8415c3"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.049.parquet",
+   "bytes": 38617858,
+   "lfs_sha256": "de98217a1a4fd329615924e9b29f79315fac768e2d2d94d8a43d606f7f8db5f9"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.050.parquet",
+   "bytes": 38542062,
+   "lfs_sha256": "44beac4beab73935cb9f2171efaf014c30b03360a5bd2485be821f25a5316ec6"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.051.parquet",
+   "bytes": 37950707,
+   "lfs_sha256": "700e6261312cc2142e3c33d3656bd4c09f4f76a6a4211361507bd4e1458138ae"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.052.parquet",
+   "bytes": 38109069,
+   "lfs_sha256": "d5ec7043351ff78a4fba0c448f9f180d61b6a84d05b03c6bff9db59a05fafbc7"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.053.parquet",
+   "bytes": 38409735,
+   "lfs_sha256": "17be3a7f31cc739d39f8d69c9236e37d8fbc9e932d09dfdc69d06097a4d112d1"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.054.parquet",
+   "bytes": 38218075,
+   "lfs_sha256": "1465724416094e388fbc8ddb197d35f70d692f63866260c1771c4e056f929226"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.055.parquet",
+   "bytes": 38394390,
+   "lfs_sha256": "a5c3a0b7961b11b4ce47005d1f4c838864be5385ebdcb7351e8f7795d8772bb7"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.056.parquet",
+   "bytes": 38327478,
+   "lfs_sha256": "7484d1e289eed3fb37b66c32dbce22d033e4819285798eee72a73e68e8be9e21"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.057.parquet",
+   "bytes": 736240976,
+   "lfs_sha256": "fea68793eae3682e0d8f4c55eaddca4dd8671e897f1f390445892939fd24011e"
+  },
+  {
+   "path": "data/fnspid_news/fnspid_news.058.parquet",
+   "bytes": 88168403,
+   "lfs_sha256": "e141d48d7e78bc3c141044442efbf09fd2d7a0dbf83c44e527a747055502b4f8"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.000.parquet",
+   "bytes": 97605258,
+   "lfs_sha256": "d2c8cba72825486070902a7e843917692979b1c397a0c760bf40fa168c5e1067"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.001.parquet",
+   "bytes": 97758169,
+   "lfs_sha256": "5017ee857a782920890ae5771ae978531888c969662956a92be9301284da373b"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.002.parquet",
+   "bytes": 99394135,
+   "lfs_sha256": "050d90cb244b20fd995fd6830d8e84f69a130acc240be2b1d5dce876a0acbcbb"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.003.parquet",
+   "bytes": 100594737,
+   "lfs_sha256": "c63878891e0e136617d3b7c7de77dbedd70e14facbffcfc8ea70a1dfd3742fb1"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.004.parquet",
+   "bytes": 100608333,
+   "lfs_sha256": "6249c6ac8b92eb4f2ec3861f44593d3a82ed861ae63f1e0b1361c1ee77db38b8"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.005.parquet",
+   "bytes": 104151661,
+   "lfs_sha256": "eb3f1366f268b21e5e396d44dc527ed76b95e1918306b5644a5233beee1b56ae"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.006.parquet",
+   "bytes": 106206509,
+   "lfs_sha256": "dbe82b7c8ec915e262f990988f6d35795beb74adc56ea89dc156a3df1397036d"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.007.parquet",
+   "bytes": 104600159,
+   "lfs_sha256": "b393cc18f7824b258ef37fbc8e0de8552f4e2c8656ded90f66bd399377500f46"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.008.parquet",
+   "bytes": 103287235,
+   "lfs_sha256": "626a6aae33869ae592c610c5c37d995680c221827a72625b796b8d8f14b4e8dd"
+  },
+  {
+   "path": "data/frontpage_news/frontpage_news.009.parquet",
+   "bytes": 104095348,
+   "lfs_sha256": "aa5e5be3999270e6fa8e28b658d26efb58ce8d517502e048b8452b452ddcafed"
+  },
+  {
+   "path": "data/gold_news_kaggle/gold_news_kaggle.000.parquet",
+   "bytes": 1036880,
+   "lfs_sha256": "8ada181b503e544f6e91d0d2da9c3dd66ae7612ab337a07f1273ad50c5315e31"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.000.parquet",
+   "bytes": 36593849,
+   "lfs_sha256": "75c2695314ca2c62502a58e3f901e5276a3157e4e5e1dd452bf7cce30a6fb1ee"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.001.parquet",
+   "bytes": 44291763,
+   "lfs_sha256": "7d9a3d69418f77bfc7c43425c53537e04bf8e10bc9f24abef65cbdcbf5a0b215"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.002.parquet",
+   "bytes": 49907144,
+   "lfs_sha256": "c13db38a25b9a51e438821f738da47a81d0bf9e680ff114ed6e5ee84a633fb88"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.003.parquet",
+   "bytes": 51153970,
+   "lfs_sha256": "fcd8941d3b6d62d88a389eb7e28f34959d4008939a958d95d213c486ed69c3cf"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.004.parquet",
+   "bytes": 52816796,
+   "lfs_sha256": "f6f5e515f8fa7bfbbc168d39678161a871e81714688303497b365156e07daae3"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.005.parquet",
+   "bytes": 55552007,
+   "lfs_sha256": "6410a5a2efc28bc7796e457fd394deac168c914579fdbccdac67a5e6c22f2d79"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.006.parquet",
+   "bytes": 58975523,
+   "lfs_sha256": "78095c665efe56d429b14920fb202e4a9853e31e9fd70c68cf5993bc3c089443"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.007.parquet",
+   "bytes": 57158324,
+   "lfs_sha256": "cdee4a6b5a10179e348272cda350b2b578564611a08e1f469c9eb1ed28e228e4"
+  },
+  {
+   "path": "data/headlines_10sites_2007_2022/headlines_10sites_2007_2022.008.parquet",
+   "bytes": 46689281,
+   "lfs_sha256": "d1f9bba389a93324669fd9f73648685cc0229b73a9cf0f6e035213f56401ae91"
+  },
+  {
+   "path": "data/huffpost_news/huffpost_news.000.parquet",
+   "bytes": 48218338,
+   "lfs_sha256": "3fd22c50dc7ae365151f5941a92b55dbcef8a11fea082ed370d1e70d5d670087"
+  },
+  {
+   "path": "data/mind_news_2019/mind_news_2019.000.parquet",
+   "bytes": 29819204,
+   "lfs_sha256": "dbb3f5d80a6d9ec4787a5adfeeeb886e867d186c9ad50e348fb030222178d17d"
+  },
+  {
+   "path": "data/nyt_articles_2000_present/nyt_articles_2000_present.000.parquet",
+   "bytes": 193867357,
+   "lfs_sha256": "81dbcdb3f4870ee4c81a231a51e3e6b3f9ead7901161ec062fd5e07583470e98"
+  },
+  {
+   "path": "data/nyt_articles_2000_present/nyt_articles_2000_present.001.parquet",
+   "bytes": 180065921,
+   "lfs_sha256": "640b30c45809539210fae2b1749ab508a054417eb308c9503ae9a48986dfd3de"
+  },
+  {
+   "path": "data/nyt_articles_2000_present/nyt_articles_2000_present.002.parquet",
+   "bytes": 122291600,
+   "lfs_sha256": "2cac44e386ef14987f1686a9ef8daa54d94e136fc24db2b457a082abfd2edb06"
+  },
+  {
+   "path": "data/nyt_articles_2000_present/nyt_articles_2000_present.003.parquet",
+   "bytes": 143164637,
+   "lfs_sha256": "ec21913074f4faa495b3ef75eec73d22aa954dfc4c2eaf19a8585d6d96665942"
+  },
+  {
+   "path": "data/nyt_articles_2000_present/nyt_articles_2000_present.004.parquet",
+   "bytes": 51522251,
+   "lfs_sha256": "84a6d3c414d43bdd5aa4a4869d6ec886d18e78849a43e96ca7fe60a0d535a61b"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.000.parquet",
+   "bytes": 46410322,
+   "lfs_sha256": "b072f2a12a24392e1121bc1f5f727af2a8f570c5108008c88bbc2ef598f1999f"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.001.parquet",
+   "bytes": 46830284,
+   "lfs_sha256": "df3659a137b33562f5f64aaf10ee2e57cb1e0e8025611f85a23c9e2b0a8d84a2"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.002.parquet",
+   "bytes": 47248842,
+   "lfs_sha256": "bcf3a9602bd2bbff0d0fbb42ae091d187777eaa651990a1f5058152ed78fa0a2"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.003.parquet",
+   "bytes": 40158378,
+   "lfs_sha256": "203d14b92fd3aee41d44bacd2bc6328ef1d5575e0818b03b8e20c390e84a432e"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.004.parquet",
+   "bytes": 52246055,
+   "lfs_sha256": "bcec3c2567eca42d3bbd01f78c019e3f4192e6fed5ab29b496fc65dc677ec434"
+  },
+  {
+   "path": "data/nyt_headlines_1990_2020/nyt_headlines_1990_2020.005.parquet",
+   "bytes": 31967977,
+   "lfs_sha256": "ab3822d968564628231b479b2e3190694a688f543164e94eae4c528dfa2a3039"
+  },
+  {
+   "path": "data/nyt_headlines_2010_2021/nyt_headlines_2010_2021.000.parquet",
+   "bytes": 154250861,
+   "lfs_sha256": "93ec863bebae63b24f92172c0d0c7513d6579c349705135b6104344dc57e289a"
+  },
+  {
+   "path": "data/nyt_headlines_2010_2021/nyt_headlines_2010_2021.001.parquet",
+   "bytes": 30724002,
+   "lfs_sha256": "afa85d26da3d8f16cd49e491e2afefb721469639e64f5c4e63eeb13e17531b67"
+  },
+  {
+   "path": "data/reddit_finance_sp500/reddit_finance_sp500.000.parquet",
+   "bytes": 106332464,
+   "lfs_sha256": "94a86df66422490fc4642203312c8ddc5164954043892c482afd4513f142b12f"
+  },
+  {
+   "path": "data/reddit_worldnews_2008_2016/reddit_worldnews_2008_2016.000.parquet",
+   "bytes": 6214193,
+   "lfs_sha256": "2dbf4ffcb434925363edd08402d7dde34384980498401479543c522ef094fd4f"
+  },
+  {
+   "path": "data/sentarl_combined/sentarl_combined.000.parquet",
+   "bytes": 64865649,
+   "lfs_sha256": "ac1b64249057d30f8957491474c6bb686a21cacf383eff1578097559f696d51d"
+  },
+  {
+   "path": "data/sp500_daily_headlines/sp500_daily_headlines.000.parquet",
+   "bytes": 935058,
+   "lfs_sha256": "e686b2e11f778abd7c5383d20fa8524cc5a133d6418c581a19c3ea4d6f947ae5"
+  },
+  {
+   "path": "data/us_financial_news_2018_jeet/us_financial_news_2018_jeet.000.parquet",
+   "bytes": 459378076,
+   "lfs_sha256": "c75040a8fbd946a68857d87d7e6e88a1e13984bc75f9e80026ac14b14145c774"
+  },
+  {
+   "path": "data/wikinews_articles/wikinews_articles.000.parquet",
+   "bytes": 29056746,
+   "lfs_sha256": "40e6f70cc1d0e788dc6f65d7107cb1015461e6db5278677e648535b035815e83"
+  },
+  {
+   "path": "data/yahoo_finance_articles/yahoo_finance_articles.000.parquet",
+   "bytes": 446029236,
+   "lfs_sha256": "b1afe603ace49de78bbd02059ddf978feb1e7aabc6ca9d1479abc0ff35900a11"
+  },
+  {
+   "path": "data/yahoo_finance_felixdrinkall/yahoo_finance_felixdrinkall.000.parquet",
+   "bytes": 78403864,
+   "lfs_sha256": "ae0424b380d1072418ec39f758d7904975ab4b568248e3b8718bcf8a23773270"
+  },
+  {
+   "path": "samples/all_the_news_2_sample.jsonl",
+   "bytes": 3214,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/american_news_jonasbecker_sample.jsonl",
+   "bytes": 5605,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/benzinga_6000stocks_sample.jsonl",
+   "bytes": 400,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/bloomberg_reuters_sample.jsonl",
+   "bytes": 4735,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/cnbc_headlines_sample.jsonl",
+   "bytes": 1024,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/djia_stock_headlines_sample.jsonl",
+   "bytes": 532,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/finsen_us_2007_2023_sample.jsonl",
+   "bytes": 837,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/fnspid_news_sample.jsonl",
+   "bytes": 495,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/frontpage_news_sample.jsonl",
+   "bytes": 624,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/gold_news_kaggle_sample.jsonl",
+   "bytes": 573,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/headlines_10sites_2007_2022_sample.jsonl",
+   "bytes": 684,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/huffpost_news_sample.jsonl",
+   "bytes": 786,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/mind_news_2019_sample.jsonl",
+   "bytes": 1023,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/nyt_articles_2000_present_sample.jsonl",
+   "bytes": 741,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/nyt_headlines_1990_2020_sample.jsonl",
+   "bytes": 421,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/nyt_headlines_2010_2021_sample.jsonl",
+   "bytes": 989,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/reddit_finance_sp500_sample.jsonl",
+   "bytes": 752,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/reddit_worldnews_2008_2016_sample.jsonl",
+   "bytes": 635,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/sentarl_combined_sample.jsonl",
+   "bytes": 1004,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/sp500_daily_headlines_sample.jsonl",
+   "bytes": 531,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/us_financial_news_2018_jeet_sample.jsonl",
+   "bytes": 8259,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/wikinews_articles_sample.jsonl",
+   "bytes": 3834,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/yahoo_finance_articles_sample.jsonl",
+   "bytes": 786,
+   "lfs_sha256": null
+  },
+  {
+   "path": "samples/yahoo_finance_felixdrinkall_sample.jsonl",
+   "bytes": 1581,
+   "lfs_sha256": null
+  }
+ ],
+ "readme_text": "---\npretty_name: Multi-Source Financial & General News\nlanguage:\n- en\n\nlicense: other\nextra_gated_heading: \"Request access to Multi-Source Financial & General News\"\nextra_gated_description: \"This corpus aggregates third-party news for research use. Please acknowledge the terms below.\"\nextra_gated_prompt: |\n  By requesting access you confirm that:\n  \u2022 You will use the data **for non-commercial research/education** only.\n  \u2022 You will **respect each original source\u2019s terms** and remove items upon rightsholder request.\n  \u2022 You will **cite** this corpus and the original sources in any publication.\nextra_gated_fields:\n  Name / Email: text\n  How did you hear about this dataset?:\n    type: select\n    options:\n      - Google search\n      - Hugging Face search\n      - Word of mouth\n      - Citation in a paper\n      - Twitter / X\n      - Reddit\n      - Other\n  If \"Other\", please specify (optional):\n    type: text\n    required: false\n  Intended use:\n    type: select\n    options: [\"Research\", \"Education\", {label: \"Other\", value: other}]\n  I agree to non-commercial, research-only use: checkbox\n  I will not redistribute article text: checkbox\n  I will cite this corpus and original sources: checkbox\nextra_gated_button_content: \"Agree & Request Access\"\ntags:\n- finance\n- markets\n- trading\n- backtesting\n- time-series\n- news\n- headlines\n- parquet\n- multisource\n- llm\n- reinforcement-learning\n- retrieval\n- dataset-card\nsize_categories:\n- 10M<n<100M\ntask_categories:\n- text-classification\n- text-retrieval\n- other\ntask_ids:\n  - language-modeling\n  - document-retrieval\n  - topic-classification\n  - news-articles-summarization\n  - document-question-answering\nconfigs:\n- config_name: data\n  data_files:\n  - data/*/*.parquet\n---\n\n# Multi-Source Financial & General News\n\n> \ud83d\ude80 **57.1 MILLION ROWS OF NEWS CONTENT** \u2014 one unified corpus for market-aware AI/ML\n\nI combined **24 public news datasets** (many small on their own) into **one consistent, ready-to-use layer** so you don\u2019t have to wrangle them yourself. Everything is normalized to a minimal schema (`date`, `text`, `extra_fields`) and shipped as Parquet shards per subset\u2014**streamable**, **DuckDB-friendly**, and built with a **trading date policy** (this can be edited if folks see other use cases).  \n\nThis repo is econ/finance-first (e.g., financial markets related), but also includes broad general news\u2014great for reinforcement learning, language modeling, event studies, or whatever you want for NLP+Finance tasks.\n\n\n**Why this exists**\n\nMost \u201cbig\u201d news datasets for ML just didn\u2019t exist when I started and I didn\u2019t want to build a web-crawling pipeline, but there were lots of smaller public datasets scattered across Kaggle/HF/author zips. So I unified them into one consistent corpus that spans **1990\u20132025** and now totals **57,100,000+ rows across 24 subsets**. One place, one schema, no scraping\u2014ready for **stock trading RL**, **language modeling**, and more. \ud83d\udcf0\ud83d\udcc8\n\nMy hope is to keep adding more and more datasets so this becomes **THE** dataset for finance + NLP research\u2014one place for consistent data, fair comparisons, and real benchmarks. \nA big issue today, especially in RL + NLP for stock trading, is that there are no standardized datasets; everyone fends for themselves, which makes results hard to compare or reproduce. \nI\u2019m aiming to change that with this release and will keep expanding it as new public sources appear. \nSee my paper discussing this problem: **[Ferrell, 2025](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5135573)**.\n\n**Distribution of news over time**\n\n\n![image](https://cdn-uploads.huggingface.co/production/uploads/6895f37aca4511c42a2a0b96/JHR46Oe_pcNUUE1yNJBYK.png)\n\n**This dataset is**\n- \u23f1\ufe0f **Ready for general financial news-focused stock trading** \u2014 the day-level news content carry a trading-session anchor to prevent look-ahead bias (i.e., next NYSE trading date policy).  \n- \ud83d\udcbe **Scalable without pain** \u2014 columnar Parquet, subset sharding, HF streaming support.  \n- \ud83d\udd0e **Preserved** \u2014 some of the original source metadata lives in `extra_fields` (URLs, publishers, tickers, etc.).  \n\n> **Note:** I highly suggest turning this data into a local database (e.g., DuckDB) if you want to use for RL training or any training for that matter where you need filtering/sorting capabilities that HF streaming does not adhere to.\n\n---\n\n## Maintainer & contact\n\n- Maintainer: `ferrellbj@vcu.edu`  \n- Issues and takedown requests: open a discussion on the dataset repo or email.\n\n---\n\n## Dataset Structure\n\nAll subsets share **the same minimal schema**:\n\n| Column        | Type   | Description |\n|---------------|--------|-------------|\n| `date`        | string | UTC timestamp in ISO 8601 (`YYYY-MM-DDTHH:MM:SSZ`). If original precision is only day-level, the top-level `date` is set to **midnight UTC** and trading date policy information is kept in `extra_fields` (see below). |\n| `text`        | string | Canonicalized text (e.g., *title + two newlines + body/abstract*). Paragraph breaks are preserved; long runs of whitespace normalized. |\n| `extra_fields`| string | JSON string bundling **all** preserved non-core fields (URL(s), publisher(s), author(s), tickers, categories, origin, and timing metadata). |\n| `extra_fields.dataset`     | string | Subset identifier (dataset-of-origin). |\n\n\n### My dataset creation pipeline summary\n\n1. Download original data (Kaggle/HF/archives).\n2. **Standardize** to (`date`, `text`, `extra_fields`) with dataset-specific parsers.  \n3. **Time handling:** minute-level \u2192 UTC; day-level \u2192 *trading date* policy (midnight top-level + trading anchor in extras).  \n4. **Normalize:** URL hygiene; conservative text normalization.  \n5. **Deduplicate** per **subset** on `(date, text)` with union of tickers where applicable.  \n6. Export **Parquet shards** per subset \u2192 upload to the Hub.\n\nWhere necessary (e.g., MIND), timestamps are **derived** (first-seen from behaviors) or **fallback** to a safe default (documented in extras).\n\n\n### Trading Date policy (minute vs day level)\n\n- **Minute-level** inputs are converted to **UTC ISO** strings.\n  - If timestamps are naive but known to be U.S. market local, we localize with `tz_hint=\"America/New_York\"` then convert to UTC.\n  - If timestamps already include a `Z`/offset, we set `tz_hint=\"UTC\"` and keep the exact time.\n\n- **Day-level** inputs follow a **dual-date policy**:\n  - Top-level `date` = **midnight UTC** for coarse alignment.\n  - `extra_fields` carries:\n    - `time_precision`: `\"day\"`.\n    - `anchor_policy`: currently `\"date_midnight_utc + next_open_in_date_trading\"`.\n    - `date_raw`: original day string.\n    - `date_trading`: the **NYSE next-session open** in UTC (e.g., `09:30 ET` converted to UTC).\n    - `tz_hint`: `\"UTC\"` for day-level sources.\n\n- **Derived times** (e.g., MIND):\n  - `date_source`: `\"behaviors_first_seen\"` when using earliest impression; `\"fallback_global_min_midnight\"` when no impressions exist.\n    \n\n### Deduplication\n\n- Within all subsets I apply **(date, text)** deduplication and **union** tickers where appropriate.  \n\n\n### Known limitations\n\n- **Cross-subset duplicates are expected** (e.g., syndicated headlines). Users can run their own global dedupe across all subsets if needed (e.g., on `(date, text)` or normalized `url`).\n- Some rows lack URLs or precise times; I document the chosen trading date policy in `extra_fields`.  \n- Ticker coverage is uneven; use `extra_fields.stocks` if present.\n- There is most likely a lot of noise within this dataset (i.e., content that doesn't matter towards stock market), but think of it as part of the robustness testing your model training pipeline may need for stock trading tasks (or other uses)!\n\n---\n\n## Intended use & licensing\n\n- This corpus is meant for **research**: LLM pretraining/fine-tuning, retrieval, event studies, and **backtesting** of news-driven strategies.\n- Original content remains the property of the respective publishers/data providers. Redistribution of full text may require permission.  \n- The maintainers provide this aggregated format as **research-only** preprocessing. If you are a rightsholder and would like content removed, please open an issue or email the maintainers.\n\n**Openly licensed content:** Wikinews is CC-licensed; retain attribution and abide by its terms.\n\n### How to cite\n\nIf you use this dataset, please cite the **original sources** and this unified release. A generic BibTeX entry for the unified format:\n\n```bibtex\n@misc{brian_ferrell_2025,\n\tauthor       = { Brian Ferrell },\n\ttitle        = { financial-news-multisource (Revision b509ef6) },\n\tyear         = 2025,\n\turl          = { https://huggingface.co/datasets/Brianferrell787/financial-news-multisource },\n\tdoi          = { 10.57967/hf/6432 },\n\tpublisher    = { Hugging Face }\n}\n```\n\n### Versioning\n- **v0.2.0** \u2014 Added 9 new subsets (NYT 2000\u2013present, All-the-News 2, Yahoo Finance feeds, Reddit finance, U.S. financial news, FinSen US, American news crawl, Frontpage). \n  Standardized `time_precision`/`text_type`, cleaned and harmonized extras fields. Total size \u2248 57.1M rows.\n- **v0.1.0** \u2014 Initial unified release; 15 subsets; Parquet shards per subset; dual-date policy for day-level rows.\n\nIf there are any updates/edits or even other news datasets to add you have in mind, let me know! \n\n---\n\n## Contents (data)\n\nEach subset corresponds to a processed folder/name in `data/`:\n\n\n* [`benzinga_6000stocks`](https://www.kaggle.com/datasets/miguelaenlle/massive-stock-news-analysis-db-for-nlpbacktests) \u2014 Daily News 6000 Stocks (Benzinga): analyst ratings + headlines (2000s\u20132010s).\n* [`bloomberg_reuters`](https://github.com/philipperemy/financial-news-dataset) \u2014 Bloomberg full-text (2006\u20132013) + Reuters titles (2007\u20132013).\n* [`sentarl_combined`](https://arxiv.org/pdf/2112.02095) \u2014 SentARL used\\_icaif\\_2021 news (20 assets; headline+subhead+abstract; minute-level).\n* [`fnspid_news`](https://huggingface.co/datasets/Zihan1004/FNSPID) \u2014 FNSPID news portion only (1999\u20132023; minute & day-level mixed).\n* [`mind_news_2019`](https://msnews.github.io/) \u2014 Microsoft MIND (2019; title+abstract); dates derived from behaviors first-seen when needed.\n* [`gold_news_kaggle`](https://www.kaggle.com/datasets/ankurzing/sentiment-analysis-in-commodity-market-gold) \u2014 Commodity (Gold) annotated headlines (2000\u20132021).\n* [`huffpost_news`](https://www.kaggle.com/datasets/rmisra/news-category-dataset) \u2014 HuffPost News Category dataset (2012\u20132018; headlines).\n* [`sp500_daily_headlines`](https://www.kaggle.com/datasets/dyutidasmahaptra/s-and-p-500-with-financial-news-headlines-20082024) \u2014 S\\&P 500 headlines (2008\u20132024; day-level).\n* [`djia_stock_headlines`](https://www.kaggle.com/datasets/lykin22/stock-headlines) \u2014 DJIA \u201cDaily News using Headlines\u201d (2000\u20132016; Top1\u2013Top25 per day flattened).\n* [`reddit_worldnews_2008_2016`](https://www.kaggle.com/datasets/tanishqdublish/stock-market-predictions) \u2014 Reddit r/worldnews headlines (2008\u20132016; day-level).\n* [`wikinews_articles`](https://www.kaggle.com/datasets/datagator/wikinews-article-dataset) \u2014 Wikinews (open-licensed) articles; title + text; mixed years.\n* [`headlines_10sites_2007_2022`](https://www.kaggle.com/datasets/jordankrishnayah/45m-headlines-from-2007-2022-10-largest-sites) \u2014 4.5M headlines from 10 major sites (2007\u20132022; date=YYYYMMDD).\n* [`nyt_headlines_1990_2020`](https://www.kaggle.com/datasets/johnbandy/new-york-times-headlines) \u2014 New York Times (1990\u20132020; headlines + metadata).\n* [`nyt_headlines_2010_2021`](https://www.kaggle.com/datasets/tmishinev/nyt-headlines-20102021) \u2014 New York Times (2010\u20132021; headline + abstract + lead paragraph).\n* [`cnbc_headlines`](https://www.kaggle.com/datasets/crawlfeeds/cnbc-news-headlines-dataset) \u2014 CNBC headlines with preview text (2017\u20132020).\n* [`american_news_jonasbecker`](https://www.kaggle.com/datasets/jonasbecker98/news-website-articles) \u2014 U.S. multi-outlet crawl (JSON); title+article; primarily 03/2016-07/2021; mixed minute/day.\n* [`us_financial_news_2018_jeet`](https://www.kaggle.com/datasets/jeet2016/us-financial-news-articles) \u2014 U.S. finance/news JSON articles (multi-publisher); ~2018 approx.; minute-level.\n* [`nyt_articles_2000_present`](https://www.kaggle.com/datasets/aryansingh0909/nyt-articles-21m-2000-present) \u2014 NYT metadata (2000\u21922025); headline + abstract/snippet/lead; minute/day mixed.\n* [`finsen_us_2007_2023`](https://www.kaggle.com/datasets/eaglewhl/finsen-financial-sentiment-dataset) \u2014 FinSen (US subset): title+article with sentiment/category fields (2007\u20132023); day-level dates with trading anchor.\n* [`yahoo_finance_felixdrinkall`](https://github.com/felixdrinkall/financial-news-dataset) \u2014 Yahoo Finance JSON (2017\u20132023): title + description/main text + tickers; minute-level.\n* [`reddit_finance_sp500`](https://huggingface.co/datasets/emilpartow/reddit_finance_posts_sp500) \u2014 Reddit finance subs (S\\&P-related) posts; 2008\u20132025; minute-level.\n* [`frontpage_news`](https://huggingface.co/datasets/AndyReas/frontpage-news) \u2014 Frontpage multi-outlet headlines/descriptions; 2015\u20132020; day-level.\n* [`yahoo_finance_articles`](https://huggingface.co/datasets/bwzheng2010/yahoo-finance-data) \u2014 Yahoo Finance article feed (2025); title+paragraphs; day-level with trading anchor.\n* [`all_the_news_2`](https://components.one/datasets/all-the-news-2-news-articles-dataset) \u2014 \u201cAll the News 2.0\u201d curation; title+article; 2016\u20132019 (approx.); minute/day mixed.\n\n> **Note:** Coverage summaries above are approximate; see each subset\u2019s original source for precise details.\n\n> **Note:** Some of these subsets are filtered to use STOCK/ECON/POLITICAL related news outlets for market-impact relationsips and are not exact copies from their original sources.\n\n## Example rows (one per subset)\n\n### `benzinga_6000stocks`\n\n```json\n{\n  \"date\": \"2009-02-14T19:02:00Z\",\n  \"text\": \"How Treasuries and ETFs Work\",\n  \"extra_fields\": \"{\\\"text_type\\\":\\\"headline\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"tz_hint\\\":\\\"America/New_York\\\",\\\"dataset_source\\\":\\\"kaggle:miguelaenlle/massive-stock-news-analysis-db-for-nlpbacktests\\\",\\\"dataset\\\":\\\"benzinga_6000stocks\\\",\\\"source\\\":\\\"Benzinga\\\",\\\"raw_type\\\":\\\"analyst_ratings_processed\\\",\\\"stocks\\\":[\\\"NAV\\\"]}\"\n}\n```\n*Saved sample to `samples\\benzinga_6000stocks_sample.jsonl`.*\n\n### `bloomberg_reuters`\n\n```json\n{\n  \"date\": \"2006-10-20T20:16:16Z\",\n  \"text\": \"-- Inco's Net Soars on Higher Metal Prices, Breakup Fee\\n\\nInco Ltd., the Canadian nickel producer\\nbeing bought by Brazil 's Cia. Vale do Rio, said third-quarter\\nprofit soared 11-fold, boosted by surging metal prices and fees\\npaid by Falconbridge Ltd. after a failed takeover. \\n Net income jumped to $701 million, or $3.08 a share, from $64\\nmillion, or 29 cents, a year earlier, Toronto-based Inco said today\\nin a statement. Results included $109 million in net fees from the\\nfailed deals with Falconbridge and Phelps Dodge Corp. Sales jumped\\nto $2.32 billion from $1.08 billion. \\n Inco sold nickel at double the price last year on average, and\\noutput jumped 13 percent. Demand for the metal, used in stainless\\nsteel, surged as global economic growth fueled demand, especially\\nin China . Mines have failed to keep pace, prompting a buying spree\\nby producers seeking to bolster ore deposits. Vale outbid Phelps\\nDodge and Teck Cominco Ltd. with its $17.3 billion bid. \\n ``Record quarterly earnings reflect the unprecedented\\nsustained strength we've seen in the nickel market, combined with\\nstrong production,'' Inco Chief Executive Officer Scott Hand said\\nin the statement. \\n Shares of Inco gained 27 cents to C$85.85 at 4:10 p.m. on the\\nToronto Stock Exchange. They have gained 80 percent in the past\\nyear. Rio de Janeiro-based Vale, the world's largest iron-ore\\nproducer, has offered C$86 a share for Inco. \\n Breakup Fees \\n Inco got $450 million from Falconbridge as a fee for their\\nfailed merger, and made payments when deals failed with Phelps\\nDodge and LionOre Mining International Ltd. A strike by workers at\\nVoisey's Bay in September led to a $24 million charge in the third\\nquarter, Inco said. \\n Phelps Dodge, the world's third-biggest copper producer, in\\nSeptember dropped its offer of cash and stock for Inco, whose\\nshareholders supported an unsolicited cash bid from Vale. \\n Inco's nickel production climbed to 125 million pounds in the\\nquarter as prices jumped on average to $29,552 a metric ton. The\\ncompany had cut its output forecast from as much as 140 million\\npounds because of strikes and equipment failures. Cash costs for\\nnickel sales fell 30 percent to $2.12 a pound, Inco said. \\n Inco is the world's second-biggest nickel producer by 2005\\noutput behind Russia 's OAO GMK Norilsk Nickel. \\n Copper output rose 1.7 percent to 27,669 metric tons and\\nprices jumped 90 percent on average to $7,465 a ton. \\n Nickel today reached the highest since at least 1987 as\\nsupplies lag behind demand. Inventories monitored by the London\\nMetal Exchange plunged 86 percent this year. Mine output fell short\\nof demand by 70,000 metric tons in the eight months ended August,\\nthe World Bureau of Metal Statistics said. \\n LME Nickel \\n Nickel for delivery in three months gained $375, or 1.2\\npercent, to $32,050 on the LME after reaching $32,625, the highest\\nin at least 19 years. \\n Extended repairs at operations in Indonesia and reduced output\\nat a smelter in Sudbury, Ontario, forced Inco to cut its original\\nproduction forecast for the quarter on Sept. 20. \\n Inco has restored full production at Sudbury and a unit in\\nManitoba has returned to ``stable operations'' after a damaged\\nfurnace hurt output, Inco said. The company had said Sept. 21 it\\nexpected to return to full production at Manitoba by early October. \\n Inco declined to provide a forecast on earnings or production\\nbefore the expiration of the CVRD offer on Oct. 23. \\n Inco said it is ``continuing to review'' the cost and schedule\\nfor the $2.15 billion Goro nickel project in New Caledonia that's\\nbeen slowed by a general strike in the country. Inco expects to\\nannounce a ``revised cost estimate'' and schedule by the end of the\\nyear. \\n ``There is a global shortage of skilled workers, which is felt\\neven more acutely in New Caledonia with its population of 230,000\\npeople,'' said Jeff Zweig, deputy general manager at Goro, in an e-\\nmail on Oct. 16 ``To execute a project of this size and complexity,\\na significant number of skilled workers are required.'' \\n To contact the reporter on this story:\\nDale Crofts in Chicago at \\n dcrofts@bloomberg.net . \\n To contact the editor responsible for this story:\\nSteve Stroth at \\n sstroth@bloomberg.net\",\n  \"extra_fields\": \"{\\\"author\\\":\\\"Dale Crofts\\\",\\\"url\\\":\\\"http://www.bloomberg.com/news/2006-10-20/inco-s-net-soars-on-higher-metal-prices-breakup-fee-update4-.html\\\",\\\"text_type\\\":\\\"full_article\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"private:bloomberg_reuters\\\",\\\"dataset\\\":\\\"bloomberg_2006_2013\\\",\\\"source\\\":\\\"Bloomberg\\\",\\\"raw_type\\\":\\\"20061020_20131126_bloomberg_news\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\bloomberg_reuters_sample.jsonl`.*\n\n### `sentarl_combined`\n\n```json\n{\n  \"date\": \"1997-01-03T14:39:00Z\",\n  \"text\": \"U.S. stocks start the year on an upbeat note\\n\\nNEW YORK (MarketWatch) -- U.S. stocks rallied straight out of the gates on Wednesday, the first trading session of 2007, with the Dow Jones Industrial Average  boosted by better-than-expected holiday sales at Wal-Mart Stores Inc.  and news of a management shakeup at Home Depot Inc . The Dow was up 56 points at 12,520. The S&P 500 index  gained 5 points to 1,423 and the Nasdaq Composite  rose 19 points at 2,435. Home Depot gained 2.7% after news that its embattled chief executive, Robert Nardelli, resigned. Wal-Mart rose 2.9% after its December same store sales came ahead of expectations.\",\n  \"extra_fields\": \"{\\\"stocks\\\":[\\\"$INDU\\\",\\\"$SPX\\\",\\\"COMP\\\",\\\"HD\\\",\\\"WMT\\\"],\\\"text_type\\\":\\\"headline+subhead+abstract\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"private:sentarl\\\",\\\"dataset\\\":\\\"sentarl_20assets\\\",\\\"source\\\":\\\"SentARL\\\",\\\"raw_type\\\":\\\"used_icaif_2021_csv\\\",\\\"tz_hint\\\":\\\"America/New_York\\\"}\"\n}\n```\n*Saved sample to `samples\\sentarl_combined_sample.jsonl`.*\n\n### `fnspid_news`\n\n```json\n{\n  \"date\": \"2020-06-05T06:30:54Z\",\n  \"text\": \"Stocks That Hit 52-Week Highs On Friday\",\n  \"extra_fields\": \"{\\\"stocks\\\": [\\\"A\\\"], \\\"publisher\\\": \\\"Benzinga Insights\\\", \\\"author\\\": \\\"\\\", \\\"url\\\": \\\"https://www.benzinga.com/news/20/06/16190091/stocks-that-hit-52-week-highs-on-friday\\\", \\\"text_type\\\": \\\"headline+article\\\", \\\"time_precision\\\": \\\"minute\\\", \\\"dataset_source\\\": \\\"hf:Zihan1004/FNSPID\\\", \\\"dataset\\\": \\\"fnspid_news\\\", \\\"raw_type\\\": \\\"fnspid_news_csv\\\", \\\"tz_hint\\\": \\\"America/New_York\\\"}\"\n}\n```\n*Saved sample to `samples\\fnspid_news_sample.jsonl`.*\n\n### `mind_news_2019`\n\n```json\n{\n  \"date\": \"2019-11-09T00:00:00Z\",\n  \"text\": \"2 shot on Grambling State University campus\\n\\nAuthorities say two people were shot, including a police officer, on Grambling State University's campus early Friday. According to a post on the university's website, the shooting happened around 1:30 a.m. at the Frederick C. Hobdy Assembly Center on campus. Louisiana State Police is investigating and say there is no threat to the public. CBS News affiliate KSLA in Shreveport reports that there was a party at the assembly center when shots were...\",\n  \"extra_fields\": \"{\\\"category\\\":\\\"news\\\",\\\"subcategory\\\":\\\"newsworld\\\",\\\"date_raw\\\":\\\"2019-11-09\\\",\\\"date_trading\\\":\\\"2019-11-11T14:30:00Z\\\",\\\"url\\\":\\\"https://assets.msn.com/labs/mind/AAIYPhD.html\\\",\\\"text_type\\\":\\\"title+abstract\\\",\\\"dataset_source\\\":\\\"web:msnews.microsoft.com\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"mind_news_2019\\\",\\\"source\\\":\\\"MSN\\\",\\\"raw_type\\\":\\\"MIND_news_tsv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\mind_news_2019_sample.jsonl`.*\n\n### `gold_news_kaggle`\n\n```json\n{\n  \"date\": \"2000-02-15T00:00:00Z\",\n  \"text\": \"gold is poised for greatness\",\n  \"extra_fields\": \"{\\\"date_raw\\\":\\\"15-02-2000\\\",\\\"date_trading\\\":\\\"2000-02-16T14:30:00Z\\\",\\\"url\\\":\\\"http://www.marketwatch.com/story/thom-calandras-stockwatch-gold-is-poised-for-greatness-2000-02-15\\\",\\\"text_type\\\":\\\"headline\\\",\\\"dataset_source\\\":\\\"kaggle:ankurzing/sentiment-analysis-in-commodity-market-gold\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"gold_news_kaggle\\\",\\\"raw_type\\\":\\\"kaggle_gold_news_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\gold_news_kaggle_sample.jsonl`.*\n\n### `huffpost_news`\n\n```json\n{\n  \"date\": \"2012-01-28T00:00:00Z\",\n  \"text\": \"Dwight Howard Rips Teammates After Magic Loss To Hornets\\n\\nThe five-time all-star center tore into his teammates Friday night after Orlando committed 23 turnovers en route to losing\",\n  \"extra_fields\": \"{\\\"category\\\":\\\"SPORTS\\\",\\\"authors\\\":\\\"\\\",\\\"date_raw\\\":\\\"2012-01-28\\\",\\\"date_trading\\\":\\\"2012-01-30T14:30:00Z\\\",\\\"url\\\":\\\"https://www.huffingtonpost.com/entry/dwight-howard-rips-teammates-magic-hornets_us_5bb69b24e4b097869fd1b331\\\",\\\"text_type\\\":\\\"headline+summary\\\",\\\"dataset_source\\\":\\\"kaggle:rmisra/news-category-dataset\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"huffpost_news_categories\\\",\\\"source\\\":\\\"HuffPost\\\",\\\"raw_type\\\":\\\"huffpost_jsonl\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\huffpost_news_sample.jsonl`.*\n\n### `sp500_daily_headlines`\n\n```json\n{\n  \"date\": \"2008-01-02T00:00:00Z\",\n  \"text\": \"JPMorgan Predicts 2008 Will Be \\\"Nothing But Net\\\"\",\n  \"extra_fields\": \"{\\\"date_raw\\\":\\\"2008-01-02\\\",\\\"date_trading\\\":\\\"2008-01-03T14:30:00Z\\\",\\\"text_type\\\":\\\"headline\\\",\\\"dataset_source\\\":\\\"kaggle:dyutidasmahaptra/s-and-p-500-with-financial-news-headlines-20082024\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"sp500_daily_headlines\\\",\\\"source\\\":\\\"market_recaps\\\",\\\"raw_type\\\":\\\"sp500_headlines_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\sp500_daily_headlines_sample.jsonl`.*\n\n### `reddit_worldnews_2008_2016`\n\n```json\n{\n  \"date\": \"2008-06-08T00:00:00Z\",\n  \"text\": \"b'Marriage, they said, was reduced to the status of a commercial transaction in which women could be discarded by husbands claiming to have discovered hidden defects in them.'\",\n  \"extra_fields\": \"{\\\"date_raw\\\":\\\"2008-06-08\\\",\\\"date_trading\\\":\\\"2008-06-09T13:30:00Z\\\",\\\"text_type\\\":\\\"headline\\\",\\\"dataset_source\\\":\\\"kaggle:tanishqdublish/stock-market-predictions\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"reddit_worldnews_2008_2016\\\",\\\"source\\\":\\\"Reddit (r/worldnews)\\\",\\\"raw_type\\\":\\\"RedditNews_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\reddit_worldnews_2008_2016_sample.jsonl`.*\n\n### `djia_stock_headlines`\n\n```json\n{\n  \"date\": \"2000-01-03T00:00:00Z\",\n  \"text\": \"A 'hindrance to operations': extracts from the leaked reports\",\n  \"extra_fields\": \"{\\\"top_index\\\":\\\"top1\\\",\\\"date_raw\\\":\\\"2000-01-03\\\",\\\"date_trading\\\":\\\"2000-01-04T14:30:00Z\\\",\\\"text_type\\\":\\\"headline\\\",\\\"dataset_source\\\":\\\"kaggle:lykin22/stock-headlines\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"djia_stock_headlines\\\",\\\"source\\\":\\\"DJIA_daily_headlines\\\",\\\"raw_type\\\":\\\"djia_stock_headlines_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\djia_stock_headlines_sample.jsonl`.*\n\n### `wikinews_articles`\n\n```json\n{\n  \"date\": \"2002-04-01T00:00:00Z\",\n  \"text\": \"Department of Defense report lambasts communication failure in US War on Terror\\n\\nA U.S. Department of Defense\\nadvisory committee has released a report harshly criticizing the U.S.-led \\\"War\\non Terror\\\". The report details communication failures with the Muslim\\nworld, and notes that current efforts may have achieved the opposite\\nof their intended effect.\\n\\nThe report released without publicity the Wednesday before Thanksgiving by Defense Science Board, focuses on a failure of communication, which the Defense Science Board considers vital to the war on terror. It asserts this failure of \\\"strategic communication\\\" contributes to a perceived \\\"negative image in world opinion and diminished ability to persuade\\\" of the United States, and that a resulting atmosphere of hostility can manifest in numerous ways.\\n\\nThe list of harmful effects includes \\\"terrorism, thin coalitions, harmful effects on business, restrictions\\non travel, declines in cross border tourism and education flows, and\\ndamaging consequences for other elements of U.S. soft power\\\".\\n\\nAccording to the report, \\\"The information campaign ... is an essential objective, because the larger goals of U.S. strategy depend on separating the vast majority of non-violent Muslims from the radical-militant Islamist-Jihadists. But American efforts have not only failed in this respect: they may also have achieved the opposite of what they intended.\\\"\\n\\nBy way of example, the report quotes figures from a June 2004 Zogby poll, claiming to show a significant drop in Arab support for the U.S. in the past couple years. Statistical results are reproduced below.\\n\\nThe report further claims, \\\"American direct intervention in the Muslim World has paradoxically elevated the stature of and support for radical Islamists.\\\" As summarised in a Christian Science Monitor headline, 'They hate our policies, not our freedom'.\\n\\nSo why has support for the U.S. dropped? -- to single digits in some Arab nations. President Bush and others have famously claimed that America is hated for its freedom. But the Defense Science Board concluded that most Arabs \\\"do not hate us for our values, but because of our policies.\\\" From the same Zogby study:\\n\\nThis study explains that while support for American values may not be overwhelming, it is practically non-existent for America's policies in the Middle East.\\n\\n\\\"The overwhelming majority voice their objections to what they see as one-sided support in favor of Israel and against Palestinian rights, and the longstanding, even increasing support for what Muslims collectively see as tyrannies, most notably Egypt, Saudi Arabia, Jordan, Pakistan, and the Gulf states. Thus when American public diplomacy talks about bringing democracy to Islamic societies, this is seen as no more than self-serving hypocrisy.\\\"\\n\\nIn the eyes of Muslims, according to this report, America is really only looking out for its own interests.\\n\\nIt concludes from this that the fundamental problem with relations with the Muslim world is not a simple matter of crafting the right message. \\\"Rather, it is a fundamental problem of credibility. Simply, there is none.\\\"\",\n  \"extra_fields\": \"{\\\"categories_norm\\\":[\\\"middle east\\\",\\\"lebanon\\\",\\\"north america\\\",\\\"religion\\\",\\\"united arab emirates\\\",\\\"united states\\\",\\\"saudi arabia\\\",\\\"islam\\\",\\\"jordan\\\",\\\"tourism\\\",\\\"us war on terror\\\",\\\"morocco\\\",\\\"egypt\\\",\\\"africa\\\"],\\\"date_raw\\\":\\\"2002-04-01\\\",\\\"date_trading\\\":\\\"2002-04-02T14:30:00Z\\\",\\\"text_type\\\":\\\"title+article\\\",\\\"dataset_source\\\":\\\"kaggle:datagator/wikinews-article-dataset\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"wikinews_articles\\\",\\\"source\\\":\\\"Wikinews\\\",\\\"raw_type\\\":\\\"wikinews_json\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\wikinews_articles_sample.jsonl`.*\n\n### `headlines_10sites_2007_2022`\n\n```json\n{\n  \"date\": \"2007-01-01T00:00:00Z\",\n  \"text\": \"Rush to Hang Hussein Was  Questioned\",\n  \"extra_fields\": \"{\\\"publication\\\": \\\"New York Times\\\", \\\"date_raw\\\": \\\"2007-01-01\\\", \\\"date_trading\\\": \\\"2007-01-03T14:30:00Z\\\", \\\"url\\\": \\\"http://www.nytimes.com/2007/01/01/world/middleeast/01iraq.html?hp&ex=1167714000&en=85dae91ed8178e3a&ei=5094&partner=homepage\\\", \\\"text_type\\\": \\\"headline\\\", \\\"dataset_source\\\": \\\"kaggle:jordankrishnayah/45m-headlines-from-2007-2022-10-largest-sites\\\", \\\"time_precision\\\": \\\"day\\\", \\\"anchor_policy\\\": \\\"date_midnight_utc + next_open_in_date_trading\\\", \\\"dataset\\\": \\\"headlines_10sites_2007_2022\\\", \\\"raw_type\\\": \\\"10sites_headlines_csv\\\", \\\"tz_hint\\\": \\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\headlines_10sites_2007_2022_sample.jsonl`.*\n\n### `nyt_headlines_1990_2020`\n\n```json\n{\n  \"date\": \"1990-01-01T05:00:00Z\",\n  \"text\": \"Bridge\",\n  \"extra_fields\": \"{\\\"news_desk\\\":\\\"Metropolitan Desk\\\",\\\"url\\\":\\\"https://www.nytimes.com/1990/01/01/nyregion/bridge-173390.html\\\",\\\"text_type\\\":\\\"headline\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:johnbandy/new-york-times-headlines\\\",\\\"dataset\\\":\\\"nyt_headlines_1990_2020\\\",\\\"source\\\":\\\"New York Times\\\",\\\"raw_type\\\":\\\"nyt_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\nyt_headlines_1990_2020_sample.jsonl`.*\n\n### `nyt_headlines_2010_2021`\n\n```json\n{\n  \"date\": \"2007-07-07T14:46:20Z\",\n  \"text\": \"It was a long antipodean night. While there\u2019s no telling what\u2019s a reflection of national taste and what\u2019s the result of booking expediency, each of the concerts from Australia, Japan and China certainly had its own character.\\n\\nLive Earth: Earnest Crooners and a \u201cSupersonic Speed Machine\u201d in Australia, China and Japan\\n\\nIt was a long antipodean night. While there\u2019s no telling what\u2019s a reflection of national taste and what\u2019s the result of booking expediency, each of the concerts from Australia, Japan and China certainly had its own character.\",\n  \"extra_fields\": \"{\\\"news_desk\\\":\\\"Culture\\\",\\\"section\\\":null,\\\"section_name\\\":\\\"Arts\\\",\\\"byline\\\":null,\\\"url\\\":null,\\\"text_type\\\":\\\"abstract+headline+lead\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:tmishinev/nyt-headlines-20102021\\\",\\\"dataset\\\":\\\"nyt_headlines_2010_2021\\\",\\\"source\\\":\\\"New York Times\\\",\\\"raw_type\\\":\\\"nyt_2010_2021_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\nyt_headlines_2010_2021_sample.jsonl`.*\n\n### `cnbc_headlines`\n\n```json\n{\n  \"date\": \"2006-11-30T14:25:19Z\",\n  \"text\": \"Word On The Street: The Day Ahead\\n\\nTime for our look at the day ahead--with \\\"Word on the Street.\\\" On this morning's \\\"Squawk On The Street\\\" --CNBC\u2019s Mark Haines spoke with Peter Costa-Senior Managing Director at Lipari Partners.\u00a0 Costa says he's going to develop his own theory--\\\"Costa's Theory of\u00a0 Economic Confusion\\\" -- from this week's information. He says it's kind of hard to figure out what direction the market will move today.He added that he's been a bull all year and he expects markets to go higher for the rest of the 2006.\",\n  \"extra_fields\": \"{\\\"author\\\":\\\"Lee Brodie\\\",\\\"publisher\\\":\\\"CNBC\\\",\\\"category\\\":\\\"CNBC TV\\\",\\\"url\\\":\\\"https://www.cnbc.com/2006/11/30/word-on-the-street-the-day-ahead.html\\\",\\\"text_type\\\":\\\"headline+abstract\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:crawlfeeds/cnbc-news-headlines-dataset\\\",\\\"dataset\\\":\\\"cnbc_headlines_2017_2020\\\",\\\"source\\\":\\\"CNBC\\\",\\\"raw_type\\\":\\\"cnbc_csv\\\",\\\"tz_hint\\\":\\\"America/New_York\\\"}\"\n}\n```\n*Saved sample to `samples\\cnbc_headlines_sample.jsonl`.*\n\n### `american_news_jonasbecker`\n\n```json\n{\n  \"date\": \"2016-02-05T21:51:32Z\",\n  \"text\": \"Higher Education Jobs | Guardian Jobs\\n\\nSkip to job results Skip to refine results Did you mean ? Find the latest higher education jobs to view and apply for now with Guardian Jobs. To have a job in higher education sent to you the day it's posted, be sure to sign up for email alerts. Visit our higher education section to discover more jobs within the education sector. PortsmouthUnspecifiedUNIVERSITY OF PORTSMOUTH We are seeking a Professor in Marketing and Sales with an appetite for research leadership. View details New Top job Stellenbosch, South AfricaUnspecifiedSTELLENBOSCH UNIVERSITY Enhance and exchange knowledge, skills and expertise in a collaborative manner between the University and society. View details Top job HullNHS Agenda for Change scales UNIVERSITY OF HULL We are seeking a flexible, dynamic and experienced clinical psychologist with a strong interest in the academic side of clinical psychology training. View details New HullNHS Agenda for Change scalesUNIVERSITY OF HULL Looking for a part-time qualified cognitive behavioural therapist to teach & supervise on our Post-graduate Cognitive Behavioural Therapy (CBT) Course View details New London (Central), London (Greater)circa \u00a323,000 per annumBRITISH ACADEMY The British Academy - the UK's national Academy for the humanities and social sciences - is seeking an Assistant Press & Communications Officer. View details New London\u00a340000 per annumLONDON BUSINESS SCHOOL Supply Contract Manager\u00a340k FTCAt London Business School we all share the vision of having a profound impact on the way the world does business, in... View details New Hammersmith, London W6Up to \u00a342k + pension + benefitsINSTITUTE OF FOOD SCIENCE AND TECHNOLOGY This is an important senior management position with a wide remit within an exciting and rapidly developing professional organisation. View details New London College of Communication \u00a327,499 - \u00a333,569 per annumUNIVERSITY OF THE ARTS LONDON IT Support Analyst x2 Permanent, full-time \u00a327,499 - \u00a333,569 per annum College/Service: Strategic Development Location: London College of Communica... View details New Cambridge, CambridgeshireCompetitiveCAMBRIDGE ASSESSMENT We are rapidly expanding and actively adopting new technologies to meet challenging deadlines demanded by our global delivery programmes. View details New SE11 4BU, London (Greater)c\u00a329,300 per annumTHE HEALTH AND CARE PROFESSIONS COUNCIL We are currently recruiting for an Education Officer to join the Education department. This is a replacement role and will carry out case work asso... View details New PortsmouthUnspecifiedUNIVERSITY OF PORTSMOUTH We are seeking a Professor in Law with an appetite for research leadership. View details New PortsmouthUnspecifiedUNIVERSITY OF PORTSMOUTH We are seeking a Professor in Marketing and Sales with an appetite for research leadership. View details New PortsmouthUnspecifiedUNIVERSITY OF PORTSMOUTH We are seeking a Professor in Small Business and Enterprise Development with an appetite for research leadership. View details New PortsmouthUnspecifiedUNIVERSITY OF PORTSMOUTH We are seeking a Professor in Accounting and Financial Management with an appetite for research leadership. View details New Rotherham\u00a330000 - \u00a337889 per annumONLY FE Teaching, Learning & Assessment Manager: College Delivery\u00a337,889 per annum View details New LondonTBCOPEN SOCIETY FOUNDATION We are recruiting for 3 Program Officers to focus on our work in Africa, MENA and on Higher Education Policy. View details New Coventry, West Midlands\u00a331,662 to \u00a338,904 per annum COVENTRY UNIVERSITY You'll assist in developing a world class research presence that generates impact across many sectors, especially aerospace and automotive. View details New Bradford, West Yorkshire\u00a349,230 - \u00a355,389UNIVERSITY OF BRADFORD The Division of Social Work and Social Care is seeking to appoint an experienced academic with a background in Social Work practice. View details New Hatfield, HertfordshireUH7 \u00a331,656 to \u00a337,768 per annum depending on skills and experienceUNIVERSITY OF HERTFORDSHIRE We are seeking to appoint an academic member of staff to support the new BA degree in Politics & International Relations in the School of Law. View details New Houghton St, LondonSalary from \u00a324,491 to \u00a327,528 pa inclusive with potential to progress to \u00a329,616 pa inclusiveLONDON SCHOOL OF ECONOMICS AND POLITICAL SCIENCE The Alumni Relations Assistant plays a key role in supporting the School's alumni engagement programme. View details New London\u00a322k - \u00a330k per annum + sales related bonus.DUKES EDUCATION You'll be the first port of call for clients, guiding them through the education process and advising them on the products and services we offer. View details New LondonAvailable on requestATWOOD TATE A leading Music Publisher is looking for a Commissioning Editor to join their offices in central London. This is a great opportunity for an experie... View details New Did you mean ? Subscribe Back to top Advertise a job 2013 - 2016 Guardian News and Media Limited, all rights reserved. Powered by Madgex Job Board Software\",\n  \"extra_fields\": \"{\\\"authors\\\":\\\"\\\",\\\"source_domain\\\":\\\"jobs.theguardian.com\\\",\\\"url\\\":\\\"https://jobs.theguardian.com/jobs/higher-education/\\\",\\\"text_type\\\":\\\"title+article\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:jonasbecker98/news-website-articles\\\",\\\"dataset\\\":\\\"american_news_jonasbecker\\\",\\\"source\\\":\\\"US news (multi-outlet)\\\",\\\"raw_type\\\":\\\"jonasbecker_json\\\",\\\"tz_hint\\\":\\\"America/New_York\\\"}\"\n}\n```\n*Saved sample to `samples\\american_news_jonasbecker_sample.jsonl`.*\n\n### `us_financial_news_2018_jeet`\n\n```json\n{\n  \"date\": \"2017-12-07T04:58:00Z\",\n  \"text\": \"This entrepreneur is ringing up sales restoring vintage telephones - MarketWatch\\n\\nPublished: Dec 7, 2017 4:58 a.m. ET Share \\nCollectors and Hollywood buyers are snapping them up OldPhoneWorks.com This chrome-plated Western Electric 302 model from the 1930s sells for $449.95 at Old Phone Works. \\nBy Bonnie Miller Rubin \\nWhen Don Woodbury opened a cellphone store in 2001, he included a few old phones as part of the d\u00e9cor, reflecting the historic district where the business was located. \\nSoon customers were asking to purchase the vintage models. \u201cThey\u2019d just come up to me and say, \u2018I want one of those.\u2019 It didn\u2019t take me long to realize that there was a good internet market for this stuff,\u201d Woodbury says. \\nSome 16 years later, Oldphoneworks.com , based in Kingston, Ontario, has grown to become one of the biggest sellers of antique phones, whether it\u2019s the \u201ccandlestick\u201d style familiar from old films and TV shows or the clunky desk models that were fixtures at grandma\u2019s house. \\nWoodbury\u2019s base is a small but loyal group of collectors with a taste for nostalgia, along with a handful of people looking to buy old models in bulk, such as movie producers trying to conjure up the past and hotel moguls looking to add a touch of uniqueness to rooms. \\n\u201cIt\u2019s kind of amazing that we\u2019ve been able to create a viable business from repurposing and redeploying obsolete technology that would otherwise end up in the trash,\u201d says the 59-year-old Woodbury, who sold his 50-store cellphone chain in 2013. \\nMany small companies have done very well by selling niche products that have long since been put out to pasture, whether it\u2019s vinyl records, typewriters or anything else that captures people\u2019s fancy. \\nAlso read: Old technology that\u2019s worth bringing back\u2014and not for the nostalgia \\nFor some entrepreneurs, vintage sales are a sideline. Dr. Jonathan Finder started Oldphones.com 16 years ago when he was a young physician, and the second income helped him pay off student loans. \\nNow his job as a pediatric lung specialist keeps him from putting in the time to acquire new customers. And a downturn in landline sales has hurt business. \\nBut he keeps at it, in no small part because he\u2019s an unabashed fan of the craftsmanship and history of his merchandise. \u201cHow many electromechanical objects that are 50 to 70 years old do exactly what they did when they were first made?\u201d Finder says. \u201cThe phones of the \u201930s and \u201940s outclass anything on the market today.\u201d A new calling \\nFor other entrepreneurs, like Woodbury, retro devices are their sole focus. The market for these phones would seem pretty small to build a business on. Two groups\u2014the Antique Telephone Collectors Association and Telephone Collectors International\u2014have only 1,125 members total. \\nDon\u2019t miss: This is the vintage technology some companies are using to store your data \\nYet buyers have been eager enough not only to keep Woodbury\u2019s operation afloat but allow it to thrive, even enough to support a four-person staff. Revenue, he says, can hit 50,000 Canadian dollars (roughly US$39,000) in a good month, and though he doesn\u2019t track long-term growth, he says that sales have shown a consistent year-to-year increase since the beginning. \\nWhen original equipment is unavailable, the company uses reproduction parts\u2014such as cloth-covered cords\u2014manufactured in its own workshop. Additionally, Oldphoneworks.com has the capability to repair and refurbish models that aren\u2019t in its inventory, a service that accounts for about 10% of the company\u2019s revenue. \\nWoodbury\u2019s customers are both \u201crepeat buyers; people who are going through their collection and want to upgrade, so they\u2019ll come to us to order the one part they need,\u201d he says, and \u201ca lot of one-offs, where someone Googles us because they need parts.\u201d \\nTypically, Woodbury gets his inventory from individuals or estates looking to liquidate their collections. His average telephone sale is $250, a healthy return on his average investment of $50, not counting the cost of labor for refurbishing. Prices usually range from $100 to as much as $8,000 for a rare model, such as the 1905 Strowger Candlestick, the first commercially available dial telephone. \\n(A Kansas City undertaker, Almon Strowger, believed that the only local operator was steering business calls to his competitor, who also happened to be her husband. So he invented dial service, bypassing operator intervention.) OldPhoneWorks.com Hello! This Strowger Candlestick dial phone goes for $7,999. \\n\u201cA phone like that may sit there for five years, but eventually someone will buy it,\u201d Woodbury says. \u201cIf people really want something, they\u2019re willing to pay for it. You just have to be patient.\u201d \\nTo build consumer trust, he offers a one-year, repair-or-replace warranty\u2014which gives him an edge over garage sales and flea markets, where the mantra is \u201cLet the buyer beware.\u201d He also says he can offer items in bulk, which is difficult for other dealers. A trunk line \\nThe company doesn\u2019t do much marketing. Mostly it involves making sure customers can find 20th-century technology using 21st-century methods. General manager Matt Jennings, 31, makes updating social media a top priority, trying to land the company at the top of Google rankings in their category. \\nWhen he answered a help-wanted ad two years ago, he didn\u2019t know a spit-cup receiver from an F1 handset. \u201cI thought I\u2019d be repairing cellphones. I certainly didn\u2019t think this would be much of a market,\u201d he says. \u201cAfter my first day, I realized I was wrong.\u201d \\nBeth Howe, like many buyers, found her way to Oldphoneworks by googling. She isn\u2019t a collector, but lusted after a Western Electric 500\u2014the phone of her childhood\u2014for her Topanga, Calif., home. \\n\u201cI have fond memories of avocado-green kitchen appliances,\u201d Ms. Howe says. \u201cMaybe it\u2019s just reaching adulthood that has made me nostalgic for the late \u201960s, early \u201970s design sensibility.\u201d \\nAn online search brought her to the site, and she fell hard for a dark red Western Electric 302 instead. Last produced in 1954, the phone\u2019s sleek lines and distinctive chime made the model a staple of Hollywood\u2019s Golden Age. \\n\u201cI thought, what fun to have a phone, not from my own childhood era, but from that classic period,\u201d says Ms. Howe, a visual-effects production supervisor, who worked on the recently released film \u201cBlade Runner 2049.\u201d \\n\u201cI was especially enamored of the matching textile cord\u2026and the clickety, clickety, clack of the dialing mechanism and the ringer, which is as good as a time machine to transport me back,\u201d she says. \\nYou might like: How to value the stuff you inherited A starring role \\nOther regular clients are the TV and movie industries, which account for 15% of the firm\u2019s revenue. \\n\u201cIt\u2019s just been building on its own,\u201d Woodbury says. Recently, he says, \u201cwe got calls from two different production companies on the same day asking us to rush phones that they need on the set.\u201d \\nJess Royal, set decorator for the Netflix NFLX, -0.39% series \u201cStranger Things,\u201d calls the company her \u201cgo-to source.\u201d \\n\u201cIt\u2019s super hard to find a whole bunch of phones in working condition, such as ones that all light up for a police station scene,\u201d she says. \u201cThey\u2019ve been great for us.\u201d \\nAlso read: 5 strange things about \u2018Stranger Things\u2019 season 2 \\nWhen a certain style Woodbury has supplied appears on the screen, his staff will see an immediate blip in sales. \\n\u201cWe won\u2019t sell any red pay phones for ages, then, all of a sudden, we\u2019ll sell four in a day,\u201d he says. \\nA big order came in recently from\",\n  \"extra_fields\": \"{\\\"source_norm\\\":\\\"www.wsj.com\\\",\\\"author\\\":\\\"Bonnie Miller Rubin\\\",\\\"url\\\":\\\"https://www.wsj.com/articles/an-entrepreneur-builds-a-business-selling-old-phones-1511752141\\\",\\\"text_type\\\":\\\"headline+article\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:jeet2016/us-financial-news-articles\\\",\\\"dataset\\\":\\\"us_financial_news_2018_jeet\\\",\\\"source\\\":\\\"U.S. Financial News (multi-outlet)\\\",\\\"raw_type\\\":\\\"jeet_json\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\us_financial_news_2018_jeet_sample.jsonl`.*\n\n### `nyt_articles_2000_present`\n\n```json\n{\n  \"date\": \"2000-01-01T05:00:00Z\",\n  \"text\": \"Playoffs or No, Dallas Provides The Motivation\\n\\nArticle on upcoming New York Giants-Dallas Cowboys game; photo (M)\",\n  \"extra_fields\": \"{\\\"byline_norm\\\":\\\"By Bill Pennington\\\",\\\"keywords_norm\\\":[\\\"New York Giants\\\",\\\"Dallas Cowboys\\\",\\\"Football\\\"],\\\"source_norm\\\":\\\"The New York Times\\\",\\\"web_url\\\":\\\"https://www.nytimes.com/2000/01/01/sports/pro-football-playoffs-or-no-dallas-provides-the-motivation.html\\\",\\\"text_type\\\":\\\"headline+abstract_or_snippet_or_lead\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"kaggle:aryansingh0909/nyt-articles-21m-2000-present\\\",\\\"dataset\\\":\\\"nyt_articles_2000_present\\\",\\\"source\\\":\\\"New York Times\\\",\\\"raw_type\\\":\\\"nyt_metadata_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\nyt_articles_2000_present_sample.jsonl`.*\n\n### `finsen_us_2007_2023`\n\n```json\n{\n  \"date\": \"2007-06-04T00:00:00Z\",\n  \"text\": \"Blackstone boosts IPO after Beijing takes $3bn stake\\n\\nBlackstone boosts IPO after Beijing takes $3bn stakeUnited States\u00a0NewsThe Chinese government is to use $3bn of its vast foreign exchange reserves to buy a 9.9% stake in Blackstone, as the US buy-out fund said it had increased the size of its IPO to up to $4.75bn.2007-06-04T13:02:14.917\",\n  \"extra_fields\": \"{\\\"category\\\":\\\"Other\\\",\\\"date_raw\\\":\\\"4/06/2007\\\",\\\"date_trading\\\":\\\"2007-06-05T13:30:00Z\\\",\\\"text_type\\\":\\\"title+article\\\",\\\"dataset_source\\\":\\\"kaggle:eaglewhl/finsen-financial-sentiment-dataset\\\",\\\"tz_hint\\\":\\\"America/New_York\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"finsen_us_2007_2023\\\",\\\"source\\\":\\\"FinSen (US subset)\\\",\\\"raw_type\\\":\\\"finsen_us_csv\\\"}\"\n}\n```\n*Saved sample to `samples\\finsen_us_2007_2023_sample.jsonl`.*\n\n### `yahoo_finance_felixdrinkall`\n\n```json\n{\n  \"date\": \"2017-01-03T00:00:00Z\",\n  \"text\": \"Meet the world\u2019s friendliest home robot\\n\\nKuri, developed by Mayfield Robotics, is not only a home assistant \u2014 it was designed to be a companion as well. Kuri responds to your voice, much as Amazon Echo or Google Home do, and it\u2019s able to carry out various tasks, including a nightly security patrol. Kuri can also monitor your home when you\",\n  \"extra_fields\": \"{\\\"source_domain\\\":\\\"finance.yahoo.com\\\",\\\"news_outlet\\\":\\\"finance.yahoo.com\\\",\\\"authors\\\":[],\\\"mentioned_companies\\\":[\\\"GOOGL\\\",\\\"AMZN\\\",\\\"AAPL\\\",\\\"NFLX\\\"],\\\"related_companies\\\":[\\\"IGLD\\\",\\\"TDC\\\",\\\"IAIC\\\",\\\"CTXS\\\",\\\"EPAY\\\",\\\"OTEX\\\",\\\"CRAY\\\",\\\"TCX\\\",\\\"SMCI\\\",\\\"YHOO\\\",\\\"WBMD\\\",\\\"HMI\\\",\\\"DTLK\\\",\\\"HPQ\\\",\\\"ADSK\\\",\\\"MGIC\\\",\\\"MSFT\\\",\\\"TISA\\\",\\\"OMCL\\\",\\\"ANSS\\\",\\\"TTWO\\\",\\\"FB\\\",\\\"ZEPP\\\",\\\"AABA\\\",\\\"SNPS\\\",\\\"NAN\\\",\\\"BIDU\\\",\\\"RAMP\\\",\\\"NTCT\\\",\\\"ATVI\\\",\\\"IIJI\\\",\\\"CHKP\\\",\\\"WAVD\\\",\\\"CTSH\\\",\\\"MANH\\\",\\\"SYNT\\\",\\\"GIGM\\\",\\\"TWTR\\\",\\\"NSR\\\",\\\"ACXM\\\",\\\"SCKT\\\",\\\"ULTI\\\",\\\"PRFT\\\",\\\"COR\\\",\\\"PINS\\\",\\\"GOOG\\\",\\\"META\\\",\\\"SIFY\\\",\\\"CTSO\\\",\\\"IBM\\\",\\\"FORTY\\\",\\\"INTU\\\",\\\"AWRE\\\"],\\\"industries\\\":[\\\"7841\\\",\\\"7370\\\",\\\"3571\\\",\\\"7375\\\"],\\\"named_entities\\\":[],\\\"url\\\":\\\"http://finance.yahoo.com/news/meet-the-worlds-friendliest-home-robot-225232872.html\\\",\\\"text_type\\\":\\\"title+description_or_maintext\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"github:felixdrinkall/financial-news-dataset\\\",\\\"dataset\\\":\\\"yahoo_finance_felixdrinkall_2017_2023\\\",\\\"source\\\":\\\"Yahoo Finance\\\",\\\"raw_type\\\":\\\"felixdrinkall_json\\\",\\\"tz_hint\\\":\\\"America/New_York\\\",\\\"stocks\\\":[\\\"AAPL\\\",\\\"AMZN\\\",\\\"GOOGL\\\",\\\"NFLX\\\"]}\"\n}\n```\n*Saved sample to `samples\\yahoo_finance_felixdrinkall_sample.jsonl`.*\n\n### `reddit_finance_sp500`\n\n```json\n{\n  \"date\": \"2008-11-11T01:35:09Z\",\n  \"text\": \"The Fed makes American Express a bank - now they can cash in on the government bailout money!!\",\n  \"extra_fields\": \"{\\\"subreddit\\\":\\\"economy\\\",\\\"author\\\":\\\"weegee\\\",\\\"flair\\\":\\\"\\\",\\\"score\\\":78,\\\"num_comments\\\":7,\\\"upvote_ratio\\\":0.95,\\\"permalink\\\":\\\"/r/economy/comments/7ckuh/the_fed_makes_american_express_a_bank_now_they/\\\",\\\"domain\\\":\\\"money.cnn.com\\\",\\\"id\\\":\\\"7ckuh\\\",\\\"created_datetime\\\":\\\"2008-11-11 01:35:09\\\",\\\"text_type\\\":\\\"title+selftext\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"hf:emilpartow/reddit_finance_posts_sp500\\\",\\\"dataset\\\":\\\"reddit_finance_sp500\\\",\\\"source\\\":\\\"Reddit (finance subs)\\\",\\\"raw_type\\\":\\\"reddit_finance_csv\\\",\\\"tz_hint\\\":\\\"UTC\\\",\\\"stocks\\\":[\\\"AMERICAN_EXPRESS\\\"]}\"\n}\n```\n*Saved sample to `samples\\reddit_finance_sp500_sample.jsonl`.*\n\n### `frontpage_news`\n\n```json\n{\n  \"date\": \"2015-07-16T00:00:00Z\",\n  \"text\": \"FLOTUS teams up with rapper Wale\\n\\nWale will perform at a White House event on higher education.\",\n  \"extra_fields\": \"{\\\"outlet\\\":\\\"thehill.com\\\",\\\"new_article_id\\\":\\\"35ecc22d9ccc5f028849afe1a8826e48\\\",\\\"date_raw\\\":\\\"2015-07-16\\\",\\\"date_trading\\\":\\\"2015-07-17T13:30:00Z\\\",\\\"text_type\\\":\\\"title+description\\\",\\\"dataset_source\\\":\\\"hf:AndyReas/frontpage-news\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"frontpage_news\\\",\\\"source\\\":\\\"Frontpage (multi-outlet)\\\",\\\"raw_type\\\":\\\"frontpage_parquet\\\",\\\"tz_hint\\\":\\\"UTC\\\"}\"\n}\n```\n*Saved sample to `samples\\frontpage_news_sample.jsonl`.*\n\n### `yahoo_finance_articles`\n\n```json\n{\n  \"date\": \"2025-03-11T00:00:00Z\",\n  \"text\": \"Ainos, ASE to Use AI Nose Technology in Semiconductor Manufacturing\\n\\nAinos (AIMD) said Tuesday it's partnering with Advanced Semiconductor Engineering to \\\"revolutionize\\\"\",\n  \"extra_fields\": \"{\\\"publisher\\\":\\\"MT Newswires\\\",\\\"type\\\":\\\"STORY\\\",\\\"date_raw\\\":\\\"2025-03-11\\\",\\\"date_trading\\\":\\\"2025-03-12T13:30:00Z\\\",\\\"link\\\":\\\"https://finance.yahoo.com/news/ainos-ase-ai-nose-technology-151328212.html\\\",\\\"text_type\\\":\\\"title+paragraphs\\\",\\\"dataset_source\\\":\\\"hf:bwzheng2010/yahoo-finance-data\\\",\\\"time_precision\\\":\\\"day\\\",\\\"anchor_policy\\\":\\\"date_midnight_utc + next_open_in_date_trading\\\",\\\"dataset\\\":\\\"yahoo_finance_articles\\\",\\\"source\\\":\\\"Yahoo Finance\\\",\\\"raw_type\\\":\\\"yahoo_stock_news_parquet\\\",\\\"tz_hint\\\":\\\"UTC\\\",\\\"stocks\\\":[\\\"ASX\\\"]}\"\n}\n```\n*Saved sample to `samples\\yahoo_finance_articles_sample.jsonl`.*\n\n### `all_the_news_2`\n\n```json\n{\n  \"date\": \"2016-01-01T00:00:00Z\",\n  \"text\": \"New Ted Cruz Super PAC with $4M ad buy\\n\\n(CNN)A new super PAC supporting Ted Cruz is beginning a $4 million television advertising campaign on his behalf, the most ambitious effort yet to back him independently in the 2016 race. Stand for Truth, a group formed only six weeks ago, said Friday that it would begin $2 million TV campaigns in both Iowa and South Carolina in the coming weeks. The little-known group, which has not yet disclosed its donors, is independent of the umbrella network of super PACs, Keep the Promise, that have been blessed by the campaign. And Keep the Promise is largely unaware of the contributors and strategists behind the group, which lacks an immediate tie to the network of Cruz associates who have plotted the independent efforts to back him for over a year. Stand for Truth, however, does not appear to be a renegade organization: Keep the Promise was aware of Stand for Truth's advertising plans, even if the group is surfacing fairly late in the election calendar. Nevertheless, the outlay of $4 million is a significant pro-Cruz effort that will be more than any Keep the Promise group has spent so far on television. And it comes at a time when Cruz expects to be on the defensive, given his surge in Iowa that has invited attacks from nearly every other GOP hopeful in recent weeks. \\\"As one of the two frontrunners heading into the final weeks before voting begins, Senator Cruz is under attack from all directions and will be for the remainder of this election,\\\" Eric Lycan, an attorney for the group, said in a statement. \\\"Stand for Truth is here to make sure an accurate message reaches voters.\\\" Stand for Truth began with small advertising buys on digital and radio platforms, while not responding to requests for comment about how it fit into the larger pro-Cruz framework. The only known official associated with the group, Lycan, is only compounding suspicion of the group in some Cruz circles. A prominent GOP election attorney, Lycan was the counsel in 2014 for the reelection campaign for Mitch McConnell, a Cruz foe in the Senate. Early media buys have been executed by SRCP Media, a well-known Washington-based GOP advertising firm. The Keep the Promise network has been reluctant to spend much money on television, only announcing 24 hours earlier, on Thursday evening, that it planned to make its first major foray into TV with a $700,000 purchase on the Iowa airwaves. Given its uneasiness with a large investment in TV, some Cruz allies were elated that Stand for Truth might play the heavy in early pro-Cruz television buys. The $2.1 million buy in Iowa begins on Jan. 13 and the second $2.1 million in South Carolina begins on Jan. 27. Each runs through the election.\",\n  \"extra_fields\": \"{\\\"publication\\\":\\\"CNN\\\",\\\"author\\\":\\\"Theodore Schleifer\\\",\\\"url\\\":\\\"https://www.cnn.com/2016/01/01/politics/cruz-super-pac-stand-for-truth/index.html\\\",\\\"text_type\\\":\\\"headline+article\\\",\\\"time_precision\\\":\\\"minute\\\",\\\"dataset_source\\\":\\\"components.one:all-the-news-2 (via zip)\\\",\\\"dataset\\\":\\\"all_the_news_2\\\",\\\"source\\\":\\\"All the News (curation)\\\",\\\"raw_type\\\":\\\"all_the_news_csv\\\",\\\"tz_hint\\\":\\\"America/New_York\\\"}\"\n}\n```\n*Saved sample to `samples\\all_the_news_2_sample.jsonl`.*\n\n---\n\n## How to load\n\n> This repo requires an account and to log in for use (`huggingface-cli login`; see [source](https://huggingface.co/docs/huggingface_hub/en/guides/cli))\n\n### 1) Install\n\n```bash\npip install datasets\n```\n\n### 2) Load *everything* (streaming is recommended given the size of the data)\n\n```python\nfrom datasets import load_dataset\n\n# All shards across all subsets:\nds = load_dataset(\n    path=\"Brianferrell787/financial-news-multisource\",           \n    data_files=\"data/*/*.parquet\",\n    split=\"train\",\n    streaming=True\n)\n\nfor i, row in enumerate(ds):\n    # row[\"extra_fields\"] is a JSON string\n    if i == 3:\n        break\n```\n\n### 3) Load a single subset\n\n```python\nfrom datasets import load_dataset\nhuff = load_dataset(\"Brianferrell787/financial-news-multisource\",\n                    data_files=\"data/huffpost_news/*.parquet\",\n                    split=\"train\",\n                    streaming=True)\n```\n\n### 4) Load multiple chosen subsets\n\n```python\nfiles = [\n    \"data/fnspid_news/*.parquet\",\n    \"data/bloomberg_reuters/*.parquet\",\n    \"data/cnbc_headlines/*.parquet\",\n]\nds = load_dataset(\"Brianferrell787/financial-news-multisource\", data_files=files, split=\"train\", streaming=True)\n```\n\n### 5) Parse extras\n\n```python\nimport json\nsample = next(iter(ds))\nextras = json.loads(sample[\"extra_fields\"])\nprint(extras.get(\"url\"), extras.get(\"publisher\"), extras.get(\"date_trading\"))\n```\n\n> **Tip:** If you prefer non-streaming, omit `streaming=True`. Parquet enables columnar, memory-efficient reads even at scale.\n\n\n## Example: backtest-safe date handling\n\nDay-level rows carry **two** timestamps:\n\n- `date` (top-level): midnight UTC (`YYYY-MM-DDT00:00:00Z`), used for coarse alignment/joins.\n- `extra_fields.date_trading`: NYSE **next-session open** in UTC (default). Use this for labeling or event-time alignment in backtesting.\n\n```python\ndef event_time_utc(row):\n    import json, datetime\n    extra = json.loads(row[\"extra_fields\"])\n    return extra.get(\"date_trading\") or row[\"date\"]\n```\n\nYou can switch to same-day anchoring if desired; I recorded the policy in `extra_fields.backtest_rule`.\n\n## Loading cheatsheet\n\n```python\n# ALL\nload_dataset(\"Brianferrell787/financial-news-multisource\", data_files=\"data/*/*.parquet\", split=\"train\", streaming=True)\n\n# One subset\nload_dataset(\"Brianferrell787/financial-news-multisource\", data_files=\"data/fnspid_news/*.parquet\", split=\"train\")\n\n# Two subsets\nload_dataset(\"Brianferrell787/financial-news-multisource\", data_files=[\"data/cnbc_headlines/*.parquet\",\n                                               \"data/huffpost_news/*.parquet\"],\n             split=\"train\")\n\n# Pandas-style: take a slice quickly\nds = load_dataset(\"Brianferrell787/financial-news-multisource\", data_files=\"data/nyt_headlines_2010_2021/*.parquet\", split=\"train\")\ndf = ds.shuffle(seed=42).take(1000)  # or use .to_pandas() for small samples\n```\n\n---\n\n## Quick QA\n\n**Q: Why midnight UTC for day-only rows?**  \nA: To avoid implying any exact intra-day minute and to keep merges stable across sources. **Backtest with `extra_fields.date_trading`.**\n\n**Q: Are there splits?**  \nA: No fixed `train/val/test`. This is a **document store**. Use time-based splits or subset-based splits as needed.\n\n**Q: Can I stream only finance-focused sources?**  \nA: Yes\u2014pass specific `data_files` globs to `load_dataset` (see examples).\n\n**Q: What\u2019s inside `extra_fields`?**  \nA: A compact JSON with everything not in `date`/`text`/`dataset`, e.g.:\n\n```json\n{\n  \"url\": \"https://example.com/news/123\",\n  \"publisher\": \"Reuters\",\n  \"author\": \"Jane Doe\",\n  \"stocks\": [\"AAPL\",\"MSFT\"],\n  \"category\": \"business\",\n  \"time_precision\": \"day\",\n  \"tz_hint\": \"UTC\",\n  \"date_raw\": \"2011-04-19\",\n  \"date_trading\": \"2011-04-20T13:30:00Z\",\n  \"anchor_policy\": \"date_midnight_utc + next_open_in_date_trading\",\n  \"dataset_source\": \"kaggle:some/source\",\n  \"dataset\": \"some_subset\",\n  \"source\": \"Some Publisher\",\n  \"raw_type\": \"source_specific_format\"\n}\n```\n\n"
+}

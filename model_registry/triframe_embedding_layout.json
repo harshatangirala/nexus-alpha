@@ -1,0 +1,821 @@
+{
+ "emb_s500/chunk_0000.npz": {
+  "members": {
+   "sample_id.npy": {
+    "compressed": 1092488,
+    "size": 1092488,
+    "shape": [
+     18206
+    ],
+    "dtype": "<U15"
+   },
+   "resnet18|W.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|W.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|W.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|W.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|W.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|W.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|W.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18|D.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|D.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|D.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|D.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|D.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|D.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|D.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18|H.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|H.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|H.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|H.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|H.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|H.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|H.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   }
+  }
+ },
+ "emb_ft_s500_8ed8458840/chunk_0000.npz": {
+  "members": {
+   "sample_id.npy": {
+    "compressed": 1092488,
+    "size": 1092488,
+    "shape": [
+     18206
+    ],
+    "dtype": "<U15"
+   },
+   "ft_resnet18|W.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "ft_efficientnet_b0|W.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_base_patch16_224|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_convnext_tiny|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_swin_tiny_patch4_window7_224|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_small_patch14_dinov2|W.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "ft_mobilenetv3_large_100|W.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_p25.convnext_tiny|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_p50.swin_tiny_patch4_window7_224|W.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_resnet18|D.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "ft_efficientnet_b0|D.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_base_patch16_224|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_convnext_tiny|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_swin_tiny_patch4_window7_224|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_small_patch14_dinov2|D.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "ft_mobilenetv3_large_100|D.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_p25.convnext_tiny|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_p50.swin_tiny_patch4_window7_224|D.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_resnet18|H.npy": {
+    "compressed": 18643072,
+    "size": 18643072,
+    "shape": [
+     18206,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "ft_efficientnet_b0|H.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_base_patch16_224|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_convnext_tiny|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_swin_tiny_patch4_window7_224|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_vit_small_patch14_dinov2|H.npy": {
+    "compressed": 13982336,
+    "size": 13982336,
+    "shape": [
+     18206,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "ft_mobilenetv3_large_100|H.npy": {
+    "compressed": 46607488,
+    "size": 46607488,
+    "shape": [
+     18206,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "ft_p25.convnext_tiny|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "ft_p50.swin_tiny_patch4_window7_224|H.npy": {
+    "compressed": 27964544,
+    "size": 27964544,
+    "shape": [
+     18206,
+     768
+    ],
+    "dtype": "float16"
+   }
+  }
+ },
+ "emb_s500/chunk_0012.npz": {
+  "members": {
+   "sample_id.npy": {
+    "compressed": 565748,
+    "size": 565748,
+    "shape": [
+     9427
+    ],
+    "dtype": "<U15"
+   },
+   "resnet18|W.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|W.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|W.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|W.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|W.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|W.npy": {
+    "compressed": 7240064,
+    "size": 7240064,
+    "shape": [
+     9427,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|W.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|W.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|W.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|W.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18|D.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|D.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|D.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|D.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|D.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|D.npy": {
+    "compressed": 7240064,
+    "size": 7240064,
+    "shape": [
+     9427,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|D.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|D.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|D.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|D.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18|H.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "efficientnet_b0|H.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "vit_base_patch16_224|H.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "convnext_tiny|H.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "swin_tiny_patch4_window7_224|H.npy": {
+    "compressed": 14480000,
+    "size": 14480000,
+    "shape": [
+     9427,
+     768
+    ],
+    "dtype": "float16"
+   },
+   "vit_small_patch14_dinov2|H.npy": {
+    "compressed": 7240064,
+    "size": 7240064,
+    "shape": [
+     9427,
+     384
+    ],
+    "dtype": "float16"
+   },
+   "mobilenetv3_large_100|H.npy": {
+    "compressed": 24133248,
+    "size": 24133248,
+    "shape": [
+     9427,
+     1280
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s0|H.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s1|H.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   },
+   "resnet18_random_s2|H.npy": {
+    "compressed": 9653376,
+    "size": 9653376,
+    "shape": [
+     9427,
+     512
+    ],
+    "dtype": "float16"
+   }
+  }
+ }
+}

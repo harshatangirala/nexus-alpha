@@ -1,0 +1,271 @@
+rule_id,book,family_code,family_name,title,side,timeframes,role,nature,required_inputs,implementation,detector,fields_are_boilerplate,source_file,source_line
+E001,entry,01,"Data, tradability and visual integrity",Completed-candle gate,N/A,1W|1D|1H,data_gate,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,27
+E002,entry,01,"Data, tradability and visual integrity",As-of timeframe synchronization,N/A,1W|1D|1H,data_gate,deterministic,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,39
+E003,entry,01,"Data, tradability and visual integrity",OHLC consistency,N/A,1W|1D|1H,data_gate,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,51
+E004,entry,01,"Data, tradability and visual integrity",Missing-session control,N/A,1D,data_gate,deterministic,gap|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,63
+E005,entry,01,"Data, tradability and visual integrity",Corporate-action consistency,N/A,1W|1D|1H,data_gate,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,75
+E006,entry,01,"Data, tradability and visual integrity",Liquidity eligibility,N/A,1W|1D|1H,data_gate,deterministic,volume|spread_liquidity,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,87
+E007,entry,01,"Data, tradability and visual integrity",Indicator warm-up,N/A,1W|1D|1H,data_gate,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,99
+E008,entry,01,"Data, tradability and visual integrity",Renderer consistency,N/A,1W|1D|1H,data_gate,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,111
+E009,entry,01,"Data, tradability and visual integrity",No hindsight annotations,N/A,1W|1D|1H,data_gate,deterministic,swing_pivots|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,123
+E010,entry,01,"Data, tradability and visual integrity",Tradable instrument state,N/A,1D,data_gate,deterministic,calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,135
+E011,entry,02,Weekly regime and directional permission,Weekly higher-high/higher-low regime,LONG,1W,weekly_permission,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,149
+E012,entry,02,Weekly regime and directional permission,Weekly lower-high/lower-low regime,SHORT,1W,weekly_permission,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,161
+E013,entry,02,Weekly regime and directional permission,Weekly range classification,BOTH,1W,weekly_permission,explanatory,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,173
+E014,entry,02,Weekly regime and directional permission,Weekly transition state,BOTH,1W,weekly_permission,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,185
+E015,entry,02,Weekly regime and directional permission,Weekly trend-strength gate,BOTH,1W,weekly_permission,explanatory,swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,197
+E016,entry,02,Weekly regime and directional permission,Weekly average alignment,BOTH,1W,weekly_permission,explanatory,moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,209
+E017,entry,02,Weekly regime and directional permission,Weekly momentum agreement,BOTH,1W,weekly_permission,explanatory,support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,221
+E018,entry,02,Weekly regime and directional permission,Weekly volatility regime,BOTH,1W,weekly_permission,explanatory,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,233
+E019,entry,02,Weekly regime and directional permission,Weekly opposing-zone clearance,BOTH,1W,weekly_permission,explanatory,support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,245
+E020,entry,02,Weekly regime and directional permission,Weekly countertrend exception,BOTH,1W,weekly_permission,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,257
+E021,entry,03,Daily structure and market phase,Daily bullish break of structure,LONG,1W|1D,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,271
+E022,entry,03,Daily structure and market phase,Daily bearish break of structure,SHORT,1W|1D,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,283
+E023,entry,03,Daily structure and market phase,Daily higher-low continuation,LONG,1D|1H,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,295
+E024,entry,03,Daily structure and market phase,Daily lower-high continuation,SHORT,1D|1H,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,307
+E025,entry,03,Daily structure and market phase,Daily change-of-character sequence,BOTH,1D,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,319
+E026,entry,03,Daily structure and market phase,Daily range boundary approach,BOTH,1D,daily_setup,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,331
+E027,entry,03,Daily structure and market phase,Daily range breakout acceptance,LONG,1D,daily_setup,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,343
+E028,entry,03,Daily structure and market phase,Daily failed breakout,LONG,1D|1H,daily_setup,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,355
+E029,entry,03,Daily structure and market phase,Daily structure freshness,BOTH,1D,daily_setup,explanatory,ATR|swing_pivots|support_resistance|model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,367
+E030,entry,03,Daily structure and market phase,Daily setup expiry,BOTH,1D,daily_setup,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,379
+E031,entry,04,"Support, resistance, supply and demand locations",Support rejection long,LONG,1H,location,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,393
+E032,entry,04,"Support, resistance, supply and demand locations",Resistance rejection short,SHORT,1H,location,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,405
+E033,entry,04,"Support, resistance, supply and demand locations",Support-to-resistance retest,BOTH,1W|1D|1H,location,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,417
+E034,entry,04,"Support, resistance, supply and demand locations",Resistance-to-support retest,LONG,1W|1D|1H,location,explanatory,support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,429
+E035,entry,04,"Support, resistance, supply and demand locations",Swing/average/zone overlap,BOTH,1W|1D|1H,location,explanatory,moving_average|swing_pivots|support_resistance|portfolio_state,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,441
+E036,entry,04,"Support, resistance, supply and demand locations",Repeated support tests,BOTH,1W|1D|1H,location,model_derived,support_resistance|spread_liquidity|model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,453
+E037,entry,04,"Support, resistance, supply and demand locations",Repeated resistance tests,BOTH,1W|1D|1H,location,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,465
+E038,entry,04,"Support, resistance, supply and demand locations",Zone penetration and reclaim,LONG,1W|1D|1H,location,explanatory,moving_average|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,477
+E039,entry,04,"Support, resistance, supply and demand locations",First-obstacle clearance,BOTH,1W|1D|1H,location,explanatory,support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,489
+E040,entry,04,"Support, resistance, supply and demand locations",Level confluence de-duplication,BOTH,1W|1D|1H,location,explanatory,support_resistance|position_state,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,501
+E041,entry,05,Candlestick reversal setups,Bullish engulfing at support,LONG,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,515
+E042,entry,05,Candlestick reversal setups,Bearish engulfing at resistance,SHORT,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,527
+E043,entry,05,Candlestick reversal setups,Hammer after decline,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,539
+E044,entry,05,Candlestick reversal setups,Shooting star after advance,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,551
+E045,entry,05,Candlestick reversal setups,Morning star,LONG,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,563
+E046,entry,05,Candlestick reversal setups,Evening star,SHORT,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,575
+E047,entry,05,Candlestick reversal setups,Piercing line,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,587
+E048,entry,05,Candlestick reversal setups,Dark cloud cover,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,599
+E049,entry,05,Candlestick reversal setups,Tweezer bottom/top,BOTH,1W|1D|1H,candle_pattern,explanatory,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,611
+E050,entry,05,Candlestick reversal setups,Three-candle exhaustion,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,623
+E051,entry,06,Candlestick continuation and compression,Bullish marubozu continuation,LONG,1W|1D|1H,candle_pattern,explanatory,moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,637
+E052,entry,06,Candlestick continuation and compression,Bearish marubozu continuation,SHORT,1W|1D|1H,candle_pattern,explanatory,moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,649
+E053,entry,06,Candlestick continuation and compression,Rising three methods,LONG,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,661
+E054,entry,06,Candlestick continuation and compression,Falling three methods,SHORT,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,673
+E055,entry,06,Candlestick continuation and compression,Inside-bar break,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,685
+E056,entry,06,Candlestick continuation and compression,Nested inside-bar break,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,697
+E057,entry,06,Candlestick continuation and compression,Bull flag,LONG,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,709
+E058,entry,06,Candlestick continuation and compression,Bear flag,SHORT,1W|1D|1H,candle_pattern,explanatory,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,721
+E059,entry,06,Candlestick continuation and compression,Three-bar range expansion,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,733
+E060,entry,06,Candlestick continuation and compression,Gap-and-go hold,BOTH,1W|1D|1H,candle_pattern,explanatory,OHLC|support_resistance|gap,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,745
+E061,entry,07,Breakout and breakdown entries,Horizontal resistance breakout,LONG,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,759
+E062,entry,07,Breakout and breakdown entries,Horizontal support breakdown,SHORT,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,771
+E063,entry,07,Breakout and breakdown entries,Ascending triangle resolution,BOTH,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,783
+E064,entry,07,Breakout and breakdown entries,Descending triangle resolution,BOTH,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,795
+E065,entry,07,Breakout and breakdown entries,Symmetrical triangle resolution,LONG,1H,trigger,deterministic,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,807
+E066,entry,07,Breakout and breakdown entries,Prior-N-bar high breakout,LONG,1H,trigger,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,819
+E067,entry,07,Breakout and breakdown entries,Prior-N-bar low breakdown,SHORT,1H,trigger,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,831
+E068,entry,07,Breakout and breakdown entries,Relative-volume breakout,LONG,1D,trigger,deterministic,volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,843
+E069,entry,07,Breakout and breakdown entries,Breakout retest long,LONG,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,855
+E070,entry,07,Breakout and breakdown entries,Breakdown retest short,BOTH,1H,trigger,deterministic,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,867
+E071,entry,08,Pullback and trend-resumption entries,First pullback in new trend,BOTH,1H,entry_timing,deterministic,support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,881
+E072,entry,08,Pullback and trend-resumption entries,Shallow pullback,BOTH,1D|1H,entry_timing,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,893
+E073,entry,08,Pullback and trend-resumption entries,Deep but valid pullback,LONG,1D,entry_timing,deterministic,swing_pivots|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,905
+E074,entry,08,Pullback and trend-resumption entries,SMA20 pullback,BOTH,1D|1H,entry_timing,deterministic,OHLC|moving_average|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,917
+E075,entry,08,Pullback and trend-resumption entries,SMA50 pullback,BOTH,1H,entry_timing,deterministic,OHLC|moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,929
+E076,entry,08,Pullback and trend-resumption entries,EMA20 continuation,SHORT,1D|1H,entry_timing,deterministic,moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,941
+E077,entry,08,Pullback and trend-resumption entries,VWAP reclaim long,LONG,1D|1H,entry_timing,deterministic,OHLC|volume|vwap|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,953
+E078,entry,08,Pullback and trend-resumption entries,VWAP rejection short,SHORT,1D|1H,entry_timing,deterministic,OHLC|swing_pivots|vwap|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,965
+E079,entry,08,Pullback and trend-resumption entries,Prior-day high reclaim,LONG,1D|1H,entry_timing,deterministic,OHLC|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,977
+E080,entry,08,Pullback and trend-resumption entries,Prior-day low breakdown,BOTH,1D|1H,entry_timing,deterministic,OHLC|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,989
+E081,entry,09,"Moving averages, channels and trend filters",SMA20 rising trend filter,LONG,1W|1D|1H,trend_filter,deterministic,OHLC|moving_average|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1003
+E082,entry,09,"Moving averages, channels and trend filters",SMA50 rising trend filter,LONG,1W|1D|1H,trend_filter,deterministic,moving_average|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1015
+E083,entry,09,"Moving averages, channels and trend filters",SMA20/50 bullish alignment,LONG,1W|1D|1H,trend_filter,deterministic,OHLC|moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1027
+E084,entry,09,"Moving averages, channels and trend filters",SMA20/50 bearish alignment,SHORT,1W|1D|1H,trend_filter,deterministic,OHLC|moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1039
+E085,entry,09,"Moving averages, channels and trend filters",Bullish crossover transition,LONG,1W|1D|1H,trend_filter,deterministic,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1051
+E086,entry,09,"Moving averages, channels and trend filters",Bearish crossover transition,SHORT,1W|1D|1H,trend_filter,deterministic,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1063
+E087,entry,09,"Moving averages, channels and trend filters",Moving-average reclaim,LONG,1W|1D|1H,trend_filter,deterministic,OHLC|moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1075
+E088,entry,09,"Moving averages, channels and trend filters",Moving-average rejection,BOTH,1W|1D|1H,trend_filter,deterministic,moving_average,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1087
+E089,entry,09,"Moving averages, channels and trend filters",Regression-channel reaction,BOTH,1W|1D|1H,trend_filter,deterministic,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1099
+E090,entry,09,"Moving averages, channels and trend filters",Trend extension veto,BOTH,1W|1D|1H,trend_filter,deterministic,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1111
+E091,entry,10,Momentum entries and filters,RSI 50 reclaim long,LONG,1W|1D|1H,momentum_filter,deterministic,RSI|swing_pivots|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1125
+E092,entry,10,Momentum entries and filters,RSI 50 rejection short,BOTH,1W|1D|1H,momentum_filter,deterministic,OHLC|RSI|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1137
+E093,entry,10,Momentum entries and filters,RSI bullish divergence,LONG,1W|1D|1H,momentum_filter,deterministic,OHLC|RSI|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1149
+E094,entry,10,Momentum entries and filters,RSI bearish divergence,SHORT,1W|1D|1H,momentum_filter,deterministic,OHLC|RSI|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1161
+E095,entry,10,Momentum entries and filters,RSI failure swing long,LONG,1W|1D|1H,momentum_filter,deterministic,OHLC|RSI|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1173
+E096,entry,10,Momentum entries and filters,RSI failure swing short,SHORT,1W|1D|1H,momentum_filter,deterministic,OHLC|RSI|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1185
+E097,entry,10,Momentum entries and filters,MACD bullish crossover,LONG,1D,momentum_filter,deterministic,MACD,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1197
+E098,entry,10,Momentum entries and filters,MACD bearish crossover,SHORT,1W|1D|1H,momentum_filter,deterministic,MACD,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1209
+E099,entry,10,Momentum entries and filters,MACD histogram re-expansion,BOTH,1W|1D|1H,momentum_filter,deterministic,MACD|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1221
+E100,entry,10,Momentum entries and filters,Momentum conflict abstention,BOTH,1W|1D|1H,momentum_filter,deterministic,swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1233
+E101,entry,11,Volume and participation,Relative volume expansion,BOTH,1D|1H,participation_filter,deterministic,volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1247
+E102,entry,11,Volume and participation,OBV bullish confirmation,LONG,1W|1D|1H,participation_filter,deterministic,OHLC|volume|swing_pivots|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1259
+E103,entry,11,Volume and participation,OBV bearish confirmation,SHORT,1W|1D|1H,participation_filter,deterministic,OHLC|volume|swing_pivots|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1271
+E104,entry,11,Volume and participation,OBV bullish divergence,LONG,1H,participation_filter,deterministic,OHLC|volume|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1283
+E105,entry,11,Volume and participation,OBV bearish divergence,SHORT,1H,participation_filter,deterministic,OHLC|volume|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1295
+E106,entry,11,Volume and participation,Pullback volume contraction,BOTH,1W|1D|1H,participation_filter,deterministic,volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1307
+E107,entry,11,Volume and participation,Climactic volume reversal,BOTH,1W|1D|1H,participation_filter,deterministic,OHLC|volume|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1319
+E108,entry,11,Volume and participation,Accumulation/distribution turn,LONG,1W|1D|1H,participation_filter,deterministic,volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1331
+E109,entry,11,Volume and participation,Volume-profile node clearance,BOTH,1W|1D|1H,participation_filter,deterministic,OHLC|volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1343
+E110,entry,11,Volume and participation,Volume anomaly block,BOTH,1W|1D|1H,participation_filter,deterministic,volume,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1355
+E111,entry,12,"Volatility, range and gap conditions",ATR-normalized trigger distance,BOTH,1W|1D|1H,volatility_filter,deterministic,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1369
+E112,entry,12,"Volatility, range and gap conditions",Bollinger squeeze release,BOTH,1W|1D|1H,volatility_filter,deterministic,bollinger,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1381
+E113,entry,12,"Volatility, range and gap conditions",Bollinger band walk,BOTH,1W|1D|1H,volatility_filter,deterministic,OHLC|bollinger,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1393
+E114,entry,12,"Volatility, range and gap conditions",Bollinger/Keltner compression,BOTH,1W|1D|1H,volatility_filter,deterministic,bollinger,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1405
+E115,entry,12,"Volatility, range and gap conditions",Extreme-range candle chase filter,BOTH,1W|1D|1H,volatility_filter,deterministic,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1417
+E116,entry,12,"Volatility, range and gap conditions",Gap continuation,LONG,1W|1D|1H,volatility_filter,deterministic,support_resistance|gap,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1429
+E117,entry,12,"Volatility, range and gap conditions",Gap failure reversal,LONG,1H,volatility_filter,deterministic,swing_pivots|gap,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1441
+E118,entry,12,"Volatility, range and gap conditions",Volatility regime strategy routing,BOTH,1W|1D|1H,volatility_filter,deterministic,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1453
+E119,entry,12,"Volatility, range and gap conditions",Volatility-based stop feasibility,BOTH,1W|1D|1H,volatility_filter,deterministic,ATR,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1465
+E120,entry,12,"Volatility, range and gap conditions",Post-expansion reward-space check,BOTH,1W|1D|1H,volatility_filter,deterministic,ATR|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1477
+E121,entry,13,Multi-timeframe confluence patterns,Weekly up / daily pullback / hourly break,LONG,1W|1D|1H,mtf_confluence,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1491
+E122,entry,13,Multi-timeframe confluence patterns,Weekly down / daily rally / hourly break down,SHORT,1W|1D|1H,mtf_confluence,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1503
+E123,entry,13,Multi-timeframe confluence patterns,Weekly range low / daily support / hourly rejection,LONG,1W|1D|1H,mtf_confluence,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1515
+E124,entry,13,Multi-timeframe confluence patterns,Weekly range high / daily resistance / hourly rejection,BOTH,1W|1D|1H,mtf_confluence,explanatory,OHLC|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1527
+E125,entry,13,Multi-timeframe confluence patterns,Weekly breakout / daily acceptance / hourly retest,LONG,1W|1D|1H,mtf_confluence,explanatory,OHLC,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1539
+E126,entry,13,Multi-timeframe confluence patterns,Higher-timeframe obstacle veto,BOTH,1W|1D,mtf_confluence,explanatory,OHLC|swing_pivots,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1551
+E127,entry,13,Multi-timeframe confluence patterns,Daily setup age gate,BOTH,1D,mtf_confluence,explanatory,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1563
+E128,entry,13,Multi-timeframe confluence patterns,Hourly trigger age gate,BOTH,1H,mtf_confluence,explanatory,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1575
+E129,entry,13,Multi-timeframe confluence patterns,Timeframe disagreement abstention,BOTH,1W|1D,mtf_confluence,model_derived,model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1587
+E130,entry,13,Multi-timeframe confluence patterns,Cross-timeframe stop consistency,BOTH,1D|1H,mtf_confluence,explanatory,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1599
+E131,entry,14,Special entries and final quality gates,Earnings/event-specific route,N/A,1W|1D|1H,final_gate,model_derived,gap|calendar_events|model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1613
+E132,entry,14,Special entries and final quality gates,Post-event range setup,N/A,1H,final_gate,deterministic,swing_pivots|support_resistance|calendar_events,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1625
+E133,entry,14,Special entries and final quality gates,Liquidity sweep low reclaim,N/A,1H,final_gate,deterministic,OHLC|spread_liquidity,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1637
+E134,entry,14,Special entries and final quality gates,Liquidity sweep high rejection,N/A,1H,final_gate,deterministic,OHLC|spread_liquidity,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1649
+E135,entry,14,Special entries and final quality gates,Sector/index confirmation,N/A,1W|1D|1H,final_gate,deterministic,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1661
+E136,entry,14,Special entries and final quality gates,Market shock abstention,N/A,1W|1D|1H,final_gate,deterministic,ATR|support_resistance,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1673
+E137,entry,14,Special entries and final quality gates,Independent evidence minimum,N/A,1W|1D|1H,final_gate,deterministic,swing_pivots|portfolio_state,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1685
+E138,entry,14,Special entries and final quality gates,Calibrated confluence score,N/A,1W|1D|1H,final_gate,model_derived,calendar_events|model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1697
+E139,entry,14,Special entries and final quality gates,No-chase execution gate,N/A,1W|1D|1H,final_gate,deterministic,,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1709
+E140,entry,14,Special entries and final quality gates,Complete audit trail,N/A,1W|1D|1H,final_gate,model_derived,calendar_events|position_state|model_output,catalogued_only,,True,01_ENTRY_RULEBOOK_150.md,1721
+E141,entry,15,Advanced trigger and entry-quality gates,Intrabar trigger confirmation policy,BOTH,1H,trigger_quality,model_derived,OHLC|position_state|model_output,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1745
+E142,entry,15,Advanced trigger and entry-quality gates,Trigger retest count limit,BOTH,1H,trigger_quality,deterministic,support_resistance,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1756
+E143,entry,15,Advanced trigger and entry-quality gates,Breakout close-location quality,LONG,1H,trigger_quality,deterministic,OHLC,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1767
+E144,entry,15,Advanced trigger and entry-quality gates,Retest hold duration,LONG,1H,trigger_quality,deterministic,support_resistance,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1778
+E145,entry,15,Advanced trigger and entry-quality gates,Trend pullback overlap quality,BOTH,1H,trigger_quality,deterministic,OHLC,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1789
+E146,entry,15,Advanced trigger and entry-quality gates,Trigger-time liquidity gate,BOTH,1H,trigger_quality,deterministic,spread_liquidity,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1800
+E147,entry,15,Advanced trigger and entry-quality gates,Trigger alignment with session phase,BOTH,1D|1H,trigger_quality,deterministic,ATR|spread_liquidity|calendar_events,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1811
+E148,entry,15,Advanced trigger and entry-quality gates,Failed trigger cancellation,BOTH,1H,trigger_quality,deterministic,support_resistance,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1822
+E149,entry,15,Advanced trigger and entry-quality gates,Net reward-to-risk after fill estimate,BOTH,1H,trigger_quality,deterministic,spread_liquidity,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1833
+E150,entry,15,Advanced trigger and entry-quality gates,Final independent approval gate,BOTH,1W|1D|1H,trigger_quality,deterministic,spread_liquidity|portfolio_state,catalogued_only,,False,01_ENTRY_RULEBOOK_150.md,1844
+X001,exit,01,Initial stop and structural invalidation,Structure stop,BOTH,1W|1D|1H,initial_stop,deterministic,swing_pivots|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,27
+X002,exit,01,Initial stop and structural invalidation,Pattern extreme stop,BOTH,1W|1D|1H,initial_stop,deterministic,OHLC|ATR,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,39
+X003,exit,01,Initial stop and structural invalidation,Zone-distal stop,BOTH,1W|1D|1H,initial_stop,deterministic,support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,51
+X004,exit,01,Initial stop and structural invalidation,Protected higher-low stop,LONG,1W|1D|1H,initial_stop,deterministic,OHLC|swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,63
+X005,exit,01,Initial stop and structural invalidation,Protected lower-high stop,SHORT,1W|1D|1H,initial_stop,deterministic,OHLC|swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,75
+X006,exit,01,Initial stop and structural invalidation,Breakout failure stop,LONG,1W|1D|1H,initial_stop,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,87
+X007,exit,01,Initial stop and structural invalidation,Retest failure stop,LONG,1W|1D|1H,initial_stop,deterministic,support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,99
+X008,exit,01,Initial stop and structural invalidation,Daily thesis invalidation,BOTH,1D,initial_stop,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,111
+X009,exit,01,Initial stop and structural invalidation,Weekly thesis invalidation,BOTH,1W,initial_stop,deterministic,swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,123
+X010,exit,01,Initial stop and structural invalidation,Stop infeasibility rule,BOTH,1W|1D|1H,initial_stop,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,135
+X011,exit,02,Volatility and stop management,ATR buffer management,BOTH,1W|1D|1H,stop_management,model_derived,ATR|swing_pivots|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,149
+X012,exit,02,Volatility and stop management,ATR expansion de-risk,BOTH,1W|1D|1H,stop_management,deterministic,ATR|portfolio_state|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,161
+X013,exit,02,Volatility and stop management,ATR contraction trail,BOTH,1W|1D|1H,stop_management,deterministic,ATR|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,173
+X014,exit,02,Volatility and stop management,Chandelier long trail,LONG,1W|1D|1H,stop_management,model_derived,OHLC|ATR|position_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,185
+X015,exit,02,Volatility and stop management,Chandelier short trail,SHORT,1W|1D|1H,stop_management,model_derived,OHLC|ATR|position_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,197
+X016,exit,02,Volatility and stop management,Close-confirmed stop policy,BOTH,1W|1D|1H,stop_management,model_derived,OHLC|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,209
+X017,exit,02,Volatility and stop management,Volatility shock exit,BOTH,1W|1D|1H,stop_management,deterministic,ATR,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,221
+X018,exit,02,Volatility and stop management,Partial-fill risk recalculation,BOTH,1W|1D|1H,stop_management,deterministic,volume|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,233
+X019,exit,02,Volatility and stop management,No stop widening,BOTH,1W|1D|1H,stop_management,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,245
+X020,exit,02,Volatility and stop management,Cost-adjusted breakeven,BOTH,1W|1D|1H,stop_management,deterministic,spread_liquidity,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,257
+X021,exit,03,Targets and obstacle-based exits,First opposing structure target,BOTH,1W|1D|1H,target,deterministic,swing_pivots|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,271
+X022,exit,03,Targets and obstacle-based exits,Range midpoint target,BOTH,1W|1D|1H,target,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,283
+X023,exit,03,Targets and obstacle-based exits,Opposite range boundary target,BOTH,1W|1D|1H,target,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,295
+X024,exit,03,Targets and obstacle-based exits,Measured-move target,BOTH,1W|1D|1H,target,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,307
+X025,exit,03,Targets and obstacle-based exits,Fibonacci extension target,BOTH,1W|1D|1H,target,deterministic,swing_pivots|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,319
+X026,exit,03,Targets and obstacle-based exits,Prior weekly extreme target,BOTH,1W|1D,target,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,331
+X027,exit,03,Targets and obstacle-based exits,Prior daily extreme target,BOTH,1D,target,deterministic,OHLC|calendar_events,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,343
+X028,exit,03,Targets and obstacle-based exits,VWAP target or obstacle,BOTH,1D|1H,target,deterministic,vwap|calendar_events,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,355
+X029,exit,03,Targets and obstacle-based exits,Volume-profile node target,BOTH,1W|1D|1H,target,deterministic,volume|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,367
+X030,exit,03,Targets and obstacle-based exits,Obstacle truncation exit,BOTH,1W|1D|1H,target,deterministic,support_resistance|calendar_events,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,379
+X031,exit,04,Profit taking and trailing,Partial at milestone R,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,393
+X032,exit,04,Profit taking and trailing,Partial at first obstacle,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,405
+X033,exit,04,Profit taking and trailing,Staged target ladder,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,417
+X034,exit,04,Profit taking and trailing,Trail below confirmed higher lows,LONG,1W|1D|1H,profit_taking_trailing,deterministic,OHLC|swing_pivots|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,429
+X035,exit,04,Profit taking and trailing,Trail above confirmed lower highs,SHORT,1W|1D|1H,profit_taking_trailing,deterministic,OHLC|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,441
+X036,exit,04,Profit taking and trailing,Moving-average close exit,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,OHLC|moving_average,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,453
+X037,exit,04,Profit taking and trailing,ATR runner trail,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,ATR|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,465
+X038,exit,04,Profit taking and trailing,Trend-maturity faster trail,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,477
+X039,exit,04,Profit taking and trailing,Exit remainder at next structure,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,OHLC|swing_pivots|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,489
+X040,exit,04,Profit taking and trailing,Peak-profit giveback limit,BOTH,1W|1D|1H,profit_taking_trailing,deterministic,OHLC|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,501
+X041,exit,05,"Trend, momentum and volume deterioration",RSI regime loss,BOTH,1W|1D|1H,deterioration_exit,deterministic,RSI|swing_pivots|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,515
+X042,exit,05,"Trend, momentum and volume deterioration",MACD histogram rollover,BOTH,1W|1D|1H,deterioration_exit,deterministic,MACD|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,527
+X043,exit,05,"Trend, momentum and volume deterioration",Confirmed bearish divergence against long,BOTH,1W|1D|1H,deterioration_exit,deterministic,swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,539
+X044,exit,05,"Trend, momentum and volume deterioration",Confirmed bullish divergence against short,BOTH,1W|1D|1H,deterioration_exit,deterministic,swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,551
+X045,exit,05,"Trend, momentum and volume deterioration",ADX weakening plus stall,BOTH,1W|1D|1H,deterioration_exit,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,563
+X046,exit,05,"Trend, momentum and volume deterioration",Moving-average loss and failed reclaim,LONG,1W|1D|1H,deterioration_exit,deterministic,OHLC|moving_average,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,575
+X047,exit,05,"Trend, momentum and volume deterioration",OBV distribution warning,BOTH,1W|1D|1H,deterioration_exit,deterministic,volume,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,587
+X048,exit,05,"Trend, momentum and volume deterioration",OBV accumulation warning for short,SHORT,1W|1D|1H,deterioration_exit,deterministic,volume,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,599
+X049,exit,05,"Trend, momentum and volume deterioration",Volume climax at target,BOTH,1W|1D|1H,deterioration_exit,deterministic,volume|support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,611
+X050,exit,05,"Trend, momentum and volume deterioration",Directional efficiency collapse,BOTH,1W|1D|1H,deterioration_exit,deterministic,OHLC|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,623
+X051,exit,06,Candle-based warning and reversal exits,Opposite engulfing at target,BOTH,1W|1D|1H,candle_exit,deterministic,support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,637
+X052,exit,06,Candle-based warning and reversal exits,Upper-wick rejection against long,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,649
+X053,exit,06,Candle-based warning and reversal exits,Lower-wick rejection against short,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC|support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,661
+X054,exit,06,Candle-based warning and reversal exits,Doji after extension,BOTH,1W|1D|1H,candle_exit,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,673
+X055,exit,06,Candle-based warning and reversal exits,Three-candle reversal against position,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC|support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,685
+X056,exit,06,Candle-based warning and reversal exits,Failed breakout close,LONG,1W|1D|1H,candle_exit,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,697
+X057,exit,06,Candle-based warning and reversal exits,Opposite inside-bar break,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,709
+X058,exit,06,Candle-based warning and reversal exits,Climax candle warning,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC|volume|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,721
+X059,exit,06,Candle-based warning and reversal exits,Consecutive opposing closes,BOTH,1W|1D|1H,candle_exit,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,733
+X060,exit,06,Candle-based warning and reversal exits,Original entry-pattern invalidation,BOTH,1W|1D|1H,candle_exit,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,745
+X061,exit,07,"Structure, liquidity and failed thesis",BOS against position,BOTH,1W|1D|1H,structure_exit,deterministic,swing_pivots|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,759
+X062,exit,07,"Structure, liquidity and failed thesis",CHoCH confirmation against position,BOTH,1W|1D|1H,structure_exit,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,771
+X063,exit,07,"Structure, liquidity and failed thesis",Support loss in long,LONG,1W|1D|1H,structure_exit,deterministic,support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,783
+X064,exit,07,"Structure, liquidity and failed thesis",Resistance reclaim in short,BOTH,1W|1D|1H,structure_exit,deterministic,support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,795
+X065,exit,07,"Structure, liquidity and failed thesis",Higher-low failure,LONG,1W|1D|1H,structure_exit,deterministic,OHLC|swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,807
+X066,exit,07,"Structure, liquidity and failed thesis",Lower-high failure,SHORT,1W|1D|1H,structure_exit,deterministic,OHLC|swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,819
+X067,exit,07,"Structure, liquidity and failed thesis",Sweep and reclaim against long,BOTH,1W|1D|1H,structure_exit,deterministic,OHLC|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,831
+X068,exit,07,"Structure, liquidity and failed thesis",Sweep and rejection against short,BOTH,1W|1D|1H,structure_exit,deterministic,OHLC|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,843
+X069,exit,07,"Structure, liquidity and failed thesis",Failed breakout retest,LONG,1W|1D|1H,structure_exit,deterministic,support_resistance,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,855
+X070,exit,07,"Structure, liquidity and failed thesis",Range re-entry after breakout,LONG,1W|1D|1H,structure_exit,deterministic,portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,867
+X071,exit,08,"Time, stalling and strategy expiry",Maximum holding horizon,BOTH,1W|1D|1H,time_exit,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,881
+X072,exit,08,"Time, stalling and strategy expiry",Breakout no-follow-through,LONG,1W|1D|1H,time_exit,deterministic,OHLC,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,893
+X073,exit,08,"Time, stalling and strategy expiry",Time stop near breakeven,BOTH,1W|1D|1H,time_exit,deterministic,OHLC|portfolio_state|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,905
+X074,exit,08,"Time, stalling and strategy expiry",Momentum stall,BOTH,1W|1D|1H,time_exit,deterministic,volume,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,917
+X075,exit,08,"Time, stalling and strategy expiry",Unfilled entry expiry,BOTH,1W|1D|1H,time_exit,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,929
+X076,exit,08,"Time, stalling and strategy expiry",Pullback continuation failure,BOTH,1W|1D|1H,time_exit,deterministic,OHLC|swing_pivots,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,941
+X077,exit,08,"Time, stalling and strategy expiry",Range reversion failure,BOTH,1W|1D|1H,time_exit,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,953
+X078,exit,08,"Time, stalling and strategy expiry",Trend-to-range transition,BOTH,1W|1D|1H,time_exit,deterministic,portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,965
+X079,exit,08,"Time, stalling and strategy expiry",No favorable extreme after peak,BOTH,1W|1D|1H,time_exit,deterministic,OHLC|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,977
+X080,exit,08,"Time, stalling and strategy expiry",Opportunity-cost rotation,BOTH,1W|1D|1H,time_exit,model_derived,portfolio_state|position_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,989
+X081,exit,09,"Events, gaps, liquidity and execution",Pre-event exposure rule,BOTH,1W|1D|1H,event_execution_exit,model_derived,OHLC|calendar_events|portfolio_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1003
+X082,exit,09,"Events, gaps, liquidity and execution",Post-event volatility reset,BOTH,1W|1D|1H,event_execution_exit,deterministic,ATR|support_resistance|calendar_events,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1015
+X083,exit,09,"Events, gaps, liquidity and execution",Adverse gap exit,BOTH,1W|1D|1H,event_execution_exit,model_derived,gap|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1027
+X084,exit,09,"Events, gaps, liquidity and execution",Favorable gap profit policy,BOTH,1W|1D|1H,event_execution_exit,deterministic,swing_pivots|gap|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1039
+X085,exit,09,"Events, gaps, liquidity and execution",Spread blowout response,BOTH,1W|1D|1H,event_execution_exit,deterministic,OHLC|spread_liquidity,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1051
+X086,exit,09,"Events, gaps, liquidity and execution",Liquidity collapse,BOTH,1W|1D|1H,event_execution_exit,deterministic,spread_liquidity|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1063
+X087,exit,09,"Events, gaps, liquidity and execution",Borrow recall/fee exit,BOTH,1W|1D|1H,event_execution_exit,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1075
+X088,exit,09,"Events, gaps, liquidity and execution",Corporate-action reconciliation,BOTH,1W|1D|1H,event_execution_exit,deterministic,calendar_events,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1087
+X089,exit,09,"Events, gaps, liquidity and execution",Halt/limit-state response,BOTH,1W|1D|1H,event_execution_exit,model_derived,gap|calendar_events|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1099
+X090,exit,09,"Events, gaps, liquidity and execution",Slippage breach,BOTH,1W|1D|1H,event_execution_exit,deterministic,spread_liquidity,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1111
+X091,exit,10,"Portfolio, capital and concentration controls",Portfolio open-risk cap,N/A,1W|1D|1H,portfolio_control,deterministic,OHLC|gap|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1125
+X092,exit,10,"Portfolio, capital and concentration controls",Correlated exposure reduction,N/A,1W|1D|1H,portfolio_control,deterministic,portfolio_state|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1137
+X093,exit,10,"Portfolio, capital and concentration controls",Daily loss kill-switch,N/A,1D,portfolio_control,deterministic,OHLC|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1149
+X094,exit,10,"Portfolio, capital and concentration controls",Weekly drawdown guard,N/A,1W,portfolio_control,deterministic,portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1161
+X095,exit,10,"Portfolio, capital and concentration controls",Strategy drawdown suspension,N/A,1W|1D|1H,portfolio_control,deterministic,portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1173
+X096,exit,10,"Portfolio, capital and concentration controls",Volatility bucket exposure limit,N/A,1W|1D|1H,portfolio_control,deterministic,OHLC|ATR|spread_liquidity|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1185
+X097,exit,10,"Portfolio, capital and concentration controls",Market shock de-risk,N/A,1W|1D|1H,portfolio_control,deterministic,support_resistance|portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1197
+X098,exit,10,"Portfolio, capital and concentration controls",FX/contract exposure control,N/A,1W|1D|1H,portfolio_control,deterministic,portfolio_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1209
+X099,exit,10,"Portfolio, capital and concentration controls",Margin liquidation buffer,N/A,1W|1D|1H,portfolio_control,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1221
+X100,exit,10,"Portfolio, capital and concentration controls",Capital-preservation override,N/A,1W|1D|1H,portfolio_control,model_derived,spread_liquidity|portfolio_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1233
+X101,exit,11,Position lifecycle and model governance,Partial-fill risk recalculation,N/A,1W|1D|1H,lifecycle_governance,deterministic,moving_average|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1247
+X102,exit,11,Position lifecycle and model governance,Reduce on confluence decay,N/A,1W|1D|1H,lifecycle_governance,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1259
+X103,exit,11,Position lifecycle and model governance,Timeframe downgrade,N/A,1W|1D|1H,lifecycle_governance,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1271
+X104,exit,11,Position lifecycle and model governance,Add-to-winner as separate trade,N/A,1W|1D|1H,lifecycle_governance,deterministic,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1283
+X105,exit,11,Position lifecycle and model governance,No averaging into loser,N/A,1W|1D|1H,lifecycle_governance,deterministic,portfolio_state|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1295
+X106,exit,11,Position lifecycle and model governance,Partial at ATR milestone,N/A,1W|1D|1H,lifecycle_governance,deterministic,ATR|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1307
+X107,exit,11,Position lifecycle and model governance,Protect peak favorable excursion,N/A,1W|1D|1H,lifecycle_governance,deterministic,position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1319
+X108,exit,11,Position lifecycle and model governance,Expected-edge exit,N/A,1W|1D|1H,lifecycle_governance,model_derived,OHLC|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1331
+X109,exit,11,Position lifecycle and model governance,OOD model fallback,N/A,1W|1D|1H,lifecycle_governance,model_derived,model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1343
+X110,exit,11,Position lifecycle and model governance,Trade lifecycle state machine,N/A,1W|1D|1H,lifecycle_governance,deterministic,OHLC|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1355
+X111,exit,12,Model-aware exit and review controls,Stop-first probability,BOTH,1W|1D|1H,model_aware_exit,model_derived,model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1369
+X112,exit,12,Model-aware exit and review controls,Conditional return quantiles,BOTH,1W|1D|1H,model_aware_exit,model_derived,OHLC|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1381
+X113,exit,12,Model-aware exit and review controls,Uncertainty de-risk,BOTH,1W|1D|1H,model_aware_exit,model_derived,OHLC|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1393
+X114,exit,12,Model-aware exit and review controls,Hard rule/model conflict,BOTH,1W|1D|1H,model_aware_exit,model_derived,model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1405
+X115,exit,12,Model-aware exit and review controls,Regime-specific exit routing,BOTH,1W|1D|1H,model_aware_exit,model_derived,support_resistance|position_state,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1417
+X116,exit,12,Model-aware exit and review controls,Calibration drift fallback,BOTH,1W|1D|1H,model_aware_exit,model_derived,model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1429
+X117,exit,12,Model-aware exit and review controls,Data anomaly kill-switch,BOTH,1W|1D|1H,model_aware_exit,model_derived,OHLC|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1441
+X118,exit,12,Model-aware exit and review controls,Model version lock,BOTH,1W|1D|1H,model_aware_exit,model_derived,OHLC|position_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1453
+X119,exit,12,Model-aware exit and review controls,Post-trade exit attribution,BOTH,1W|1D|1H,model_aware_exit,model_derived,swing_pivots|calendar_events|portfolio_state|model_output,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1465
+X120,exit,12,Model-aware exit and review controls,Rule retirement review,BOTH,1W|1D|1H,model_aware_exit,model_derived,,catalogued_only,,True,02_EXIT_RULEBOOK_120.md,1477

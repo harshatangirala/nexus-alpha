@@ -170,6 +170,37 @@ Up-vs-down AUROC by test year:
 | 2021.0 | 0.506 | 0.557 | 0.53 |
 | 2022.0 | 0.498 | 0.523 | 0.493 |
 
+## E04 economic backtest, test 2020-2022 (thresholds frozen on 2017-2018)
+
+| policy | trades | Sharpe | Sharpe 95% CI | CAGR | max DD | win rate | expectancy R | DSR |
+|---|---|---|---|---|---|---|---|---|
+| rule_only|5D|theta=0.1|base | 1075 | -0.96 | [-2.12, 0.02] | -0.078 | -0.322 | 0.447 | -0.066 | 0.000 |
+| rule_only|5D|theta=0.1|stressed | 1075 | -1.14 | [-2.29, -0.16] | -0.092 | -0.335 | 0.445 | -0.080 | 0.000 |
+| rule_only|5D|theta=0.1|severe | 1075 | -1.32 | [-2.47, -0.33] | -0.105 | -0.347 | 0.439 | -0.094 | 0.000 |
+| model_atr|5D|theta=0.05|base | 2463 | 0.29 | [-0.95, 1.84] | 0.037 | -0.386 | 0.494 | 0.007 | 0.016 |
+| model_atr|5D|theta=0.05|stressed | 2463 | 0.14 | [-1.08, 1.68] | 0.009 | -0.391 | 0.492 | -0.000 | 0.008 |
+| model_atr|5D|theta=0.05|severe | 2463 | 0.00 | [-1.21, 1.53] | -0.017 | -0.396 | 0.487 | -0.008 | 0.004 |
+| nexus|5D|theta=0.2|base | 2 | 0.31 | [-0.97, 1.45] | 0.001 | -0.006 | 0.500 | 0.480 | 0.012 |
+| nexus|5D|theta=0.2|stressed | 2 | 0.30 | [-0.98, 1.44] | 0.001 | -0.006 | 0.500 | 0.472 | 0.012 |
+| nexus|5D|theta=0.2|severe | 2 | 0.30 | [-0.98, 1.44] | 0.001 | -0.006 | 0.500 | 0.464 | 0.012 |
+| nexus_gated|5D|theta=0.1|base | 88 | 0.20 | [-1.06, 1.39] | 0.006 | -0.059 | 0.489 | -0.005 | 0.010 |
+| nexus_gated|5D|theta=0.1|stressed | 88 | 0.16 | [-1.11, 1.34] | 0.004 | -0.061 | 0.477 | -0.018 | 0.009 |
+| nexus_gated|5D|theta=0.1|severe | 88 | 0.12 | [-1.15, 1.30] | 0.003 | -0.062 | 0.477 | -0.031 | 0.007 |
+| rule_only|20D|theta=0.1|base | 686 | -0.98 | [-2.21, 0.18] | -0.105 | -0.386 | 0.378 | -0.093 | 0.000 |
+| rule_only|20D|theta=0.1|stressed | 686 | -1.06 | [-2.30, 0.10] | -0.113 | -0.400 | 0.378 | -0.105 | 0.000 |
+| rule_only|20D|theta=0.1|severe | 686 | -1.14 | [-2.39, 0.02] | -0.121 | -0.414 | 0.376 | -0.117 | 0.000 |
+| model_atr|20D|theta=0.05|base | 1173 | 0.04 | [-1.17, 1.27] | -0.017 | -0.398 | 0.450 | 0.003 | 0.005 |
+| model_atr|20D|theta=0.05|stressed | 1173 | -0.01 | [-1.22, 1.22] | -0.028 | -0.401 | 0.450 | -0.003 | 0.004 |
+| model_atr|20D|theta=0.05|severe | 1173 | -0.06 | [-1.27, 1.17] | -0.039 | -0.404 | 0.450 | -0.010 | 0.003 |
+| nexus|20D|theta=0.2|base | 64 | -0.15 | [-1.22, 0.68] | -0.006 | -0.058 | 0.359 | -0.080 | 0.002 |
+| nexus|20D|theta=0.2|stressed | 64 | -0.18 | [-1.25, 0.65] | -0.007 | -0.059 | 0.359 | -0.093 | 0.002 |
+| nexus|20D|theta=0.2|severe | 64 | -0.21 | [-1.27, 0.63] | -0.007 | -0.059 | 0.359 | -0.106 | 0.001 |
+| nexus_gated|20D|theta=0.1|base | 254 | -0.64 | [-1.50, 0.16] | -0.050 | -0.159 | 0.362 | -0.148 | 0.000 |
+| nexus_gated|20D|theta=0.1|stressed | 254 | -0.68 | [-1.54, 0.12] | -0.053 | -0.162 | 0.362 | -0.161 | 0.000 |
+| nexus_gated|20D|theta=0.1|severe | 254 | -0.73 | [-1.59, 0.07] | -0.056 | -0.167 | 0.362 | -0.174 | 0.000 |
+
+Equal-weight survivor benchmark, test: Sharpe 0.53, CAGR 0.118, max drawdown -0.409. PBO over 20 configurations: 0.127. Frozen thresholds: {'model_atr|5D': 0.05, 'nexus|5D': 0.2, 'model_atr|20D': 0.05, 'nexus|20D': 0.2}.
+
 ## RAG retrieval evaluation
 
 | index | recall@1 | recall@5 | recall@10 | precision@5 | mrr | ndcg@10 | page_citation_accuracy@1 | latency_ms_median | n |

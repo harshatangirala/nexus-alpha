@@ -1,0 +1,4 @@
+tests\test_splits_and_news.py ........                                   [ 88%]
+tests\test_trading.py ........                                           [100%]
+
+============================= 67 passed in 45.01s =============================

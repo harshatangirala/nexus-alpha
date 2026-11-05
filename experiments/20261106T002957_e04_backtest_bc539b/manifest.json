@@ -51,5 +51,8 @@
  },
  "inputs": {},
  "started_utc": "2026-11-05T19:00:14Z",
- "status": "RUNNING"
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T19:03:53Z",
+ "elapsed_s": 236.2,
+ "summary": "rule_only|5D Sharpe -0.96; model_atr|5D Sharpe 0.29; nexus|5D Sharpe 0.31; nexus_gated|5D Sharpe 0.20; rule_only|20D Sharpe -0.98; model_atr|20D Sharpe 0.04; nexus|20D Sharpe -0.15; nexus_gated|20D Sharpe -0.64; EW benchmark test Sharpe 0.53; PBO 0.12698412698412698"
 }

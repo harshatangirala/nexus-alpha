@@ -336,6 +336,17 @@ class NexusPredictor:
                                   calibrated=True, skill_validated=bool(f.direction_skill_validated), levels_available=True,
                                   weekly=weekly, setups=setups, trigger_by_side=trig, atr=float(ev.atr14),
                                   close=float(ev.close), risk=risk, data_gate_reasons=data_reasons)
+        if any(p.decision in ("LONG", "SHORT") for p in plans.values()):
+            bt = paths.REPO_ROOT / "reports" / "backtest" / "e04_backtest.json"
+            if bt.exists():
+                b = json.loads(bt.read_text(encoding="utf-8"))
+                g = {k.split("|")[1]: v["sharpe"] for k, v in b["test_final"].items()
+                     if k.startswith("nexus_gated") and k.endswith("|base")}
+                limitations.append("Backtest evidence (E04, 2020-2022, base costs): this gated policy had Sharpe "
+                                   + ", ".join(f"{h} {s:.2f}" for h, s in g.items())
+                                   + f" against {b['benchmark_ew_survivors']['test']['sharpe']:.2f} for equal-weight "
+                                   "buy-and-hold, with confidence intervals including zero. Treat any LONG/SHORT plan "
+                                   "as an unvalidated research candidate.")
         dq = "validated" if not missing and not data_reasons else ("insufficient" if data_reasons else "partial")
         res = InferenceResult(
             instrument=Instrument(symbol=ticker, forecast_timestamp=decision_utc.isoformat(), asof_session=str(asof_date.date()),

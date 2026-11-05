@@ -16,6 +16,8 @@ H = ["1D", "2D", "5D", "10D", "20D", "1M"]
 
 def latest(prefix):
     for r in sorted((ROOT / "experiments").glob(f"*_{prefix}_*"), reverse=True):
+        if not (r / "manifest.json").exists():
+            continue
         m = json.loads((r / "manifest.json").read_text(encoding="utf-8"))
         if m.get("status") == "COMPLETED" and (r / "metrics.json").exists():
             return r.name, json.loads((r / "metrics.json").read_text(encoding="utf-8"))
@@ -117,6 +119,61 @@ def main() -> int:
               f"Equal-weight survivor benchmark, test: Sharpe {f(b['benchmark_ew_survivors']['test']['sharpe'], 2)}, CAGR "
               f"{f(b['benchmark_ew_survivors']['test']['cagr'], 3)}, max drawdown {f(b['benchmark_ew_survivors']['test']['max_drawdown'], 3)}. "
               f"PBO over {b['pbo'].get('n_configs')} configurations: {f(b['pbo'].get('pbo'), 3)}. Frozen thresholds: {b['frozen_thresholds']}.", ""]
+    rid, m = latest("e06_optimization")
+    if m:
+        L += [f"## E06 fusion optimisation study (`{rid}`, post-registration, selection on validation)", "",
+              md_table(pd.DataFrame([{"run": n, "lr": v.get("lr"), "d_model": v.get("d_model"), "dropout": v.get("dropout"),
+                                      "wd": v.get("weight_decay"), "seed": v.get("seed"), "epochs": v.get("epochs"),
+                                      "best epoch": v.get("best_epoch"), "valid": f(v["valid"], 5), "test": f(v["test"], 5)}
+                                     for n, v in m.items() if isinstance(v, dict) and "history" in v])), "",
+              f"Seed ensembles: fusion valid {f(m['best_seed_ensemble']['valid'], 5)} / test {f(m['best_seed_ensemble']['test'], 5)}; "
+              f"numbers-only valid {f(m['num_seed_ensemble']['valid'], 5)} / test {f(m['num_seed_ensemble']['test'], 5)}. "
+              f"Seed spread (best config): valid {f(m['seed_spread']['valid_mean'], 5)} ± {f(m['seed_spread']['valid_sd'], 5)}, "
+              f"test {f(m['seed_spread']['test_mean'], 5)} ± {f(m['seed_spread']['test_sd'], 5)}. Landscape: centre "
+              f"{f(m['landscape']['center_valid_ce'], 5)}, lowest grid point {f(m['landscape']['min_on_grid'], 5)} at "
+              f"{m['landscape']['argmin_on_grid']}.", ""]
+    rid, m = latest("e07_lgbm_tuning")
+    if m:
+        L += [f"## E07 LightGBM tuning (`{rid}`)", "", f"Best of {m['n_trials']} TPE trials: {m['best_params']}; mean validation log loss "
+              f"(1D/5D/20D) {f(m['best_value'], 5)} vs default {f(m['default_value'], 5)}.", "",
+              md_table(pd.DataFrame([{"horizon": h, "best iteration": m["curves"][h]["best_iteration_inner"],
+                                      "tuned valid": f(m["scores"]["tuned"][h]["valid"], 5), "tuned test": f(m["scores"]["tuned"][h]["test"], 5),
+                                      "refit test": f(m["scores"]["refit"][h]["test"], 5)} for h in H])), ""]
+    p9 = ROOT / "reports" / "e09_convexity_certificate.json"
+    if p9.exists():
+        c = json.loads(p9.read_text(encoding="utf-8"))
+        L += ["## E09 convexity certificate (multinomial logistic, numeric features)", "",
+              md_table(pd.DataFrame([{"horizon": h, "certified": v["certified_global_minimum"], "objective spread": f"{v['objective_range']:.1e}",
+                                      "param spread": f"{v['max_param_distance_between_starts']:.1e}", "grad norm": f"{v['gradient_norm_at_solution']:.1e}",
+                                      "Hessian min eig": f"{v['hessian_min_eigenvalue']:.1e}", "valid log loss": f(v["valid_log_loss"], 5)}
+                                     for h, v in c.items()])), ""]
+    rid, m = latest("e08_final_model")
+    if m:
+        L += [f"## E08 final model (`{rid}`)", "", f"Selected on validation among {m['n_candidates']} candidates: **{m['selected']}**. "
+              f"Calibration on the test years (mean log loss): {m['calibration_compare_test']}.", "",
+              md_table(pd.DataFrame([{"horizon": h, "log loss": f(r["log_loss"]), "gain vs prior [95% CI]":
+                                      f"{r['gain_vs_prior']['estimate']:+.4f} [{r['gain_vs_prior']['ci95'][0]:+.4f}, {r['gain_vs_prior']['ci95'][1]:+.4f}]",
+                                      "gain vs E03": f"{r['gain_vs_e03']['estimate']:+.4f} [{r['gain_vs_e03']['ci95'][0]:+.4f}, {r['gain_vs_e03']['ci95'][1]:+.4f}]",
+                                      "AUROC up/down [95% CI]": f"{r['auroc_up_down_ci']['estimate']:.3f} [{r['auroc_up_down_ci']['ci95'][0]:.3f}, {r['auroc_up_down_ci']['ci95'][1]:.3f}]",
+                                      "AUROC sideways": f(r.get("auroc_SIDEWAYS"), 3), "ECE": f(r["ece_top"], 3), "accuracy": f(r["accuracy"], 3),
+                                      "balanced acc.": f(r["balanced_accuracy"], 3), "macro-F1": f(r["macro_f1"], 3)}
+                                     for h, r in m["final"]["by_horizon"].items()])), ""]
+    bt = ROOT / "reports" / "backtest" / "e04_backtest_v1.1.json"
+    if bt.exists():
+        b = json.loads(bt.read_text(encoding="utf-8"))
+        L += ["## E04 v1.1 backtest (audit fixes A-01, A-02, A-04, A-06; final model), test 2020-2022", "",
+              md_table(pd.DataFrame([{"policy": k, "trades": v.get("trades", 0), "Sharpe": f(v["sharpe"], 2),
+                                      "Sharpe 95% CI": "[" + ", ".join(f(x, 2) for x in v["sharpe_ci95_month_blocks"]) + "]",
+                                      "CAGR": f(v["cagr"], 3), "max DD": f(v["max_drawdown"], 3), "expectancy R": f(v.get("expectancy_R"), 3),
+                                      "DSR": f((v.get("deflated_sharpe") or {}).get("dsr"), 3)} for k, v in b["test_final"].items() if k.endswith("|base")])), "",
+              f"Benchmark Sharpe {f(b['benchmark_ew_survivors']['test']['sharpe'], 2)}; PBO {f(b['pbo'].get('pbo'), 3)}; frozen thresholds {b['frozen_thresholds']}.", ""]
+    rid10, m10 = latest("e10_controls")
+    if m10:
+        rows10 = [{"horizon": h, "control": k, "valid_LL_minus_prior": v["valid"]["log_loss"] - v["valid"]["prior_log_loss"],
+                   "test_LL_minus_prior": v["test"]["log_loss"] - v["test"]["prior_log_loss"], "trees": v["test"]["best_iteration"]}
+                  for h, d in m10.items() for k, v in d.items()]
+        L += ["## E10 controls (placebo and planted-leak canary; log loss minus class prior, negative = better)", "",
+              md_table(pd.DataFrame(rows10).round(4)), ""]
     rag = ROOT / "reports" / "rag" / "rag_eval.json"
     if rag.exists():
         e = json.loads(rag.read_text(encoding="utf-8"))

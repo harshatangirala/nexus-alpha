@@ -1,0 +1,71 @@
+{
+ "1D": {
+  "objective_per_start": [
+   1.0355384664950407,
+   1.035538466495022,
+   1.0355384664950236,
+   1.0355384664950231,
+   1.0355384664950227
+  ],
+  "objective_range": 1.865174681370263e-14,
+  "max_param_distance_between_starts": 2.621694151327958e-06,
+  "gradient_norm_at_solution": 3.243539315650686e-08,
+  "hessian_min_eigenvalue": 0.001000000000000182,
+  "hessian_max_eigenvalue": 7.152472984968307,
+  "certified_global_minimum": true,
+  "valid_log_loss": 1.0338244530095981,
+  "converged_flags": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "5D": {
+  "objective_per_start": [
+   1.0629320401405626,
+   1.062932040140555,
+   1.06293204014056,
+   1.0629320401405684,
+   1.0629320401405717
+  ],
+  "objective_range": 1.6653345369377348e-14,
+  "max_param_distance_between_starts": 2.9216230910539265e-06,
+  "gradient_norm_at_solution": 5.465736562183549e-08,
+  "hessian_min_eigenvalue": 0.0009999999999998985,
+  "hessian_max_eigenvalue": 7.4855969022106645,
+  "certified_global_minimum": true,
+  "valid_log_loss": 1.0620301818369888,
+  "converged_flags": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "20D": {
+  "objective_per_start": [
+   1.0613904891047536,
+   1.061390489104764,
+   1.0613904891047647,
+   1.0613904891047532,
+   1.061390489104762
+  ],
+  "objective_range": 1.1546319456101628e-14,
+  "max_param_distance_between_starts": 4.15778118978416e-06,
+  "gradient_norm_at_solution": 6.726405962616862e-08,
+  "hessian_min_eigenvalue": 0.0010000000000000735,
+  "hessian_max_eigenvalue": 7.603092420709059,
+  "certified_global_minimum": true,
+  "valid_log_loss": 1.0698831667502389,
+  "converged_flags": [
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ }
+}

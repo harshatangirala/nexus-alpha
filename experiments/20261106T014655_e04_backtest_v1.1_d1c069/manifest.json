@@ -1,0 +1,93 @@
+{
+ "run_id": "20261106T014655_e04_backtest_v1.1_d1c069",
+ "name": "e04_backtest_v1.1",
+ "profile": "local-cpu",
+ "config": {
+  "e03_run": "20261106T000935_e03_fusion_8ddffb",
+  "probs": "artifacts/predictions/20261106T013154_e08_final_model_8bbb54/final_for_backtest__probs.npy",
+  "min_trades": 30,
+  "thetas": [
+   0.05,
+   0.1,
+   0.15,
+   0.2
+  ],
+  "horizons": [
+   "5D",
+   "20D"
+  ],
+  "risk": {
+   "account_capital": 100000.0,
+   "risk_pct_per_trade": 0.005,
+   "max_position_pct": 0.1,
+   "max_portfolio_gross_pct": 1.0,
+   "max_daily_loss_pct": 0.02,
+   "allow_short": true,
+   "min_edge": 0.1,
+   "min_net_rr": 1.5,
+   "cost_scenario": "base"
+  },
+  "policies": [
+   "rule_only",
+   "model_atr",
+   "nexus",
+   "nexus_gated"
+  ]
+ },
+ "config_hash": "d1c069641df16936",
+ "git_commit": "a921af36f21016dcd432ff871412003d427daeca",
+ "git_dirty": true,
+ "git_dirty_files": [
+  "M app/streamlit_app.py",
+  " M docs/EXPERIMENT_LOG.md",
+  " M scripts/experiments/e04_backtest.py",
+  " M scripts/report/make_results.py",
+  " M src/nexus_alpha/experiments.py",
+  " M src/nexus_alpha/inference/pipeline.py",
+  " M src/nexus_alpha/multimodal/dataset.py",
+  " M src/nexus_alpha/multimodal/trainer.py",
+  " M src/nexus_alpha/rules/detectors.py",
+  " M src/nexus_alpha/trading/backtest.py",
+  " M tests/test_app.py",
+  " M tests/test_fusion_and_calibration.py",
+  " M tests/test_trading.py",
+  "?? docs/CHIEF_AUDIT_REPORT.md",
+  "?? experiments/20261106T004933_e07_lgbm_tuning_e2dc27/",
+  "?? experiments/20261106T005012_e06_optimization_fa42d8/",
+  "?? experiments/20261106T005640_e09_convexity_certificate_0b9e66/",
+  "?? experiments/20261106T013106_e10_controls_a06c4c/",
+  "?? experiments/20261106T013154_e08_final_model_8bbb54/",
+  "?? experiments/20261106T013548_e10_controls_a06c4c/",
+  "?? reports/e07_optuna_trials.csv",
+  "?? reports/e09_convexity_certificate.json",
+  "?? reports/figures/",
+  "?? scripts/data/add_nvalid.py",
+  "?? scripts/experiments/e06_optimization.py",
+  "?? scripts/experiments/e07_lgbm_tuning.py",
+  "?? scripts/experiments/e08_final_model.py",
+  "?? scripts/experiments/e09_convexity_certificate.py",
+  "?? scripts/experiments/e10_controls.py",
+  "?? scripts/report/audit_report.py"
+ ],
+ "git_diff_sha256": "e13e4e10a001099bdb6d2e9632511e81e816b5a13a950fbbc6e7746f805503ac",
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {},
+ "started_utc": "2026-11-05T20:17:08Z",
+ "status": "FAILED",
+ "finished_utc": "2026-11-05T20:20:40Z",
+ "elapsed_s": 225.4,
+ "summary": "AttributeError: 'str' object has no attribute 'tag'"
+}

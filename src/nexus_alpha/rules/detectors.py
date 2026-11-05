@@ -31,6 +31,7 @@ MIN_ADV_USD = 1_000_000         # E006 liquidity gate (same threshold as TriFram
 MIN_PRICE = 5.0
 REL_VOL_EXPANSION = 1.2         # E101
 CHASE_ATR = 1.0                 # E111/E128 maximum distance from trigger level in daily ATR
+MIN_OBSTACLE_ATR = 0.5          # X021 'material' obstacle: at least 0.5 ATR beyond the reference
 
 
 @dataclass
@@ -198,20 +199,24 @@ def daily_setups(d: pd.DataFrame, k: int, weekly: dict, x_all: pd.DataFrame | No
     ll = pd.Series(l)
     prior20_high = hh.iloc[-21:-1].max()
     prior20_low = ll.iloc[-21:-1].min()
-    hi252, lo252 = hh.iloc[-252:].max(), ll.iloc[-252:].min()
+    hi252, lo252 = hh.iloc[-253:-1].max(), ll.iloc[-253:-1].min()      # prior bars only (audit fix A-01)
     close, rng_ = c[-1], h[-1] - l[-1]
     cl_loc = (close - l[-1]) / rng_ if rng_ > 0 else 0.5
     perm = weekly.get("permission", "NONE")
+    atr_now = x.atr14.iloc[-1]
+    measured = float(prior20_high - prior20_low)                        # X024 measured-move height
 
     def obstacle_above(level):
-        cands = [p for p in (piv.sh_last.iloc[-1], piv.sh_prev.iloc[-1]) if np.isfinite(p) and p > level]
-        cands += [hi252] if hi252 > level else []
-        return float(min(cands)) if cands else None
+        """Nearest MATERIAL opposing level above (X021): a confirmed swing high or the prior 252-bar high at least
+        0.5 ATR above `level`; with none (e.g. a breakout to new highs) a measured move of the prior 20-bar range."""
+        cands = [p for p in (piv.sh_last.iloc[-1], piv.sh_prev.iloc[-1], hi252)
+                 if np.isfinite(p) and p >= level + MIN_OBSTACLE_ATR * atr_now]
+        return float(min(cands)) if cands else float(level + max(measured, MIN_OBSTACLE_ATR * atr_now))
 
     def obstacle_below(level):
-        cands = [p for p in (piv.sl_last.iloc[-1], piv.sl_prev.iloc[-1]) if np.isfinite(p) and p < level]
-        cands += [lo252] if lo252 < level else []
-        return float(max(cands)) if cands else None
+        cands = [p for p in (piv.sl_last.iloc[-1], piv.sl_prev.iloc[-1], lo252)
+                 if np.isfinite(p) and p <= level - MIN_OBSTACLE_ATR * atr_now]
+        return float(max(cands)) if cands else float(max(level - max(measured, MIN_OBSTACLE_ATR * atr_now), 0.01))
 
     out = []
     touched20_long = (np.abs(l[-5:] - x.sma20.to_numpy()[-5:]) <= 0.5 * atr).any()

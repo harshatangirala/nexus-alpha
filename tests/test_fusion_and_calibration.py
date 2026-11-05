@@ -97,3 +97,24 @@ def test_classification_report_on_known_case():
     assert r["log_loss"] == pytest.approx(-np.mean(np.log([0.8, 0.8, 0.8, 0.2])))
     with pytest.raises(ValueError):
         check_probs(np.array([[0.5, 0.5, 0.5]]))
+
+
+def _toy_data(n=600, seed=0):
+    from nexus_alpha.multimodal.trainer import ModalityData
+    rng = np.random.default_rng(seed)
+    x = {k: rng.normal(size=(n, d)).astype(np.float32) for k, d in DIMS.items()}
+    y = rng.integers(0, 3, (n, 6)).astype(np.int64)
+    z = rng.normal(size=(n, 6)).astype(np.float32)
+    return ModalityData(x, np.ones((n, len(DIMS)), np.float32), y, z, list(DIMS))
+
+
+def test_trainer_records_curves_and_keeps_last_epoch_when_asked(tmp_path):
+    from nexus_alpha.multimodal.trainer import train
+    d = _toy_data()
+    cfg = FusionConfig(modality_dims=DIMS, variant="concat", d_model=8, hidden=16)
+    m, hist = train(cfg, d.subset(np.arange(400)), d.subset(np.arange(400, 500)), tmp_path / "a", epochs=3, batch=128,
+                    log=lambda s: None, monitor={"valid": d.subset(np.arange(500, 600))}, schedule="cosine")
+    assert len(hist) >= 1 and {"train_ce_eval", "inner_ce", "valid_ce", "lr_end"} <= set(hist[0])
+    m2, h2 = train(cfg, d.subset(np.arange(400)), d.subset(np.arange(400, 500)), tmp_path / "b", epochs=3, batch=128,
+                   log=lambda s: None, patience=10 ** 6, restore_best=False)
+    assert len(h2) == 3                                    # fixed-length run: every epoch trained, last one kept

@@ -92,3 +92,25 @@ def test_chase_gap_cancels_and_costs_apply():
     rs = simulate(Order("s", "T", 0, -1, 103, 90, 2), d2, CostModel())
     assert rs["net_return"] == pytest.approx(-0.001 - 0.005 * 2 / 252)
     assert sum(x for _, x in r["daily"]) == pytest.approx(r["net_return"], abs=1e-9)
+
+
+def test_daily_pnl_sums_to_trade_return_on_a_moving_path():
+    d = _path([(100, 101, 99, 100), (100, 104, 99.5, 103), (103, 106, 102, 105), (105, 107, 101, 102), (102, 103, 101, 102)])
+    for side, stop, tgt in ((+1, 90.0, 130.0), (-1, 110.0, 80.0)):
+        r = simulate(Order("s", "T", 0, side, stop, tgt, 4), d, CostModel())
+        assert r["exit_reason"] == "time"
+        assert sum(x for _, x in r["daily"]) == pytest.approx(r["net_return"], abs=1e-12)
+
+
+def test_portfolio_kill_switch_and_gross_cap():
+    from nexus_alpha.trading.backtest import portfolio
+    days = pd.bdate_range("2021-01-04", periods=6)
+    def trade(sid, d0, path, risk=0.05):
+        return {"sample_id": sid, "fill_status": "FILLED", "entry_date": d0, "risk_fraction": risk,
+                "daily": [(days[i], r) for i, r in path]}
+    t = pd.DataFrame([trade("a", days[0], [(0, -0.30), (1, 0.0)], risk=0.05),      # weight 0.1 -> -3% day 0
+                      trade("b", days[1], [(1, 0.01)]),                               # blocked by kill-switch
+                      trade("c", days[2], [(2, 0.01)])])                              # allowed
+    ret, kept = portfolio(t, days, risk_pct=0.005, max_position_pct=0.10, max_daily_loss=0.02)
+    assert ret[days[0]] == pytest.approx(-0.03) and set(kept.sample_id) == {"a", "c"}
+    assert int(kept.blocked_by_daily_loss.iloc[0]) == 1

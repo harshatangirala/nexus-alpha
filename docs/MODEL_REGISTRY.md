@@ -36,6 +36,10 @@ Preprocessing for all: binary r1 chart (128 × 3·bars) repeated to 3 channels, 
 | Logistic on chart PCA features (per view and tri-frame) | E02 | E02 |
 | LightGBM on numbers + chart PCA | E02 | E02 |
 | Fusion: late, concat, attention, gated, hybrid | E03 (selection by validation) | `docs/EXPERIMENT_LOG.md` |
-| Selected fusion model + per-horizon calibrators | exported as the inference bundle `artifacts/bundles/<E03 run id>` | E03 |
+| Selected fusion model + per-horizon calibrators | v1 inference bundle `artifacts/bundles/20261106T000935_e03_fusion_8ddffb` (superseded, kept) | E03 |
+| Fusion, gated, E06 settings (lr 3e-4, cosine, dropout 0.3), 5 seeds | **included** in the v1.1 blend (weight 0.6) | E06, E08 |
+| Multinomial logistic on numeric features (L2 1e-3) | **included** in the v1.1 blend (weight 0.3); certified global minimum | E09, E08 |
+| LightGBM per horizon, E07 tuned parameters | **included** in the v1.1 blend (weight 0.1) | E07, E08 |
+| **Deployed: blend v1.1, refit 2003-2018, temperature at 10D/20D/1M** | inference bundle `artifacts/bundles/20261106T020411_e08_final_model_5c4327` (first build `20261106T013154_e08_final_model_8bbb54` superseded by the A-21 rebuild) | E08; `docs/MODEL_CARD.md` |
 
 Checkpoints and bundles are never committed (data licences). Provenance: `model_registry/checkpoint_inventory.json`, `model_registry/triframe_backbones_s500.json`, `artifacts/cv_embeddings/s500/manifest.json` (source revision and sha256 of every array).

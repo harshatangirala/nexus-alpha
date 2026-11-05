@@ -28,13 +28,22 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | 9 | Streamlit app on the real bundle | done | `app/streamlit_app.py`, `tests/test_app.py` |
 | 9 | Colab orchestrator, pinned requirements, run profiles | done | `notebooks/`, `scripts/run_pipeline.py`, `requirements-colab.txt` |
 | 9 | Colab execution | not run | no GPU session in this work |
+| A | Chief audit: 17 findings, 4 High/Medium bugs fixed with regression tests | done | `docs/CHIEF_AUDIT_REPORT.md` |
+| A | Fusion optimisation (LR sweep, cosine, 5 seeds, landscape) | done | E06 |
+| A | LightGBM TPE tuning with per-iteration and learning curves | done | E07 |
+| A | Convexity certificate for the logistic head | passed | E09, `reports/e09_convexity_certificate.json` |
+| A | Final model: blend, calibration comparison, refit, bundle v1.1 | done | E08, `docs/MODEL_CARD.md` |
+| A | Placebo and planted-leak controls | passed | E10 |
+| A | Backtest v1.1 on the fixed engine | done | `reports/backtest/e04_backtest_v1.1.json` |
+| A | Quantile coverage of the deployed bundle; return ranges in the app | passed | `scripts/verify/quantile_coverage.py` |
+| A | Visual audit report (loss and validation curves, ROC/PR, reliability, confusion, by-year, landscape, equity) | done | `reports/NEXUS_Audit_Report.html`, app tab "L Audit" |
 | 10 | Automated tests | see `reports/test_run.txt` | |
 | 10 | Model card, limitations, results report | done | `docs/MODEL_CARD.md`, `docs/LIMITATIONS.md`, `reports/RESULTS.md` |
-| — | GitHub repository | not created | outward-facing: waits for the owner's approval |
+| — | GitHub repository | done, **private** | `harshatangirala/nexus-alpha`; making it public is the owner's decision |
 
 ## Next steps, in order
 
 1. Owner review of results and of what to freeze; then (optionally) the single sealed evaluation, reported as semi-confirmatory.
 2. GPU profile: transformer text encoders (FinBERT/BGE/ChronoBERT) as a pre-registered comparison against the classical features; native-resolution chart embeddings.
 3. Forward shadow test: score each session from the freeze date and log forecasts, the only clean test of direction.
-4. Five seeds for the selected fusion model; surface calibrated quantile outputs as expected-return ranges.
+4. Pre-register for the next study: an economic direction gate, rolling recalibration (or none), and the v1.1 blend as the frozen model.

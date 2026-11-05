@@ -86,14 +86,23 @@ def run_config(orders, daily, block, cost):
 
 
 def main() -> int:
-    e03 = sys.argv[1]
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("e03")
+    ap.add_argument("--probs", default=None, help="npy (N,6,3) aligned with the E03 rows; default: E03 selected calibrated")
+    ap.add_argument("--tag", default="v1")
+    ap.add_argument("--min-trades", type=int, default=0, help="v1.1 (audit A-06): a threshold is eligible only with >= this many validation trades")
+    ap.add_argument("--bundle", default=None, help="bundle whose direction-skill flags drive the gated policy; must be the model "
+                    "that produced --probs (audit: v1.1 used E03's flags, which agree with E08's at 5D and 20D)")
+    a = ap.parse_args()
+    e03 = a.e03
     pdir = paths.ARTIFACTS / "predictions" / e03
     rows = pd.read_parquet(pdir / "rows.parquet")
-    probs = np.load(pdir / "selected_calibrated__probs.npy")
-    meta = json.loads((paths.ARTIFACTS / "bundles" / e03 / "bundle_meta.json").read_text(encoding="utf-8"))
+    probs = np.load(a.probs) if a.probs else np.load(pdir / "selected_calibrated__probs.npy")
+    meta = json.loads((paths.ARTIFACTS / "bundles" / (a.bundle or e03) / "bundle_meta.json").read_text(encoding="utf-8"))
     skill = meta["direction_skill"]
     ev_all = pd.read_parquet(paths.ARTIFACTS / "features" / "rule_events.parquet")
-    run = Run("e04_backtest", {"e03_run": e03, "thetas": THETAS, "horizons": HZ, "risk": RiskConfig().__dict__,
+    run = Run("e04_backtest_" + a.tag, {"e03_run": e03, "probs": a.probs, "skill_bundle": a.bundle or e03, "min_trades": a.min_trades, "thetas": THETAS, "horizons": HZ, "risk": RiskConfig().__dict__,
                                "policies": ["rule_only", "model_atr", "nexus", "nexus_gated"]})
     daily = {}
     res, daily_rets = {}, {}
@@ -122,7 +131,10 @@ def main() -> int:
         frozen = {}
         for h in HZ:
             for pol in ("model_atr", "nexus"):
-                cands = {th: res["valid"][f"{pol}|{h}|{th}"]["sharpe"] for th in THETAS}
+                cands = {th: res["valid"][f"{pol}|{h}|{th}"]["sharpe"] for th in THETAS
+                         if res["valid"][f"{pol}|{h}|{th}"].get("trades", 0) >= a.min_trades}
+                if not cands:                                    # nothing eligible: the most active threshold
+                    cands = {max(THETAS, key=lambda th: res["valid"][f"{pol}|{h}|{th}"].get("trades", 0)): 0.0}
                 cands = {k: (v if v == v else -99) for k, v in cands.items()}
                 frozen[f"{pol}|{h}"] = max(cands, key=cands.get)
         # test with frozen thresholds, cost scenarios
@@ -130,6 +142,7 @@ def main() -> int:
         m = (rows.block == "test").to_numpy()
         r = rows[m].reset_index(drop=True)
         ev = r[["sample_id"]].merge(ev_all, on="sample_id", how="left")
+        daily_final = {}
         all_sr = [v["sharpe"] for v in res["valid"].values() if v["sharpe"] == v["sharpe"]]
         n_trials = len(res["valid"])
         sr_var = float(np.var(np.array(all_sr) / np.sqrt(252), ddof=1)) if len(all_sr) > 2 else 0.0
@@ -140,19 +153,27 @@ def main() -> int:
                     ret, tr, kept = run_config(orders_for(ev, probs[m], pol, h, th, skill), daily, "test", CostModel.from_scenario(sc))
                     perf = performance(ret, kept if len(kept) else None, n_trials=n_trials, trial_sr_var=sr_var)
                     final[f"{pol}|{h}|theta={th}|{sc}"] = perf
+                    if sc == "base":
+                        daily_final[f"{pol}|{h}"] = ret
         s = sessions()
         mk = market_context()
         bench = {}
-        for block, (a, b) in BLOCK_DATES.items():
-            cal = s[(s >= pd.Timestamp(a)) & (s <= pd.Timestamp(b))]
+        for block, (d0, d1) in BLOCK_DATES.items():          # (not 'a': that name holds the parsed arguments)
+            cal = s[(s >= pd.Timestamp(d0)) & (s <= pd.Timestamp(d1))]
             bench[block] = performance(mk.mkt_ret1.reindex(cal).fillna(0.0))
+        cal_t = s[(s >= pd.Timestamp(BLOCK_DATES["test"][0])) & (s <= pd.Timestamp(BLOCK_DATES["test"][1]))]
+        dfr = pd.DataFrame(daily_final)
+        dfr["benchmark_ew_survivors"] = mk.mkt_ret1.reindex(cal_t).fillna(0.0).values
+        rep0 = paths.REPO_ROOT / "reports" / "backtest"
+        rep0.mkdir(parents=True, exist_ok=True)
+        dfr.to_csv(rep0 / f"e04_daily_returns_{a.tag}.csv", index_label="date")
         perf_mat = pd.concat({k: pd.concat(v) for k, v in daily_rets.items()}, axis=1).fillna(0.0)
         pbo = pbo_cscv(perf_mat.to_numpy(), n_splits=10)
         out = {"by_block": res, "frozen_thresholds": frozen, "test_final": final, "benchmark_ew_survivors": bench,
                "pbo": pbo, "n_trials_valid": n_trials, "direction_skill_used_by_gated_policy": skill}
         rep = paths.REPO_ROOT / "reports" / "backtest"
         rep.mkdir(parents=True, exist_ok=True)
-        (rep / "e04_backtest.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
+        (rep / ("e04_backtest.json" if a.tag == "v1" else f"e04_backtest_{a.tag}.json")).write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
         summ = "; ".join(f"{k.split('|theta')[0]} Sharpe {v['sharpe']:.2f}" for k, v in final.items() if k.endswith("|base"))
         summ += f"; EW benchmark test Sharpe {bench['test']['sharpe']:.2f}; PBO {pbo.get('pbo')}"
         run.finish("COMPLETED", summ, out)

@@ -1,0 +1,53 @@
+{
+ "run_id": "20261106T005640_e09_convexity_certificate_0b9e66",
+ "name": "e09_convexity_certificate",
+ "profile": "local-cpu",
+ "config": {
+  "lambda": 0.001,
+  "starts": 5,
+  "rows": "60,000 training rows (seeded)"
+ },
+ "config_hash": "0b9e66c505628215",
+ "git_commit": "a921af36f21016dcd432ff871412003d427daeca",
+ "git_dirty": true,
+ "git_dirty_files": [
+  "M scripts/experiments/e04_backtest.py",
+  " M src/nexus_alpha/experiments.py",
+  " M src/nexus_alpha/inference/pipeline.py",
+  " M src/nexus_alpha/multimodal/dataset.py",
+  " M src/nexus_alpha/multimodal/trainer.py",
+  " M src/nexus_alpha/rules/detectors.py",
+  " M src/nexus_alpha/trading/backtest.py",
+  " M tests/test_fusion_and_calibration.py",
+  " M tests/test_trading.py",
+  "?? experiments/20261106T004933_e07_lgbm_tuning_e2dc27/",
+  "?? experiments/20261106T005012_e06_optimization_fa42d8/",
+  "?? scripts/data/add_nvalid.py",
+  "?? scripts/experiments/e06_optimization.py",
+  "?? scripts/experiments/e07_lgbm_tuning.py",
+  "?? scripts/experiments/e08_final_model.py",
+  "?? scripts/experiments/e09_convexity_certificate.py",
+  "?? scripts/report/audit_report.py"
+ ],
+ "git_diff_sha256": "76d724c1c654058caa03b8d1529bdfcf0388393e6dcb4cc1c20674c82fa0d779",
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {},
+ "started_utc": "2026-11-05T19:26:58Z",
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T19:30:56Z",
+ "elapsed_s": 255.1,
+ "summary": "1D: certified True, |grad| 3.2e-08, min eig 1.00e-03, spread 1.9e-14; 5D: certified True, |grad| 5.5e-08, min eig 1.00e-03, spread 1.7e-14; 20D: certified True, |grad| 6.7e-08, min eig 1.00e-03, spread 1.2e-14"
+}

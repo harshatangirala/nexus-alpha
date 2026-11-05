@@ -71,7 +71,10 @@ class Run:
         self.t0 = time.time()
         self.manifest = {"run_id": self.run_id, "name": name, "profile": profile, "config": config,
                          "config_hash": self.cfg_hash, "git_commit": _git("rev-parse", "HEAD"),
-                         "git_dirty": bool(_git("status", "--porcelain")), "environment": environment(),
+                         "git_dirty": bool(_git("status", "--porcelain")),
+                         "git_dirty_files": _git("status", "--porcelain").splitlines()[:200],
+                         "git_diff_sha256": hashlib.sha256(_git("diff", "HEAD").encode()).hexdigest(),
+                         "environment": environment(),
                          "inputs": {k: {"path": str(v), "digest": file_digest(v)} for k, v in (inputs or {}).items()},
                          "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "RUNNING"}
         self._write()

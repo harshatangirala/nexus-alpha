@@ -26,7 +26,7 @@ from ..cv import render as R
 from ..data import bars as B
 from ..data.calendar import calendar, decision_time_utc, offset_session
 from ..indicators import triframe_visible as FV
-from ..indicators.core import indicators, structured_features
+from ..indicators.core import ewma_sigma, indicators, structured_features
 from ..multimodal.fusion import FusionConfig, FusionModel
 from ..rules import batch as RB
 from ..seal import SEAL_DATE
@@ -44,21 +44,41 @@ def latest_bundle() -> Path | None:
 
 
 class Bundle:
+    """Loads an inference bundle. v1 bundles hold one fusion model; v1.1 bundles (E08) may hold several fusion seeds
+    (averaged), one LightGBM per horizon on the raw numeric features, and a blend weight; calibration is applied last."""
+
     def __init__(self, path: Path):
         import torch
         self.path = Path(path)
         self.meta = json.loads((self.path / "bundle_meta.json").read_text(encoding="utf-8"))
-        st = torch.load(self.path / "fusion.pt", map_location="cpu", weights_only=False)
-        self.cfg = FusionConfig(**st["cfg"])
-        self.model = FusionModel(self.cfg).eval()
-        self.model.load_state_dict(st["model"])
+        comp = self.meta.get("components") or {}
+        self.w_lgbm = float(comp.get("lgbm_weight", 0.0))
+        self.w_log = float(comp.get("logistic_weight", 0.0))
+        self.w_fus = float(comp.get("fusion_weight", 1.0 - self.w_lgbm - self.w_log))
+        self.logistic = None
+        if comp.get("logistic"):
+            with open(self.path / comp["logistic"]["file"], "rb") as f:
+                self.logistic = pickle.load(f)
+        self.models = []
+        seeds = comp.get("fusion_seeds") or ([{"file": "fusion.pt"}] if (self.path / "fusion.pt").exists() else [])
+        for sd in seeds:
+            st = torch.load(self.path / sd["file"], map_location="cpu", weights_only=False)
+            m = FusionModel(FusionConfig(**st["cfg"])).eval()
+            m.load_state_dict(st["model"])
+            self.models.append(m)
+        self.cfg = self.models[0].cfg if self.models else None
+        self.lgbm = {}
+        if comp.get("lgbm"):
+            import lightgbm as lgb
+            self.lgbm = {h: lgb.Booster(model_file=str(self.path / v["file"])) for h, v in comp["lgbm"].items()}
         with open(self.path / "preprocessor.pkl", "rb") as f:
             self.pre = pickle.load(f)
         with open(self.path / "calibrators.pkl", "rb") as f:
             self.calibrators = pickle.load(f)
         self.news_tf = self._opt("news_tfidf_svd.pkl")
         self.sec_tf = self._opt("sec_tfidf_svd.pkl")
-        self.names = list(self.cfg.modality_dims)
+        self.names = list(self.cfg.modality_dims) if (self.cfg and self.w_fus > 0) else ["num"]
+        self.raw_num = None                              # set by the pipeline for the LightGBM component
 
     def _opt(self, fn):
         p = self.path / fn
@@ -69,12 +89,32 @@ class Bundle:
 
     def probs(self, x: dict, mask: np.ndarray, calibrated: bool = True) -> np.ndarray:
         import torch
-        with torch.no_grad():
-            lg, q, _ = self.model({k: torch.from_numpy(v) for k, v in x.items()}, torch.from_numpy(mask))
-        p = torch.softmax(lg, -1).numpy()[0]
+        p_f, q = None, None
+        if self.models:
+            ps, qs = [], []
+            with torch.no_grad():
+                for m in self.models:
+                    lg, qq, _ = m({k: torch.from_numpy(v) for k, v in x.items()}, torch.from_numpy(mask))
+                    ps.append(torch.softmax(lg, -1).numpy()[0])
+                    qs.append(qq.numpy()[0])
+            # quantiles averaged over seeds, then sorted (monotone rearrangement: the heads are unconstrained and
+            # sorting can only reduce pinball loss, Chernozhukov, Fernandez-Val and Galichon 2010)
+            p_f, q = np.mean(ps, 0), np.sort(np.mean(qs, 0), axis=-1)
+        parts, weights = [], []
+        if p_f is not None and self.w_fus > 0:
+            parts.append(p_f); weights.append(self.w_fus)
+        if self.lgbm and self.w_lgbm > 0:
+            if self.raw_num is None:
+                raise ValueError("raw numeric features are required for the LightGBM component")
+            parts.append(np.stack([self.lgbm[h].predict(self.raw_num)[0] for h in HORIZONS])); weights.append(self.w_lgbm)
+        if self.logistic is not None and self.w_log > 0:
+            parts.append(np.stack([self.logistic[h].predict_proba(x["num"].astype(np.float64))[0] for h in HORIZONS]))
+            weights.append(self.w_log)
+        w = np.array(weights) / np.sum(weights)
+        p = sum(wi * pi for wi, pi in zip(w, parts))
         if calibrated:
             p = np.stack([self.calibrators[h].transform(p[j:j + 1])[0] for j, h in enumerate(HORIZONS)])
-        return p, q.numpy()[0]
+        return p, q
 
 
 def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -159,6 +199,7 @@ class NexusPredictor:
                 xv = FV.from_series(daily.open, daily.high, daily.low, daily.close, daily.volume, [k])
                 row = pd.concat([f.reset_index(drop=True), xv.reset_index(drop=True)], axis=1)
                 x[n] = pre._std("num", row.reindex(columns=pre.num_cols).to_numpy(np.float64), None)
+                self.b.raw_num = row.reindex(columns=pre.num_cols).astype(float)
                 mask.append(1.0)
                 evidence["structured_features"] = {c: (None if pd.isna(row[c].iloc[0]) else float(row[c].iloc[0]))
                                                    for c in row.columns if c in pre.num_cols}
@@ -248,12 +289,16 @@ class NexusPredictor:
             if k >= len(daily) or daily.date.iloc[k] != a:
                 raise ValueError(f"{a.date()} is not a trading session for {ticker}")
             block = assign_blocks(pd.Series([a])).iloc[0]
+            refit = "refit 2003-2018" in self.b.meta.get("trained_through_block", "")
+            insample = ("train", "inner", "valid", None) if refit else ("train", None)
+            span = "2003-2018" if refit else "2003-2015"
             limitations.append(f"Historical as-of date in block '{block or 'outside the development blocks'}'"
-                               + (": IN-SAMPLE for the model (trained on 2003-2015)." if block in ("train", None) else "."))
+                               + (f": IN-SAMPLE for the model (trained on {span})." if block in insample else "."))
         elif mode == "live":
             daily, hourly = fetch_live(ticker)
             k = len(daily) - 1
-            limitations.append("Live forecast: the model was trained on 2003-2015 data, calibrated on 2019; it has not been "
+            span = "2003-2018" if "refit 2003-2018" in self.b.meta.get("trained_through_block", "") else "2003-2015"
+            limitations.append(f"Live forecast: the model was trained on {span} data, calibrated on 2019; it has not been "
                                "validated on post-2022 data. Live bars come from Yahoo Finance and can differ slightly between requests.")
         else:
             raise ValueError("mode must be 'historical' or 'live'")
@@ -267,13 +312,21 @@ class NexusPredictor:
         x, mask, missing, evidence, trip, emb = self._inputs(ticker, daily, hourly, k, decision_utc, articles, sec_ctx)
         P, Q = self.b.probs(x, mask)
         skill = self.b.meta.get("direction_skill", {})
+        # Return range from the quantile heads (volatility-scaled z, so multiply by sigma_t * sqrt(h)); shown only for
+        # horizons whose 10-90% band covered 0.80 +/- 0.08 on validation (scripts/verify/quantile_coverage.py).
+        qcov = self.b.meta.get("quantile_coverage", {})
+        sig = float(ewma_sigma(daily.close.iloc[: k + 1]).iloc[-1])
         forecasts = {}
         for j, h in enumerate(HORIZONS):
             p = P[j] / P[j].sum()
+            show_q = Q is not None and bool(qcov.get(h, {}).get("show_in_app", False)) and np.isfinite(sig) and sig > 0
+            scale = sig * np.sqrt(HORIZONS[h])
             forecasts[h] = HorizonForecast(up_probability=float(p[2]), down_probability=float(p[0]),
                                            sideways_probability=float(p[1]),
                                            predicted_direction=["DOWN", "SIDEWAYS", "UP"][int(np.argmax(p))],
-                                           expected_return=None, return_q10=None, return_q90=None,
+                                           expected_return=float(Q[j, 1] * scale) if show_q else None,
+                                           return_q10=float(Q[j, 0] * scale) if show_q else None,
+                                           return_q90=float(Q[j, 2] * scale) if show_q else None,
                                            uncertainty=float(-(p * np.log(np.clip(p, 1e-12, 1))).sum() / np.log(3)),
                                            direction_skill_validated=bool(skill.get(h, {}).get("validated", False)))
         # rule events and indicator evidence
@@ -337,12 +390,13 @@ class NexusPredictor:
                                   weekly=weekly, setups=setups, trigger_by_side=trig, atr=float(ev.atr14),
                                   close=float(ev.close), risk=risk, data_gate_reasons=data_reasons)
         if any(p.decision in ("LONG", "SHORT") for p in plans.values()):
-            bt = paths.REPO_ROOT / "reports" / "backtest" / "e04_backtest.json"
+            rb = paths.REPO_ROOT / "reports" / "backtest"
+            bt, tag = (rb / "e04_backtest_v1.1.json", "E04 v1.1") if (rb / "e04_backtest_v1.1.json").exists()                 else (rb / "e04_backtest.json", "E04 v1")
             if bt.exists():
                 b = json.loads(bt.read_text(encoding="utf-8"))
                 g = {k.split("|")[1]: v["sharpe"] for k, v in b["test_final"].items()
                      if k.startswith("nexus_gated") and k.endswith("|base")}
-                limitations.append("Backtest evidence (E04, 2020-2022, base costs): this gated policy had Sharpe "
+                limitations.append(f"Backtest evidence ({tag}, 2020-2022, base costs): this gated policy had Sharpe "
                                    + ", ".join(f"{h} {s:.2f}" for h, s in g.items())
                                    + f" against {b['benchmark_ew_survivors']['test']['sharpe']:.2f} for equal-weight "
                                    "buy-and-hold, with confidence intervals including zero. Treat any LONG/SHORT plan "
@@ -353,7 +407,9 @@ class NexusPredictor:
                                   reference_price=float(daily.close.iloc[k]), reference_price_source=
                                   ("sealed TriFrame bars" if mode == "historical" else "Yahoo Finance") + " (as-of close)",
                                   data_quality=dq),
-            model=ModelInfo(architecture_version=ARCHITECTURE_VERSION, checkpoint_ids=[self.b.meta["bundle_id"], self.b.pre.backbone],
-                            calibration_status="calibrated", bundle_id=self.b.meta["bundle_id"], trained_through="2015-12-31"),
+            model=ModelInfo(architecture_version=self.b.meta.get("architecture_version", ARCHITECTURE_VERSION),
+                            checkpoint_ids=[self.b.meta["bundle_id"], self.b.pre.backbone, self.b.meta.get("recipe", "fusion")],
+                            calibration_status="calibrated", bundle_id=self.b.meta["bundle_id"],
+                            trained_through="2018-12-31" if "refit 2003-2018" in self.b.meta.get("trained_through_block", "") else "2015-12-31"),
             forecasts=forecasts, evidence=evidence, confluence=confluence, trade_plans=plans, limitations=limitations)
         return res

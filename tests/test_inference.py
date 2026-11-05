@@ -32,6 +32,8 @@ def test_prediction_contract_and_missing_news(predictor):
     for f in r.forecasts.values():
         p = np.array([f.down_probability, f.sideways_probability, f.up_probability])
         assert np.isfinite(p).all() and abs(p.sum() - 1) < 1e-6
+        if f.expected_return is not None:                                  # return range: ordered quantiles
+            assert f.return_q10 <= f.expected_return <= f.return_q90
     assert any("no news" in m for m in r.confluence["missing_information"])
     assert r.instrument.forecast_timestamp.startswith("2021-03-16T13:00")      # 09:00 New York, next session
     for plan in r.trade_plans.values():

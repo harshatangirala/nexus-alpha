@@ -50,7 +50,13 @@ def evaluate_loss(model, d: ModalityData, cfg: FusionConfig, device, batch=4096)
 
 
 def train(cfg: FusionConfig, tr: ModalityData, es: ModalityData, ckpt_dir: Path, epochs: int = 25, batch: int = 1024,
-          lr: float = 1e-3, weight_decay: float = 1e-4, patience: int = 4, seed: int = 7, log=print):
+          lr: float = 1e-3, weight_decay: float = 1e-4, patience: int = 4, seed: int = 7, log=print,
+          monitor: dict | None = None, schedule: str = "constant", warmup_epochs: int = 1, train_eval_rows: int = 20000,
+          restore_best: bool = True):
+    """monitor: extra blocks (e.g. {"valid": d_valid}) whose cross-entropy is RECORDED each epoch for validation curves;
+    early stopping always uses `es` only. schedule: "constant" or "cosine" (linear warm-up, then cosine decay to 5% of
+    lr over `epochs`). A fixed subset of training rows is scored each epoch in eval mode (no dropout), so train and
+    held-out losses on the curves are comparable."""
     hw = detect()
     device = torch.device(hw["device"])
     torch.manual_seed(seed)
@@ -68,6 +74,17 @@ def train(cfg: FusionConfig, tr: ModalityData, es: ModalityData, ckpt_dir: Path,
         log(f"resumed from epoch {st['epoch']}")
     amp = precision(hw)
     gen = torch.Generator(device="cpu").manual_seed(seed)
+    tr_eval = tr.subset(np.random.default_rng(seed).choice(len(tr), min(train_eval_rows, len(tr)), replace=False))
+    steps_per_epoch = max(1, int(np.ceil(len(tr) / batch)))
+
+    def lr_at(step):
+        if schedule != "cosine":
+            return lr
+        w = warmup_epochs * steps_per_epoch
+        if step < w:
+            return lr * (step + 1) / w
+        frac = (step - w) / max(1, epochs * steps_per_epoch - w)
+        return lr * (0.05 + 0.95 * 0.5 * (1 + np.cos(np.pi * min(1.0, frac))))
     for ep in range(start, epochs):
         model.train()
         t0 = time.time()
@@ -80,13 +97,19 @@ def train(cfg: FusionConfig, tr: ModalityData, es: ModalityData, ckpt_dir: Path,
             with torch.autocast(device_type=hw["device"], dtype=torch.bfloat16, enabled=(amp == "bf16")):
                 lg, q, _ = model(x, m)
             loss = fusion_loss(lg.float(), q.float(), y, z, cfg)
+            for g in opt.param_groups:
+                g["lr"] = lr_at(ep * steps_per_epoch + s // batch)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
             run_loss += loss.item(); nb += 1
         val = evaluate_loss(model, es, cfg, device)
-        hist.append({"epoch": ep, "train_loss": run_loss / max(nb, 1), "inner_ce": val, "seconds": round(time.time() - t0, 1)})
+        rec = {"epoch": ep, "train_loss": run_loss / max(nb, 1), "train_ce_eval": evaluate_loss(model, tr_eval, cfg, device),
+               "inner_ce": val, "lr_end": opt.param_groups[0]["lr"], "seconds": round(time.time() - t0, 1)}
+        for name, dm in (monitor or {}).items():
+            rec[f"{name}_ce"] = evaluate_loss(model, dm, cfg, device)
+        hist.append(rec)
         if val < best - 1e-5:
             best, best_epoch, bad = val, ep, 0
             torch.save({"model": model.state_dict(), "cfg": asdict(cfg)}, ckpt_dir / "best.pt")
@@ -97,8 +120,9 @@ def train(cfg: FusionConfig, tr: ModalityData, es: ModalityData, ckpt_dir: Path,
         log(f"epoch {ep}: train {hist[-1]['train_loss']:.4f} inner CE {val:.4f} ({hist[-1]['seconds']} s)")
         if bad >= patience:
             break
-    st = torch.load(ckpt_dir / "best.pt", map_location=device, weights_only=False)
-    model.load_state_dict(st["model"])
+    if restore_best:                      # fixed-length refits keep the last epoch (no selection on the monitored block)
+        st = torch.load(ckpt_dir / "best.pt", map_location=device, weights_only=False)
+        model.load_state_dict(st["model"])
     (ckpt_dir / "history.json").write_text(json.dumps({"hist": hist, "best_epoch": best_epoch, "best_inner_ce": best,
                                                         "hardware": hw, "precision": amp}, indent=1), encoding="utf-8")
     return model, hist

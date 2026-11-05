@@ -71,7 +71,10 @@ def build(fr: pd.DataFrame, train_mask: np.ndarray, modalities=ALL_MODALITIES, b
         for v in img_views:
             cols = [c for c in Z.columns if f"_{v}_" in c]
             x[f"img_{v}"] = pre._std(f"img_{v}", Z[cols].to_numpy(np.float32), rows_fit)
-            masks.append(np.ones(len(fr), np.float32))
+            need = {"W": 42, "D": 51, "H": 56}[v]                      # same >= 40%-of-window rule as inference (A-03)
+            present = (fr[f"n_valid_{v}"].to_numpy() >= need).astype(np.float32) if f"n_valid_{v}" in fr else np.ones(len(fr), np.float32)
+            x[f"img_{v}"] *= present[:, None]
+            masks.append(present)
     if "num" in modalities:
         X = fr[pre.num_cols].to_numpy(np.float64)
         x["num"] = pre._std("num", X, rows_fit)          # NaN (warm-up, missing hourly session) -> 0 after scaling

@@ -77,7 +77,7 @@ def simulate(o: Order, d: pd.DataFrame, cost: CostModel) -> dict:
     prev = entry
     daily = []
     for i, (dt, px) in enumerate(path):
-        r = o.side * (px / prev - 1)
+        r = o.side * (px - prev) / entry          # P&L on the entry notional: daily parts sum to the trade return (audit fix A-02)
         if i == 0:
             r -= cost.round_trip_bps / 2e4
         if i == len(path) - 1:
@@ -91,32 +91,42 @@ def simulate(o: Order, d: pd.DataFrame, cost: CostModel) -> dict:
 
 
 def portfolio(trades: pd.DataFrame, calendar_dates: pd.DatetimeIndex, risk_pct: float = 0.005,
-              max_position_pct: float = 0.10, max_gross: float = 1.0) -> tuple[pd.Series, pd.DataFrame]:
-    """Daily portfolio returns from filled trades with gross-exposure cap (trades processed in entry order)."""
-    f = trades[trades.fill_status == "FILLED"].sort_values("entry_date").copy()
+              max_position_pct: float = 0.10, max_gross: float = 1.0, max_daily_loss: float = 0.02) -> tuple[pd.Series, pd.DataFrame]:
+    """Day-by-day portfolio: new trades enter in entry-date order if the gross-exposure cap allows AND the previous
+    session's portfolio return was not below -max_daily_loss (kill-switch X093: no new entries the next session).
+    Each position's daily P&L is weight * (price change / entry price), so a trade's daily parts sum to its return."""
+    f = trades[trades.fill_status == "FILLED"].copy()
+    if f.empty:
+        return pd.Series(0.0, index=calendar_dates, name="portfolio_return"), f
+    f["entry_date"] = pd.to_datetime(f.entry_date)
     f["weight"] = np.minimum(risk_pct / f.risk_fraction.clip(lower=1e-4), max_position_pct)
-    open_until: list[tuple] = []
-    kept = []
-    for _, t in f.iterrows():
-        d0 = pd.Timestamp(t.entry_date)
-        open_until = [(end, w) for end, w in open_until if end >= d0]
-        gross = sum(w for _, w in open_until)
-        if gross + t.weight > max_gross + 1e-12:
-            continue
-        end = pd.Timestamp(t.daily[-1][0])
-        open_until.append((end, t.weight))
-        kept.append(t)
-    k = pd.DataFrame(kept)
+    by_day = {d: g for d, g in f.sort_values(["entry_date", "sample_id"]).groupby("entry_date")}
     ret = pd.Series(0.0, index=calendar_dates)
     expo = pd.Series(0.0, index=calendar_dates)
-    for _, t in k.iterrows():
-        for dt, r in t.daily:
-            dt = pd.Timestamp(dt)
-            if dt in ret.index:
-                ret[dt] += t.weight * r
-                expo[dt] += t.weight
+    open_pos: list[dict] = []
+    kept, blocked_cap, blocked_kill = [], 0, 0
+    prev_ret = 0.0
+    for day in calendar_dates:
+        open_pos = [p for p in open_pos if p["end"] >= day]
+        if day in by_day:
+            for _, t in by_day[day].iterrows():
+                if prev_ret < -max_daily_loss:
+                    blocked_kill += 1
+                    continue
+                if sum(p["w"] for p in open_pos) + t.weight > max_gross + 1e-12:
+                    blocked_cap += 1
+                    continue
+                path = {pd.Timestamp(dt): r for dt, r in t.daily}
+                open_pos.append({"w": t.weight, "end": max(path), "path": path})
+                kept.append(t)
+        r_day = sum(p["w"] * p["path"].get(day, 0.0) for p in open_pos)
+        ret[day] = r_day
+        expo[day] = sum(p["w"] for p in open_pos if day in p["path"])
+        prev_ret = r_day
+    k = pd.DataFrame(kept)
     k_out = k.drop(columns=["daily"]) if len(k) else k
-    return ret.rename("portfolio_return"), k_out.assign(exposure_mean=float(expo.mean()) if len(expo) else np.nan)
+    return ret.rename("portfolio_return"), k_out.assign(exposure_mean=float(expo.mean()), blocked_by_gross_cap=blocked_cap,
+                                                        blocked_by_daily_loss=blocked_kill)
 
 
 def performance(ret: pd.Series, trades: pd.DataFrame | None = None, n_trials: int = 1, trial_sr_var: float = 0.0) -> dict:
@@ -128,7 +138,8 @@ def performance(ret: pd.Series, trades: pd.DataFrame | None = None, n_trials: in
     out = {"n_days": int(len(r)), "total_return": float(eq.iloc[-1] - 1) if len(eq) else np.nan,
            "cagr": float(eq.iloc[-1] ** (1 / years) - 1) if years > 0 and eq.iloc[-1] > 0 else np.nan,
            "vol_annual": float(r.std(ddof=1) * np.sqrt(252)), "sharpe": sharpe(r.values),
-           "sortino": float(r.mean() / neg.std(ddof=1) * np.sqrt(252)) if len(neg) > 2 else np.nan,
+           "sortino": float(r.mean() / np.sqrt(np.mean(np.minimum(r.values, 0.0) ** 2)) * np.sqrt(252))
+           if (r < 0).sum() > 2 else np.nan,                     # downside deviation over all days (audit fix A-05)
            "max_drawdown": float(dd.min()), "calmar": float((eq.iloc[-1] ** (1 / years) - 1) / abs(dd.min())) if dd.min() < 0 and years > 0 else np.nan,
            "psr_vs_0": probabilistic_sharpe(r.values),
            "exposure_days_share": float((r != 0).mean())}

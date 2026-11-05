@@ -201,6 +201,95 @@ Up-vs-down AUROC by test year:
 
 Equal-weight survivor benchmark, test: Sharpe 0.53, CAGR 0.118, max drawdown -0.409. PBO over 20 configurations: 0.127. Frozen thresholds: {'model_atr|5D': 0.05, 'nexus|5D': 0.2, 'model_atr|20D': 0.05, 'nexus|20D': 0.2}.
 
+## E06 fusion optimisation study (`20261106T005012_e06_optimization_fa42d8`, post-registration, selection on validation)
+
+| run | lr | d_model | dropout | wd | seed | epochs | best epoch | valid | test |
+|---|---|---|---|---|---|---|---|---|---|
+| lr_0.0003 | 0.0003 | 64 | 0.1 | 0.0001 | 7 | 20 | 13 | 1.05883 | 1.06441 |
+| lr_0.001 | 0.001 | 64 | 0.1 | 0.0001 | 7 | 12 | 5 | 1.05917 | 1.06529 |
+| lr_0.003 | 0.003 | 64 | 0.1 | 0.0001 | 7 | 8 | 1 | 1.06360 | 1.06773 |
+| cap_d128 | 0.0003 | 128 | 0.1 | 0.0001 | 7 | 15 | 8 | 1.05872 | 1.06516 |
+| reg_wd1e-3 | 0.0003 | 64 | 0.1 | 0.001 | 7 | 20 | 13 | 1.05883 | 1.06441 |
+| reg_dropout0.3 | 0.0003 | 64 | 0.3 | 0.0001 | 7 | 23 | 16 | 1.05867 | 1.06453 |
+| best_seed7 | 0.0003 | 64 | 0.3 | 0.0001 | 7 | 23 | 16 | 1.05867 | 1.06453 |
+| best_seed11 | 0.0003 | 64 | 0.3 | 0.0001 | 11 | 20 | 13 | 1.05854 | 1.06413 |
+| best_seed23 | 0.0003 | 64 | 0.3 | 0.0001 | 23 | 13 | 6 | 1.06086 | 1.06427 |
+| best_seed42 | 0.0003 | 64 | 0.3 | 0.0001 | 42 | 17 | 10 | 1.05865 | 1.06352 |
+| best_seed101 | 0.0003 | 64 | 0.3 | 0.0001 | 101 | 27 | 20 | 1.05870 | 1.06476 |
+| num_seed7 | 0.0003 | 64 | 0.3 | 0.0001 | 7 | 23 | 16 | 1.05981 | 1.06415 |
+| num_seed11 | 0.0003 | 64 | 0.3 | 0.0001 | 11 | 22 | 15 | 1.05973 | 1.06358 |
+| num_seed23 | 0.0003 | 64 | 0.3 | 0.0001 | 23 | 30 | 23 | 1.05932 | 1.06413 |
+| num_seed42 | 0.0003 | 64 | 0.3 | 0.0001 | 42 | 25 | 18 | 1.05968 | 1.06393 |
+| num_seed101 | 0.0003 | 64 | 0.3 | 0.0001 | 101 | 32 | 25 | 1.05968 | 1.06417 |
+
+Seed ensembles: fusion valid 1.05804 / test 1.06286; numbers-only valid 1.05926 / test 1.06338. Seed spread (best config): valid 1.05908 ± 0.00100, test 1.06424 ± 0.00047. Landscape: centre 1.05867, lowest grid point 1.05842 at [0.10000000000000009, 0.0].
+
+## E07 LightGBM tuning (`20261106T015859_e07_lgbm_tuning_8fb4fc`)
+
+Best of 25 TPE trials: {'learning_rate': 0.07826968053857598, 'num_leaves': 7, 'min_data_in_leaf': 195, 'feature_fraction': 0.7580871652599147, 'bagging_fraction': 0.8317004666751824, 'lambda_l2': 0.03388212372550781}; mean validation log loss (1D/5D/20D) 1.05625 vs default 1.05699.
+
+| horizon | best iteration | tuned valid | tuned test | refit test |
+|---|---|---|---|---|
+| 1D | 320 | 1.03472 | 1.03033 | 1.02966 |
+| 2D | 321 | 1.05250 | 1.05707 | 1.05684 |
+| 5D | 204 | 1.06277 | 1.06766 | 1.06747 |
+| 10D | 117 | 1.06705 | 1.07497 | 1.07448 |
+| 20D | 86 | 1.07126 | 1.07656 | 1.07584 |
+| 1M | 35 | 1.07436 | 1.07769 | 1.07715 |
+
+## E09 convexity certificate (multinomial logistic, numeric features)
+
+| horizon | certified | objective spread | param spread | grad norm | Hessian min eig | valid log loss |
+|---|---|---|---|---|---|---|
+| 1D | True | 1.9e-14 | 2.6e-06 | 3.2e-08 | 1.0e-03 | 1.03382 |
+| 5D | True | 1.7e-14 | 2.9e-06 | 5.5e-08 | 1.0e-03 | 1.06203 |
+| 20D | True | 1.2e-14 | 4.2e-06 | 6.7e-08 | 1.0e-03 | 1.06988 |
+
+## E08 final model (`20261106T020411_e08_final_model_5c4327`)
+
+Selected on validation among 68 candidates: **blend_l0.1_f0.6_g0.3**. Calibration on the test years (mean log loss): {'none': 1.061291703774762, 'static_2019': 1.062532719022228, 'walk_forward_previous_year': 1.061730160996242}.
+
+| horizon | log loss | gain vs prior [95% CI] | gain vs E03 | AUROC up/down [95% CI] | AUROC sideways | ECE | accuracy | balanced acc. | macro-F1 |
+|---|---|---|---|---|---|---|---|---|---|
+| 1D | 1.0287 | +0.0200 [+0.0147, +0.0262] | +0.0030 [+0.0017, +0.0042] | 0.511 [0.498, 0.527] | 0.613 | 0.023 | 0.488 | 0.337 | 0.228 |
+| 2D | 1.0539 | +0.0134 [+0.0090, +0.0185] | +0.0034 [+0.0017, +0.0053] | 0.514 [0.498, 0.531] | 0.594 | 0.020 | 0.455 | 0.337 | 0.222 |
+| 5D | 1.0639 | +0.0114 [+0.0066, +0.0169] | +0.0035 [+0.0012, +0.0056] | 0.508 [0.481, 0.539] | 0.587 | 0.015 | 0.439 | 0.349 | 0.262 |
+| 10D | 1.0742 | +0.0057 [-0.0029, +0.0162] | +0.0058 [+0.0016, +0.0098] | 0.497 [0.462, 0.530] | 0.577 | 0.038 | 0.425 | 0.351 | 0.278 |
+| 20D | 1.0742 | +0.0092 [-0.0042, +0.0253] | +0.0050 [-0.0006, +0.0103] | 0.495 [0.443, 0.541] | 0.593 | 0.038 | 0.422 | 0.363 | 0.301 |
+| 1M | 1.0769 | +0.0082 [-0.0055, +0.0247] | +0.0046 [-0.0008, +0.0093] | 0.494 [0.437, 0.545] | 0.594 | 0.042 | 0.420 | 0.366 | 0.304 |
+
+## E04 v1.1 backtest (audit fixes A-01, A-02, A-04, A-06; final model), test 2020-2022
+
+| policy | trades | Sharpe | Sharpe 95% CI | CAGR | max DD | expectancy R | DSR |
+|---|---|---|---|---|---|---|---|
+| rule_only|5D|theta=0.1|base | 1386 | -0.87 | [-2.11, 0.34] | -0.081 | -0.291 | -0.036 | 0.000 |
+| model_atr|5D|theta=0.1|base | 1325 | 0.02 | [-0.76, 1.14] | -0.011 | -0.250 | -0.015 | 0.003 |
+| nexus|5D|theta=0.05|base | 245 | 0.04 | [-1.11, 1.12] | 0.001 | -0.066 | -0.016 | 0.003 |
+| nexus_gated|5D|theta=0.1|base | 41 | 0.31 | [-0.64, 2.08] | 0.008 | -0.051 | -0.010 | 0.015 |
+| rule_only|20D|theta=0.1|base | 761 | -0.34 | [-1.61, 0.71] | -0.044 | -0.244 | -0.014 | 0.000 |
+| model_atr|20D|theta=0.05|base | 1110 | 0.16 | [-0.96, 1.47] | 0.010 | -0.378 | 0.018 | 0.006 |
+| nexus|20D|theta=0.1|base | 322 | -0.14 | [-1.19, 0.77] | -0.016 | -0.142 | -0.041 | 0.001 |
+| nexus_gated|20D|theta=0.1|base | 322 | -0.14 | [-1.19, 0.77] | -0.016 | -0.142 | -0.041 | 0.001 |
+
+Benchmark Sharpe 0.53; PBO 0.119; frozen thresholds {'model_atr|5D': 0.1, 'nexus|5D': 0.05, 'model_atr|20D': 0.05, 'nexus|20D': 0.1}.
+
+## E10 controls (placebo and planted-leak canary; log loss minus class prior, negative = better)
+
+| horizon | control | valid_LL_minus_prior | test_LL_minus_prior | trees |
+|---|---|---|---|---|
+| 1D | real | -0.0163 | -0.0184 | 320 |
+| 1D | placebo_within_date_shuffle | -0.0028 | -0.0058 | 82 |
+| 1D | placebo_global_shuffle | 0.0001 | 0.0004 | 13 |
+| 1D | canary_planted_leak | -0.057 | -0.1029 | 434 |
+| 5D | real | -0.0125 | -0.0077 | 204 |
+| 5D | placebo_within_date_shuffle | -0.0008 | -0.0033 | 40 |
+| 5D | placebo_global_shuffle | 0.0 | 0.0 | 1 |
+| 5D | canary_planted_leak | -0.0569 | -0.1007 | 271 |
+| 20D | real | -0.0169 | -0.0069 | 86 |
+| 20D | placebo_within_date_shuffle | -0.0018 | -0.002 | 8 |
+| 20D | placebo_global_shuffle | 0.0001 | 0.0001 | 2 |
+| 20D | canary_planted_leak | -0.0654 | -0.0999 | 69 |
+
 ## RAG retrieval evaluation
 
 | index | recall@1 | recall@5 | recall@10 | precision@5 | mrr | ndcg@10 | page_citation_accuracy@1 | latency_ms_median | n |

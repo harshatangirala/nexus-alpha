@@ -22,14 +22,14 @@ Implemented in `nexus_alpha/trading/plan.py` (planner), `costs.py` and `backtest
 | 7 | Daily setup on the same side with a structural invalidation and first obstacle | E023/E024, E026/E027, E031/E032, E066/E067 | NO_TRADE |
 | 8 | Hourly trigger on the as-of session (structure break, engulfing, rejection) | E121/E122, E041-E044 | NO_TRADE (wait) |
 | 9 | Stop = invalidation ∓ 0.25 ATR; stop on the losing side of the entry reference | X001, X011 | NO_TRADE |
-| 10 | Target 1 = first opposing obstacle; net reward-to-risk after round-trip costs (and borrow for shorts) >= 1.5 | X021, E039, E149 | NO_TRADE |
+| 10 | Target 1 = first material opposing obstacle from PRIOR bars (confirmed swing or 252-day high/low excluding the current bar, at least 0.5 ATR away; otherwise a measured move); net reward-to-risk after round-trip costs (and borrow for shorts) >= 1.5 | X021, X024, E039, E149 | NO_TRADE |
 | 11 | Size = floor(capital × risk% / (risk per share + cost per share)), capped by max position %; < 1 share → reject | X010 | NO_TRADE |
 
 Plan fields: entry reference (last close; executed at the next open if within the max-chase price = 1 ATR beyond, else cancelled, E111/E139), stop, target 1, target 2 (2 × first-target distance), risk and reward per share, gross and net R:R, quantity, position value, planned loss in cash, holding sessions (= horizon, X071), invalidation text, cost assumptions, rule ids and the level source.
 
 ## User configuration
 
-Account capital, risk per trade (default 0.5%), max position (10%), max portfolio gross (100%), max daily loss (2%, enforced by the portfolio simulator and documented for the live engine), short allowed, cost scenario. No personal capital is hard-coded.
+Account capital, risk per trade (default 0.5%), max position (10%), max portfolio gross (100%), max daily loss (2%: the portfolio simulator blocks new entries on the session after a day below −2%, rule X093, audit fix A-04; gross exposure is capped at 100%), short allowed, cost scenario. No personal capital is hard-coded.
 
 ## Costs and execution (D-010)
 
@@ -37,4 +37,17 @@ Round trip 10 / 15 / 20 bps (base / stressed / severe) of entry value; shorts pa
 
 ## What the evidence says about the engine
 
-On validation (2017-2018) the selected model's up-vs-down AUROC was 0.517-0.538 with intervals above 0.5, so gate 3 is **open at every horizon**. Most decisions are still NO TRADE (the edge, setup, trigger and reward-to-risk gates rarely all pass), but some LONG/SHORT plans are issued. The backtest of exactly this gated policy on 2020-2022 (E04) did not beat equal-weight buy-and-hold: Sharpe 0.20 at 5D (88 trades) and −0.64 at 20D (254 trades, expectancy −0.15R), intervals including zero, deflated Sharpe ≈ 0. A rule-only version lost money at both horizons. The gate was registered before these results and is **not** retuned on them (that would be selection on test data); instead the app attaches this evidence as a warning to every LONG/SHORT plan. A stricter, economically grounded gate (for example positive net expectancy on validation and calibration) is a candidate for a pre-registered change tested on fresh data.
+**v1.1 (deployed bundle E08).** The direction-skill gate (gate 3) is **closed at 1D and 2D** and **open at 5D, 10D, 20D and 1M**: validation up-vs-down AUROC was 0.522-0.542 with intervals above 0.5. Most decisions are still NO TRADE, because the edge, setup, trigger and reward-to-risk gates rarely all pass.
+
+The backtest of the gated policy on 2020-2022 used the fixed engine (E04 v1.1: material prior-bar targets, corrected P&L, kill-switch, thresholds frozen with ≥ 30 validation trades):
+
+| Horizon | Trades | Sharpe | 95% CI |
+|---|---|---|---|
+| 5D | 41 | 0.31 | [−0.64, 2.08] |
+| 20D | 322 | −0.14 | [−1.19, 0.77] |
+
+Neither beat equal-weight buy-and-hold of the same survivors (0.53), deflated Sharpe ratios are ≈ 0, and the rule-only policy lost money at both horizons. At 10D-1M, the skill that opened the gate on 2017-2018 was absent on 2020-2022 (test AUROC 0.49-0.50).
+
+The gate was registered before these results and is **not** retuned on them, because that would be selection on test data. Instead, the app attaches this evidence as a warning to every LONG/SHORT plan. A stricter, economically grounded gate (for example, positive net expectancy on validation and calibration) is a candidate for a pre-registered change tested on fresh data.
+
+v1 (bundle E03, superseded): gate open at every horizon; gated Sharpe 0.20 at 5D (88 trades) and −0.64 at 20D (254 trades). That backtest predates the A-01/A-02/A-04 fixes.

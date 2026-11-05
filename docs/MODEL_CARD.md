@@ -1,37 +1,53 @@
-# Model card: NEXUS Alpha bundle `20261106T000935_e03_fusion_8ddffb`
+# Model card: NEXUS Alpha bundle `20261106T020411_e08_final_model_5c4327` (v1.1)
+
+Supersedes the v1 bundle `20261106T000935_e03_fusion_8ddffb` and the first v1.1 build `20261106T013154_e08_final_model_8bbb54` (rebuilt after audit fix A-21; same recipe, test log loss unchanged to 5 decimals). Both are kept for reproducibility. Built in the audit phase; see `docs/CHIEF_AUDIT_REPORT.md`.
 
 ## Intended use
 
-Research and paper-trading decision support for US-listed stocks in the 500-stock TriFrame sample. It produces calibrated UP / SIDEWAYS / DOWN probabilities for six horizons (1, 2, 5, 10, 20, 21 sessions) and hands them to a separate deterministic risk engine. **Not** for live trading, not investment advice, not for stocks outside the training universe without new validation.
+Research and paper-trading decision support for US-listed stocks in the 500-stock TriFrame sample. It produces UP / SIDEWAYS / DOWN probabilities and a 10-50-90% return range for six horizons (1, 2, 5, 10, 20, 21 sessions) and hands them to a separate deterministic risk engine. **Not** for live trading, not investment advice, not for stocks outside the training universe without new validation.
 
 ## Model
 
-* **Architecture:** gated multimodal fusion (selected among late, concat, attention, gated and hybrid by mean validation log loss): six modality projections (weekly, daily and hourly chart embeddings; 80 numeric indicator features; news; SEC filings) → softmax gate over present modalities → six 3-class heads + quantile heads. 64-d modality space, modality dropout 0.15.
-* **Inputs:** frozen ConvNeXt-Tiny embeddings of TriFrame r1 charts (PCA 64 per view), NEXUS multi-timeframe indicators + TriFrame's 33 visible-window features, TF-IDF/SVD and Loughran-McDonald tone of up to 7 de-duplicated articles from the 5 days before the decision, SEC filing features and text.
-* **Training data:** s500 sample, as-of dates 2003-2015 (143,695 samples); early stopping on 2016; selection on 2017-2018; calibration on 2019 (temperature scaling at 10D, none elsewhere, chosen on chronological halves).
+* **Recipe (E08, chosen on 2017-2018 validation among 68 candidates):** probability blend 0.6 × fusion ensemble + 0.3 × convex logistic + 0.1 × LightGBM, then per-horizon calibration.
+  * *Fusion ensemble:* five seeds (7, 11, 23, 42, 101) of the gated multimodal fusion network (weekly, daily and hourly chart embeddings; 80 numeric features; news; SEC). Settings from E06: learning rate 3e-4, linear warm-up then cosine decay, dropout 0.3, patience 6.
+  * *Convex logistic:* multinomial logistic regression on the standardised numeric features, L2 1e-3. Its optimum is certified as the unique global minimum (E09).
+  * *LightGBM:* one model per horizon on the raw numeric features, with E07's tuned parameters (25-trial TPE search on validation) and tree counts from early stopping on 2016 only.
+* **Refit:** every component was refit on 2003-2018, with the epoch and tree counts fixed from the selection stage (no early stopping on held-out data during the refit).
+* **Calibration:** temperature scaling at 10D, 20D and 1M; none at 1D-5D. Chosen on chronological halves of 2019 and fitted on 2019.
+* **Return range:** the fusion seeds' quantile heads (0.1, 0.5, 0.9 of the volatility-scaled return), averaged and sorted, then multiplied by σ_t·√h. A horizon's range is shown only if its 10-90% band covered 80% ± 8 points on validation. All six pass, at 0.83-0.84.
 * **Decision timing:** 09:00 New York on the session after the as-of close; entry at that session's open.
 
-## Performance (test block 2020-2022, historical diagnostic; all numbers from `reports/RESULTS.md`)
+## Performance (test block 2020-2022, historical diagnostic)
 
-| Horizon | Log loss (class prior) | AUROC up vs down | ECE |
-|---|---|---|---|
-| 1D | 1.0317 (1.0487) | 0.508 | 0.014 |
-| 2D | 1.0573 (1.0674) | 0.505 | 0.009 |
-| 5D | 1.0674 (1.0753) | 0.511 | 0.018 |
-| 10D | 1.0800 (1.0798) | 0.503 | 0.036 |
-| 20D | 1.0793 (1.0835) | 0.514 | 0.038 |
-| 1M | 1.0815 (1.0851) | 0.511 | 0.044 |
+| Horizon | Log loss (class prior) | Gain vs prior, 95% CI | Gain vs v1 (E03) | AUROC up vs down | AUROC sideways | ECE | 10-90% coverage |
+|---|---|---|---|---|---|---|---|
+| 1D | 1.0287 (1.0487) | +0.0200 [+0.015, +0.026] | +0.0030 | 0.511 | 0.613 | 0.023 | 0.841 |
+| 2D | 1.0539 (1.0674) | +0.0134 [+0.009, +0.019] | +0.0034 | 0.514 | 0.594 | 0.020 | 0.829 |
+| 5D | 1.0639 (1.0753) | +0.0114 [+0.007, +0.017] | +0.0035 | 0.508 | 0.587 | 0.015 | 0.825 |
+| 10D | 1.0742 (1.0798) | +0.0057 [−0.003, +0.016] | +0.0058 | 0.497 | 0.577 | 0.038 | 0.825 |
+| 20D | 1.0742 (1.0835) | +0.0092 [−0.004, +0.025] | +0.0050 | 0.495 | 0.593 | 0.038 | 0.825 |
+| 1M | 1.0769 (1.0851) | +0.0082 [−0.006, +0.025] | +0.0046 | 0.494 | 0.594 | 0.042 | 0.821 |
 
-Most of the gain over the prior is in predicting SIDEWAYS versus a move (sideways AUROC about 0.58), a volatility effect; direction is close to chance on these years. On validation (2017-2018) the up-vs-down AUROC was 0.517-0.538 with 95% intervals above 0.5, so the risk engine's direction-skill gate is open at every horizon; the backtest (E04) and the walk-forward study (E05: up-vs-down AUROC 0.517 at 1D and 5D over 2008-2022, 0.514 at 20D with large year-to-year swings) are the evidence for whether that matters economically.
+Mean test log loss is 1.0620 (v1: 1.0662). The gain over v1 is significant at 1D-10D, using month-block bootstrap CIs over 36 blocks. Accuracy is 0.42-0.49. It is dominated by SIDEWAYS, and balanced accuracy is 0.34-0.37. Models are selected on log loss, a proper scoring rule, not on accuracy.
 
-**None of the registered multimodal hypotheses is supported** (tri-frame, NLP, indicators, trainable fusion vs late, calibration). A numbers-only LightGBM (E01) and a numbers-only fusion head match or beat the full multimodal model on the test years.
+**What the model knows.** It knows whether a stock will move: SIDEWAYS AUROC is 0.58-0.61. Direction is close to chance on these years. Up-versus-down AUROC is 0.49-0.52 on the full block, and 20D swings from 0.41 in 2020 to 0.56 in 2021. Placebo controls (E10) show that about a third of the 1D gain is date-level, market-wide timing. A within-date label shuffle keeps that part; a global shuffle removes everything.
 
-**Economics (E04, 2020-2022, thresholds frozen on 2017-2018):** the gated decision policy built on this model had Sharpe 0.20 at 5D (88 trades) and −0.64 at 20D (254 trades); a model-only ATR policy 0.29 (5D) and 0.04 (20D); a rule-only policy −0.96 and −0.98; equal-weight buy-and-hold of the same survivors 0.53. All model-policy intervals include zero and deflated Sharpe ratios are about 0 (PBO 0.13 over 20 configurations). The model is not shown to support profitable trading.
+**Direction-skill gate.** The gate opens a horizon when its validation up-vs-down AUROC has a 95% interval above 0.5. It is closed at 1D and 2D and open at 5D-1M (validation AUROC 0.52-0.54). On 2020-2022, direction skill at 10D-1M was not present. The gate is statistical, not economic (audit finding A-12).
+
+**Economics (E04 v1.1: fixed engine, new model, thresholds frozen on 2017-2018 with ≥ 30 validation trades):** the gated live planner had Sharpe 0.31 at 5D (41 trades, CI [−0.64, 2.08]) and −0.14 at 20D (322 trades, CI [−1.19, 0.77]). The model-ATR policy had 0.02 and 0.16, and the rule-only policy −0.87 and −0.34. Equal-weight buy-and-hold of the same survivors had 0.53. Deflated Sharpe ≈ 0 and PBO 0.12. **The model is not shown to support profitable trading.** Details: `docs/CHIEF_AUDIT_REPORT.md` section 5.7.
+
+**Calibration finding.** On the test years, no calibration (1.0613) beat static 2019 calibration (1.0625) and walk-forward annual recalibration (1.0617) at the selection stage. The pre-registered procedure is kept, because switching now would be a test-set choice. It is flagged for the next study.
 
 ## Limitations
 
-See `docs/LIMITATIONS.md`. In brief: survivor-only universe from one vendor; test years already read by TriFrame; sealed 2023+ period not virgin; one seed; charts scale-free OHLC bars; classical text features; calibration error grows with horizon (ECE 0.036-0.044 at 10D and longer); trained on 2003-2015, so live 2026 forecasts are extrapolations.
+See `docs/LIMITATIONS.md`. In brief:
+* Survivor-only universe from one vendor.
+* The test years were already read by TriFrame and have been re-scored by six NEXUS experiments.
+* The sealed 2023+ period is not virgin.
+* Charts are scale-free OHLC bars, and the text features are classical.
+* Calibration error grows with horizon (ECE 0.038-0.042 at 10D and longer).
+* The model was trained on 2003-2018, so live 2026 forecasts are extrapolations.
 
 ## Ethical and legal
 
-Data licences forbid publishing data, embeddings, article or book text and weights; the bundle stays private. Article text is never shown in full; book snippets are capped at 200 characters. No broker connection exists.
+Data licences forbid publishing data, embeddings, article or book text and weights, so the bundle stays private. Article text is never shown in full, and book snippets are capped at 200 characters. No broker connection exists.

@@ -16,22 +16,24 @@
 9. **Charts are OHLC bars, not candlesticks**, scaled to each window (so they cannot show the volatility level), resized to 224² (TriFrame's review flags resolution loss). A candlestick renderer and native-resolution inputs are registered, not run.
 10. **Fine-tuned chart embeddings** may be evaluated only from 2017; their weights saw TriFrame targets through 2014.
 11. **Text features are classical** in the local profile (TF-IDF/SVD, lexicon tone). Transformer encoders are registered adapters for GPU runs, not results.
-12. **Single seed** for each fusion model (CPU budget); seed variation is not reported.
+12. **Seeds.** The E03 variant comparison used one seed per variant. The selected configuration was re-run with 5 seeds in E06 (validation spread ± 0.0010), so differences between E03 variants smaller than about 0.002 are within seed noise.
 13. **The 20D and 1M horizons differ by one session**, so they are near-duplicates by construction.
 14. **Hourly triggers** are evaluated only on the as-of session's completed bars; intrabar decisions (rule E141) are out of scope.
-15. **The quantile heads** are trained but not yet calibrated or shown as expected returns; the app leaves expected return as None.
+15. **Return ranges.** The quantile heads' 10-90% band is slightly too wide (coverage 0.83-0.84 on validation, 0.82-0.84 on test, nominal 0.80). It is shown as a range, not as a direction call, and the median is close to zero by construction.
 
 ## Evaluation
 
-16. **The test years 2020-2022 were already read** by TriFrame for its own targets; NEXUS's test results are a historical diagnostic.
+16. **The test years 2020-2022 were already read** by TriFrame for its own targets. NEXUS has also scored them in E01, E02, E03, E06, E07, E08 and E10. Its test results are a heavily re-used historical diagnostic, not evidence of generalisation.
 17. **The sealed period 2023-2026 is not virgin**: TriFrame opened it twice and it is the SEC study's spent locked test. A clean confirmation needs forward data.
 18. **E01 and E02 printed test-block metrics before the pre-registration** (disclosed in the specification).
 19. **RAG gold pages are lexical**, which can favour BM25; five evaluation queries had no gold page.
 20. **The backtest** has no quotes (spreads bounded by cost scenarios), no market impact, no partial fills, no borrow availability; stops inside a bar assume the stop came first.
+21. **Calibration hurt on the test years.** The pre-registered calibration (temperature at 10D-1M, fitted on 2019) was slightly worse than none on 2020-2022. The procedure was not changed after seeing this.
+22. **The direction-skill gate is statistical.** It opens 5D-1M on 2017-2018 evidence, and that skill was absent at 10D-1M on 2020-2022. An economic gate is a candidate for the next pre-registration.
 
 ## Engineering
 
-21. Live mode depends on Yahoo Finance, whose hourly bars can differ slightly between requests.
-22. The live mode does not fetch SEC filings.
-23. A final-evaluation script for the sealed period is not written yet; it should be written only after the owner decides what to freeze.
-24. Screenshots are displayed but never read; TriFrame's OCR screen reader was not integrated.
+23. Live mode depends on Yahoo Finance, whose hourly bars can differ slightly between requests.
+24. The live mode does not fetch SEC filings.
+25. A final-evaluation script for the sealed period is not written yet; it should be written only after the owner decides what to freeze.
+26. Screenshots are displayed but never read; TriFrame's OCR screen reader was not integrated.

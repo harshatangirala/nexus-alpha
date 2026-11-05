@@ -1,0 +1,38 @@
+{
+ "run_id": "20261106T004933_e07_lgbm_tuning_e2dc27",
+ "name": "e07_lgbm_tuning",
+ "profile": "local-cpu",
+ "config": {
+  "features": 80,
+  "trials": 25,
+  "tune_horizons": [
+   "1D",
+   "5D",
+   "20D"
+  ],
+  "threads": 3
+ },
+ "config_hash": "e2dc275fc8b0a6c1",
+ "git_commit": "a921af36f21016dcd432ff871412003d427daeca",
+ "git_dirty": true,
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {},
+ "started_utc": "2026-11-05T19:20:55Z",
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T20:00:31Z",
+ "elapsed_s": 2458.5,
+ "summary": "Optuna 25 trials: mean valid LL (1D/5D/20D) 1.05625 vs default 1.05699; six-horizon mean: tuned valid 1.06033 test 1.06380; refit test 1.06346"
+}

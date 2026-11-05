@@ -1,0 +1,179 @@
+# NEXUS Alpha: chief audit report
+
+Audit date: 6 November 2026. Scope: the whole system as built (data lineage and point-in-time rules, labels, splits, features, the three model families, training and optimisation, calibration, statistics, backtest, RAG, inference and app, code quality and governance). Method: line-by-line review of the risky code paths, re-measurement of every claim against artifacts, targeted experiments where a claim could not be checked by reading (E06 optimisation, E07 tuning and curves, E08 final assembly, E09 convexity certificate, E10 controls, E04 v1.1 backtest). Figures and tables: `reports/NEXUS_Audit_Report.html` (also the app's "L Audit" tab).
+
+Severity: **High** = changes a reported result or a trade; **Medium** = weakens a conclusion or a control; **Low** = hygiene; **Info** = context a reviewer must know.
+
+## 1. Verdict
+
+The point-in-time machinery is sound: no leakage into the test years was found, the seal was never opened, and every reused artifact reproduces exactly.
+
+The audit found 21 issues (register below):
+* **Changed trading results:** two real bugs. A-01 target levels and A-02 portfolio accounting.
+* **Documented but missing:** one control, the A-04 daily-loss kill-switch.
+* **Weakened selection:**
+  * The backtest's threshold selection could pick degenerate configurations (A-06).
+  * A tuning script let the 2017-2018 validation block cap LightGBM's tree count at two horizons (A-21), a choice the protocol reserves for 2016.
+
+All are fixed, covered by tests or asserts, and the affected experiments were re-run.
+
+The v1 modelling was under-optimised: constant learning rate, short patience, one seed, untuned trees, no refit. E06-E08 address this, and the convex head is now certified at its unique global minimum. The deployed model improved significantly at short horizons.
+
+**The research conclusion does not change:** the signal is mostly "will it move", direction is weak and regime-dependent, and there is no demonstrated trading edge.
+
+## 2. Findings register
+
+| ID | Sev. | Area | Finding | Evidence | Fix and verification | Status |
+|---|---|---|---|---|---|---|
+| A-01 | High | Rules / targets | "First obstacle" targets used the 252-day high INCLUDING the current bar, so a breakout's target was often that bar's own high (median 1.32 ATR away, 10th percentile 0.07 ATR); reward-to-risk then failed for mechanical reasons | distance distribution of all setups' targets | obstacles from prior bars only; an obstacle must be >= 0.5 ATR away (rule X021 "material"); otherwise a measured move (X024). After: breakouts median 4.86 ATR, 10th pct 1.47; pullbacks >= 0.5 ATR. Rule events rebuilt | fixed |
+| A-02 | High | Backtest | Daily position returns were price ratios applied to a fixed entry weight, so a multi-day trade's daily P&L did not sum to its actual return | new regression test on a moving path | daily P&L = weight × (price change / entry price); test `test_daily_pnl_sums_to_trade_return_on_a_moving_path` | fixed |
+| A-03 | Low | Train/serve | Inference marks a chart view with < 40% of its bars as missing; training always marked views present | per-view valid-bar counts from TriFrame's sealed index | counts added to the frame and the same rule applied in training. Measured: 0 rows affected in the s500 frame (TriFrame only cached full windows), so no result changes | fixed, no impact |
+| A-04 | Medium | Risk control | The risk document said the portfolio simulator enforces the 2% daily-loss limit; it did not | code review | day-by-day portfolio with the kill-switch (X093) and gross cap; test `test_portfolio_kill_switch_and_gross_cap` | fixed |
+| A-05 | Low | Metrics | Sortino used the standard deviation of negative days only | code review | downside deviation over all days | fixed |
+| A-06 | Medium | Backtest selection | Threshold selection on validation Sharpe let a 2-trade configuration win (NEXUS 5D, theta 0.20) | E04 v1 table | v1.1 eligibility: >= 30 validation trades; both v1 and v1.1 reported | fixed |
+| A-07 | Low | Reproducibility | Run manifests flagged a dirty tree but not which files or what diff | manifests | manifests now store dirty files and a SHA-256 of the working-tree diff | fixed |
+| A-08 | Medium | Training | (caught in new code before it ran) a fixed-length refit would have restored the epoch with the best loss on the 2019 calibration block, a silent selection on calibration data | review of E08 | `restore_best=False` for refits; test | fixed |
+| A-09 | Medium | Optimisation | v1 fusion used a constant learning rate, patience 3 and one seed; most models stopped after 5-9 epochs, so "converged" was not demonstrated | E03 histories | E06: learning-rate sweep, cosine schedule with warm-up, patience 6, capacity/regularisation variants, 5 seeds, loss landscape | done |
+| A-10 | Medium | Trees | LightGBM used fixed parameters and was never refit on 2016-2018 data | E01 config | E07: 25-trial TPE search on validation, per-iteration curves, learning curves, importance, refit | done |
+| A-11 | Medium | Calibration | Calibration fitted on one calm year (2019) made 2020-2022 log loss slightly worse (H5: −0.0004, CI excludes 0) | E03 | E08 compares none / static 2019 / walk-forward recalibration on the test years | done |
+| A-12 | Medium | Decision engine | The direction-skill gate is statistical (AUROC CI > 0.5 on validation) and let through trades that lost at 20D on 2020-22 | E04 v1 | not retuned on test data; every LONG/SHORT plan carries the backtest evidence; an economic gate is a pre-registration candidate for the next study | mitigated |
+| A-13 | Medium | Inference | The bundle supported one fusion model only, so a better ensemble or blend could not be deployed | code review | bundle v1.1: fusion seeds averaged, LightGBM per horizon, convex logistic, blend weights, calibration last | fixed |
+| A-14 | Low | Inference | The in-sample notice assumed training ended in 2015 also for refit bundles | code review | notice follows the bundle's training span | fixed |
+| A-15 | Info | Evaluation governance | The 2020-2022 test block has now been scored by E01, E02, E03, E06, E07 and E08; it is a heavily reused diagnostic, not evidence of generalisation | experiment log | stated in every report; only the sealed 2023+ period (semi-confirmatory) or forward data can confirm | open by nature |
+| A-16 | Info | Model outputs | Quantile heads were trained but never validated or shown | code review | coverage of the deployed bundle measured on validation (0.83-0.84) and test (0.82-0.84); ranges shown when within 0.80 ± 0.08 | fixed |
+| A-17 | Info | Comparability | E02-E03 used ConvNeXt-T although DINOv2-S was marginally better images-only on validation | E02 | recorded in the registry; the difference (≈ 0.001-0.003 log loss) is below the noise between seeds measured in E06 | recorded |
+
+No leakage was found in the checks below; they are part of the automated suite: future-bar perturbation of features, charts, pivots and patterns; seal readers; purge and embargo (including a planted violation); news and SEC timing; label parity with TriFrame (99.32%); indicator parity (< 1e-9); renderer byte parity (20 of 20); embedding parity (cosine ≥ 0.99998); masked-modality zero influence (all fusion variants); RAG cannot change probabilities.
+
+## 3. SWOT
+
+**Strengths**
+* Point-in-time discipline end to end: read-time seal, calendar-based label windows, availability rules for news and filings, purged and embargoed splits, all tested.
+* Reuse is verified, not assumed: byte-exact chart parity, embedding parity, label and indicator parity with the parent projects.
+* Honest pre-registration (commit `1b17168`), full experiment log including failures, artifacts behind every number.
+* Proper scoring rules and dependence-aware inference (month-block bootstrap, walk-forward across 15 years, Holm, PSR/DSR, PBO).
+* Separation of forecast and decision; hard gates a model score cannot bypass; paper-only.
+* Certified global optimum for the convex heads (E09), measured convergence and seed stability for the networks (E06).
+
+**Weaknesses**
+* Survivor-only universe from one vendor; 2020-2022 test re-used many times; one development test window dominated by 2020.
+* The economically relevant quantity (direction) is near chance; most predictive gain is volatility-driven SIDEWAYS discrimination.
+* Classical text features only (transformer encoders not run); news coverage thin before 2010 and nearly absent in 2024.
+* Chart images are scale-free OHLC bars resized to 224²; resolution and candlestick variants untested.
+* The direction-skill gate is not an economic gate (A-12).
+
+**Opportunities**
+* Forward shadow test from the freeze date (the only clean test of direction).
+* Volatility/"will it move" products: the predictable part (SIDEWAYS AUROC ≈ 0.58-0.61) supports risk sizing and option-style use cases better than direction.
+* GPU profile: transformer text encoders, native-resolution charts, 979-stock universe, delisted names.
+* Economic gate and rolling recalibration as pre-registered changes for the next study.
+
+**Threats**
+* Multiple testing across ~150 configurations: any single "win" can be selection noise (DSR ≈ 0 in the backtest).
+* Regime dependence: direction AUROC swings from 0.43 to 0.57 by year at 20 days; calibration drifts in crises.
+* Data licences (bars without a declared licence, research-only news) block any commercial or public release of data or weights.
+* Over-trust in attractive dashboards: the app must keep showing NO TRADE and the evidence warnings by default.
+
+## 4. Optimisation and the "global minimum" question
+
+* **Convex heads (multinomial logistic on the numeric features): certified global minimum.** Strictly convex objective (reference-class parameterisation, L2); L-BFGS from 5 random starts reaches the same objective (spread ≤ 2e-14) and the same parameters (≤ 4e-6); gradient norm ≤ 7e-8; Hessian positive definite (min eigenvalue 1e-3). Validation log loss 1.0338 (1D), 1.0620 (5D), 1.0699 (20D), as good as or better than the default LightGBM. (`reports/e09_convexity_certificate.json`)
+* **Gradient-boosted trees:** greedy, no global optimum exists to certify. The per-iteration curves show the training loss falling monotonically while the held-out losses reach a minimum and flatten or rise; the number of trees is chosen at the 2016 minimum (E07).
+* **Neural fusion:** non-convex; no method can certify a global minimum. Evidence offered instead: learning-rate sweep, cosine schedule, early stopping at the held-out minimum, five seeds landing within a narrow band, and a smooth basin in the 1-D seed-to-seed path and the 2-D landscape (E06).
+* **Accuracy vs loss.** Maximising raw accuracy is trivial here (always predict SIDEWAYS, ≈ 41-49%); models are selected on log loss, a proper scoring rule, and accuracy, balanced accuracy, macro-F1, AUROC and PR-AUC are reported beside it.
+
+## 5. Results after the fixes
+
+All numbers come from saved artifacts. Log loss is averaged over the six horizons unless stated. Lower is better. The class prior scores 1.0733 on test. Figures are in `reports/NEXUS_Audit_Report.html`.
+
+### 5.1 Model ladder
+
+| Model | Valid 2017-18 | Calib 2019 | Test 2020-22 | Note |
+|---|---|---|---|---|
+| Class prior | | | 1.0733 | |
+| E01 LightGBM, default settings | | | 1.0632 | v1 baseline |
+| E07 LightGBM, TPE-tuned (tree counts after A-21) | 1.0604 | 1.0457 | 1.0640 | tuning gain on validation did not carry to test |
+| E03 gated fusion, 1 seed, calibrated (v1 bundle) | | | 1.0662 | v1 deployed |
+| E06 fusion, best settings, 5-seed ensemble | 1.0580 | 1.0446 | 1.0629 | |
+| E06 numbers-only fusion, 5-seed ensemble | 1.0593 | 1.0451 | 1.0634 | images, news and SEC add 0.0012 on validation, 0.0005 on test (about one seed SD) |
+| **E08 blend 0.1 LightGBM + 0.6 fusion + 0.3 logistic, uncalibrated** | **1.0573** | 1.0442 | **1.0613** | best on validation among 68 candidates |
+| E08 blend, calibrated on 2019 (selection stage) | | | 1.0625 | |
+| **E08 deployed: refit 2003-2018, calibrated** | | | **1.0620** | v1.1 bundle; beats v1 at 1D-10D (CIs exclude 0) |
+
+Per horizon, the deployed model beats the prior at 1D (+0.0200, CI [+0.015, +0.026]), 2D (+0.0134) and 5D (+0.0114). At 10D, 20D and 1M the gain is positive, but the confidence intervals include zero.
+
+### 5.2 Convergence and the minimum (E06, E07, E09)
+
+* **Convex head.** Certified global minimum: objective spread across 5 starts ≤ 2e-14, gradient ≤ 7e-8, Hessian positive definite.
+* **Networks.**
+  * Learning-rate sweep: 3e-4 best; 3e-3 lost 0.005.
+  * With cosine decay and patience 6, the curves flatten before stopping. Five seeds give validation 1.0591 ± 0.0010.
+  * The 2-D landscape around the selected model is a smooth bowl. The trained point is within 0.0003 of the grid minimum, which is less than the seed spread.
+  * The straight path between two seeds rises by 0.009, so the seeds sit in different, equally good basins. The ensemble averages over these basins and gains 0.0010 over the mean seed on validation.
+* **Trees.** In the per-iteration curves, training loss falls monotonically while 2016 and validation loss reach a minimum and then flatten. TPE found settings 0.0007 better on validation (1D/5D/20D), but 0.0009 worse on test than the E01 defaults (six-horizon mean 1.0640 vs 1.0632): the gain was noise.
+* **Conclusion.** The models are at or within noise of their attainable minimum on this data. Further optimisation of the same inputs is unlikely to help. The ceiling is the information in the features, not the optimiser.
+
+### 5.3 Controls (E10, LightGBM, test LL minus prior; negative = better)
+
+| Horizon | Real | Placebo within date | Placebo global | Canary (planted leak) |
+|---|---|---|---|---|
+| 1D | −0.0184 | −0.0058 | +0.0004 | −0.1029 |
+| 5D | −0.0077 | −0.0033 | 0.0000 | −0.1007 |
+| 20D | −0.0069 | −0.0020 | +0.0001 | −0.0999 |
+
+* The global placebo finds nothing, so there is no leakage.
+* The canary is found, so the pipeline can detect real signal.
+* The within-date placebo keeps 29-43% of the real test gain. That part is market-wide timing: the class mix of a date is predictable from features shared by all stocks on that date (volatility regime). The rest is cross-sectional.
+
+### 5.4 Calibration (A-11)
+
+On the test years, no calibration (1.0613) beat static 2019 calibration (1.0625) and annual walk-forward recalibration (1.0617). Temperature scaling was chosen only at 10D-1M, on chronological halves of 2019. The procedure is not retuned on test. For the next study, "none" or walk-forward recalibration is the registered candidate. The reliability diagrams (equal-count bins, 95% intervals) show why. 1D-5D are well calibrated. At 10D-1M, DOWN is under-predicted by about 3-5 points across the range on 2020-2022: the March 2020 crash and the 2022 bear market against a model calibrated on 2019, a strong up year. This is a class-prior shift that a static calibrator cannot follow.
+
+### 5.5 Direction gate (A-12)
+
+The gate is closed at 1D and 2D and open at 5D-1M on validation evidence (AUROC 0.522-0.542, CIs above 0.5). On 2020-2022, up-vs-down AUROC was 0.508 at 5D and 0.494-0.497 at 10D-1M. 2020 was below 0.46 at 10D-1M, and 2021 was above 0.53. Direction skill at long horizons is regime-dependent and did not persist.
+
+### 5.6 Return ranges (A-16)
+
+The deployed quantile heads (5 seeds averaged, sorted) cover the realised volatility-scaled return 0.83-0.84 of the time on validation and 0.82-0.84 on test, against a nominal 0.80. The bands are slightly conservative, and no quantile crossings occur. Ranges are now shown in the app and the schema.
+
+### 5.7 Economics (E04 v1.1)
+
+Fixed engine: A-01 targets, A-02 P&L, A-04 kill-switch and gross cap, A-05 Sortino. Thresholds were frozen on 2017-2018 with at least 30 validation trades (A-06). Probabilities for 2017-2019 come from the E08 selection-stage blend (trained on 2003-2015). Probabilities for 2020-2022 come from the deployed refit (trained on 2003-2018). Every scored row is out of sample. Test 2020-2022, base costs; Sharpe intervals from month-block bootstrap.
+
+| Policy | Horizon | θ | Trades | Sharpe [95% CI] | CAGR | Max DD | Expectancy (R) | DSR | v1 Sharpe |
+|---|---|---|---|---|---|---|---|---|---|
+| Rule only | 5D | | 1,386 | −0.87 [−2.11, 0.34] | −8.1% | −29.1% | −0.036 | 0.00 | −0.96 |
+| Model + ATR stops | 5D | 0.10 | 1,325 | 0.02 [−0.76, 1.14] | −1.1% | −25.0% | −0.015 | 0.00 | 0.29 |
+| NEXUS (model + rules) | 5D | 0.05 | 245 | 0.04 [−1.11, 1.12] | 0.1% | −6.6% | −0.016 | 0.00 | 0.31 (2 trades, θ 0.20) |
+| NEXUS gated (live planner) | 5D | 0.10 | 41 | 0.31 [−0.64, 2.08] | 0.8% | −5.1% | −0.010 | 0.01 | 0.20 |
+| Rule only | 20D | | 761 | −0.34 [−1.61, 0.71] | −4.4% | −24.4% | −0.014 | 0.00 | −0.98 |
+| Model + ATR stops | 20D | 0.05 | 1,110 | 0.16 [−0.96, 1.47] | 1.0% | −37.8% | +0.018 | 0.01 | 0.04 |
+| NEXUS gated (= NEXUS at 20D) | 20D | 0.10 | 322 | −0.14 [−1.19, 0.77] | −1.6% | −14.2% | −0.041 | 0.00 | −0.64 |
+| Equal-weight buy-and-hold, same survivors | | | | 0.53 [−0.41, 1.72] | 11.8% | −40.9% | | | 0.53 |
+
+* PBO over the 20 validation configurations is 0.12, so selection overfitting is low. There is simply no edge to select.
+* Stressed (15 bps) and severe (20 bps) costs lower every Sharpe by 0.02-0.4.
+* The kill-switch was live: NEXUS policies had 1-3 sessions below −2% and the model-ATR 20D policy had 61, each blocking new entries on the next session.
+* Two of the fixes changed the rule policy directly:
+  * The fixed targets (A-01) let more rule setups pass the reward-to-risk gate: test trades rose from 1,075 to 1,386 at 5D and from 686 to 761 at 20D. With the corrected P&L (A-02), rule-only 20D moved from −0.98 to −0.34. It still loses.
+  * The trade-count floor (A-06) removed v1's degenerate 2-trade selection.
+* **Verdict.** No policy is distinguishable from zero, and none beats buy-and-hold of the same survivors on a risk-adjusted basis. The better forecasts (E08) did not create an edge. The economic conclusion of v1 stands.
+
+### 5.8 What changed and what did not
+
+* **Changed.**
+  * Four bugs were fixed: target levels, P&L accounting, the missing kill-switch, and degenerate threshold selection.
+  * The model is better: 1.0620 vs 1.0662 test log loss, significant at 1D-10D.
+  * Every network result now has seeds, curves and a landscape. The convex head is certified.
+  * The deployed bundle is the validated blend and carries return ranges.
+* **Unchanged.** The signal is mainly "will it move". Direction is weak and unstable across regimes. Images, news and filings add 0.0005-0.0012 over numbers alone, about one seed SD. There is no demonstrated trading edge.
+* **Recommended next step.** Freeze v1.1 and run a forward shadow test (no data until it is scored). Optionally, the owner can authorise the single sealed 2023+ evaluation as a semi-confirmatory read.
+
+Additional findings logged during the fixes:
+
+| ID | Sev. | Area | Finding | Fix | Status |
+|---|---|---|---|---|---|
+| A-18 | Low | Backtest script | A loop variable shadowed the parsed arguments, so E04 v1.1 crashed after computing (no wrong number was written) | renamed; re-run | fixed |
+| A-20 | Low | Backtest provenance | The gated policy's skill flags were read from the E03 bundle even when another model's probabilities were passed | `--bundle` option and the source recorded in the manifest. E08's flags agree with E03's at 5D and 20D (both open), so v1.1 results are unchanged | fixed |
+| A-21 | Medium | Protocol (E07) | The final tuned LightGBM fits recorded their curves inside the early-stopped run. LightGBM's early stopping watches every non-training set, so the 2017-18 validation block ended the run at 1D and 2D, capping the tree count and leaking validation data into a choice reserved for 2016 (5D-1M unaffected) | tree count from 2016-only early stopping, then a fixed-rounds fit records the curves; an assert checks the 2016 minimum is unchanged; E07, E08, the bundle, coverage and E04 v1.1 re-run | fixed |
+| A-19 | Low | Quantile heads | Heads are unconstrained, so q10 > q90 was possible | measured crossing rate 0.0%; monotone rearrangement (sorting) added in inference and in the coverage check | fixed |

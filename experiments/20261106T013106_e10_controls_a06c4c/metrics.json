@@ -1,0 +1,116 @@
+{
+ "1D": {
+  "real": {
+   "valid": {
+    "log_loss": 1.0347228139786362,
+    "prior_log_loss": 1.0510018037372353,
+    "best_iteration": 320
+   },
+   "test": {
+    "log_loss": 1.0303298088863675,
+    "prior_log_loss": 1.0487374182615532,
+    "best_iteration": 320
+   }
+  },
+  "placebo_within_date_shuffle": {
+   "valid": {
+    "log_loss": 1.0481801326077465,
+    "prior_log_loss": 1.0510018037372353,
+    "best_iteration": 82
+   },
+   "test": {
+    "log_loss": 1.04296992382372,
+    "prior_log_loss": 1.0487374182615532,
+    "best_iteration": 82
+   }
+  },
+  "canary_planted_leak": {
+   "valid": {
+    "log_loss": 0.9931739118898479,
+    "prior_log_loss": 1.0510018037372353,
+    "best_iteration": 363
+   },
+   "test": {
+    "log_loss": 0.9442323232541865,
+    "prior_log_loss": 1.0487374182615532,
+    "best_iteration": 363
+   }
+  }
+ },
+ "5D": {
+  "real": {
+   "valid": {
+    "log_loss": 1.0627742876993682,
+    "prior_log_loss": 1.0752614517466417,
+    "best_iteration": 204
+   },
+   "test": {
+    "log_loss": 1.0676581019988305,
+    "prior_log_loss": 1.075312555853593,
+    "best_iteration": 204
+   }
+  },
+  "placebo_within_date_shuffle": {
+   "valid": {
+    "log_loss": 1.0748908032912934,
+    "prior_log_loss": 1.0752614517466417,
+    "best_iteration": 39
+   },
+   "test": {
+    "log_loss": 1.071783682653235,
+    "prior_log_loss": 1.075312555853593,
+    "best_iteration": 39
+   }
+  },
+  "canary_planted_leak": {
+   "valid": {
+    "log_loss": 1.0209722271307633,
+    "prior_log_loss": 1.0752614517466417,
+    "best_iteration": 249
+   },
+   "test": {
+    "log_loss": 0.9720544782166313,
+    "prior_log_loss": 1.075312555853593,
+    "best_iteration": 249
+   }
+  }
+ },
+ "20D": {
+  "real": {
+   "valid": {
+    "log_loss": 1.0712630720050424,
+    "prior_log_loss": 1.0881246437570722,
+    "best_iteration": 86
+   },
+   "test": {
+    "log_loss": 1.076563998713822,
+    "prior_log_loss": 1.0834763152434488,
+    "best_iteration": 86
+   }
+  },
+  "placebo_within_date_shuffle": {
+   "valid": {
+    "log_loss": 1.0860230348881315,
+    "prior_log_loss": 1.0881246437570722,
+    "best_iteration": 14
+   },
+   "test": {
+    "log_loss": 1.0812375196257482,
+    "prior_log_loss": 1.0834763152434488,
+    "best_iteration": 14
+   }
+  },
+  "canary_planted_leak": {
+   "valid": {
+    "log_loss": 1.0303098990019584,
+    "prior_log_loss": 1.0881246437570722,
+    "best_iteration": 91
+   },
+   "test": {
+    "log_loss": 0.9803886273677845,
+    "prior_log_loss": 1.0834763152434488,
+    "best_iteration": 91
+   }
+  }
+ }
+}

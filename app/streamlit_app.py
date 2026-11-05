@@ -109,7 +109,7 @@ if go:
 
 res = st.session_state.get("res")
 tabs = st.tabs(["A Forecast", "B Charts", "C News", "D SEC", "E Indicators", "F Explain", "G Trade planner",
-                "H Model diagnostics", "I Backtesting", "J Knowledge base", "K Configuration"])
+                "H Model diagnostics", "I Backtesting", "J Knowledge base", "K Configuration", "L Audit"])
 
 with tabs[0]:
     st.header("Forecast overview")
@@ -126,8 +126,12 @@ with tabs[0]:
                    f"calibration {res.model.calibration_status}; trained through {res.model.trained_through}.")
         df = pd.DataFrame({h: {"UP": f.up_probability, "SIDEWAYS": f.sideways_probability, "DOWN": f.down_probability,
                                "predicted": f.predicted_direction, "uncertainty (normalised entropy)": f.uncertainty,
-                               "direction skill validated": f.direction_skill_validated} for h, f in res.forecasts.items()}).T
+                               "direction skill validated": f.direction_skill_validated,
+                               "median return": f.expected_return, "return q10": f.return_q10, "return q90": f.return_q90}
+                           for h, f in res.forecasts.items()}).T
         st.dataframe(df, use_container_width=True)
+        st.caption("Return range: quantile heads of the fusion seeds (10%, 50%, 90% of the horizon's simple return), shown only "
+                   "where the 10-90% band covered 80% ± 8 points on 2017-2018 validation. A range, not a direction call.")
         st.bar_chart(df[["UP", "SIDEWAYS", "DOWN"]].astype(float))
         st.subheader("Decision (separate risk engine)")
         st.dataframe(pd.DataFrame({h: {"decision": p.decision, "first reason": (p.reasons or [""])[0]}
@@ -252,9 +256,18 @@ with tabs[7]:
 
 with tabs[8]:
     st.header("Backtesting")
-    bt = ROOT / "reports" / "backtest" / "e04_backtest.json"
-    if bt.exists():
+    versions = [v for v in ("v1.1", "v1") if (ROOT / "reports" / "backtest" / ("e04_backtest.json" if v == "v1" else f"e04_backtest_{v}.json")).exists()]
+    ver = st.radio("Backtest version", versions, horizontal=True,
+                   help="v1.1: audited engine (prior-bar targets, corrected P&L, kill-switch, >= 30-trade threshold rule) with the "
+                        "deployed E08 model. v1: original engine with the E03 model, kept for comparison.") if versions else None
+    bt = ROOT / "reports" / "backtest" / ("e04_backtest.json" if ver == "v1" else f"e04_backtest_{ver}.json")
+    if ver and bt.exists():
         b = json.loads(bt.read_text(encoding="utf-8"))
+        eq = ROOT / "reports" / "backtest" / f"e04_daily_returns_{ver}.csv"
+        if eq.exists():
+            d = pd.read_csv(eq, index_col=0, parse_dates=True)
+            st.subheader("Equity curves, test 2020-2022 (base costs)")
+            st.line_chart((1 + d).cumprod())
         st.caption("Entry at the next open; gap-through stops fill at the open; stop-first on ambiguous bars; "
                    "costs 10/15/20 bps round trip plus 0.5%/yr short borrow. Benchmark: equal-weight survivors.")
         st.dataframe(pd.DataFrame(b["test_final"]).T[["trades", "sharpe", "sharpe_ci95_month_blocks", "cagr", "max_drawdown",
@@ -298,3 +311,13 @@ with tabs[10]:
             st.download_button("Export", txt, file_name=sel)
         except yaml.YAMLError as e:
             st.error(f"Invalid YAML: {e}")
+
+with tabs[11]:
+    st.header("Audit: curves, diagnostics and evaluation figures")
+    st.caption("Generated from saved artifacts by scripts/report/audit_report.py; findings and SWOT in docs/CHIEF_AUDIT_REPORT.md.")
+    figs = sorted((ROOT / "reports" / "figures").glob("*.png"))
+    if not figs:
+        st.info("Run scripts/report/audit_report.py to build the figures.")
+    for f in figs:
+        st.subheader(f.stem)
+        st.image(str(f), use_container_width=True)

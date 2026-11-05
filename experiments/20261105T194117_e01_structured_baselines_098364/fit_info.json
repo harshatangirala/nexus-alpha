@@ -1,0 +1,98 @@
+{
+ "lgbm_structured|1D": {
+  "best_iteration": 138,
+  "inner_logloss": 1.012847329480065
+ },
+ "lgbm_x33|1D": {
+  "best_iteration": 105,
+  "inner_logloss": 1.0164469393064872
+ },
+ "lgbm_struct_x33|1D": {
+  "best_iteration": 157,
+  "inner_logloss": 1.012014614466671
+ },
+ "lgbm_struct_x33_mkt|1D": {
+  "best_iteration": 72,
+  "inner_logloss": 1.0187395763427025
+ },
+ "lgbm_structured|2D": {
+  "best_iteration": 89,
+  "inner_logloss": 1.041113814416949
+ },
+ "lgbm_x33|2D": {
+  "best_iteration": 59,
+  "inner_logloss": 1.0443617534445255
+ },
+ "lgbm_struct_x33|2D": {
+  "best_iteration": 106,
+  "inner_logloss": 1.0410073009538077
+ },
+ "lgbm_struct_x33_mkt|2D": {
+  "best_iteration": 45,
+  "inner_logloss": 1.0512684970091135
+ },
+ "lgbm_structured|5D": {
+  "best_iteration": 110,
+  "inner_logloss": 1.0558915664277446
+ },
+ "lgbm_x33|5D": {
+  "best_iteration": 88,
+  "inner_logloss": 1.0585220849494823
+ },
+ "lgbm_struct_x33|5D": {
+  "best_iteration": 91,
+  "inner_logloss": 1.0552760217322028
+ },
+ "lgbm_struct_x33_mkt|5D": {
+  "best_iteration": 16,
+  "inner_logloss": 1.0668230448961074
+ },
+ "lgbm_structured|10D": {
+  "best_iteration": 44,
+  "inner_logloss": 1.063253973643622
+ },
+ "lgbm_x33|10D": {
+  "best_iteration": 48,
+  "inner_logloss": 1.0630008823635673
+ },
+ "lgbm_struct_x33|10D": {
+  "best_iteration": 44,
+  "inner_logloss": 1.0634006835174241
+ },
+ "lgbm_struct_x33_mkt|10D": {
+  "best_iteration": 31,
+  "inner_logloss": 1.0645797674256732
+ },
+ "lgbm_structured|20D": {
+  "best_iteration": 24,
+  "inner_logloss": 1.0605581646659021
+ },
+ "lgbm_x33|20D": {
+  "best_iteration": 37,
+  "inner_logloss": 1.059859203493945
+ },
+ "lgbm_struct_x33|20D": {
+  "best_iteration": 26,
+  "inner_logloss": 1.0610805437140294
+ },
+ "lgbm_struct_x33_mkt|20D": {
+  "best_iteration": 34,
+  "inner_logloss": 1.0595991171536514
+ },
+ "lgbm_structured|1M": {
+  "best_iteration": 19,
+  "inner_logloss": 1.0597797106016433
+ },
+ "lgbm_x33|1M": {
+  "best_iteration": 37,
+  "inner_logloss": 1.0600515623141902
+ },
+ "lgbm_struct_x33|1M": {
+  "best_iteration": 18,
+  "inner_logloss": 1.0603604599383623
+ },
+ "lgbm_struct_x33_mkt|1M": {
+  "best_iteration": 34,
+  "inner_logloss": 1.05807075262839
+ }
+}

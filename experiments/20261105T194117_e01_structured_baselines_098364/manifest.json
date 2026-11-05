@@ -1,0 +1,73 @@
+{
+ "run_id": "20261105T194117_e01_structured_baselines_098364",
+ "name": "e01_structured_baselines",
+ "profile": "local-cpu",
+ "config": {
+  "frame": "C:\\Users\\harsh\\nexus-alpha\\artifacts\\samples\\s500_frame.parquet",
+  "feature_sets": {
+   "momentum_lr": 4,
+   "lgbm_structured": 47,
+   "lgbm_x33": 33,
+   "lgbm_struct_x33": 80,
+   "lgbm_struct_x33_mkt": 86
+  },
+  "lgb_params": {
+   "objective": "multiclass",
+   "num_class": 3,
+   "learning_rate": 0.05,
+   "num_leaves": 31,
+   "min_data_in_leaf": 400,
+   "feature_fraction": 0.8,
+   "bagging_fraction": 0.8,
+   "bagging_freq": 1,
+   "lambda_l2": 5.0,
+   "verbose": -1,
+   "deterministic": true,
+   "force_row_wise": true,
+   "seed": 7,
+   "num_threads": 6
+  },
+  "horizons": {
+   "1D": 1,
+   "2D": 2,
+   "5D": 5,
+   "10D": 10,
+   "20D": 20,
+   "1M": 21
+  },
+  "eval_blocks": [
+   "valid",
+   "calib",
+   "test"
+  ],
+  "bootstrap": "month blocks, 500 resamples"
+ },
+ "config_hash": "0983647af5855402",
+ "git_commit": "22953942778d2fda39f17eef54d9dfab6aec4314",
+ "git_dirty": true,
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {
+  "frame": {
+   "path": "C:\\Users\\harsh\\nexus-alpha\\artifacts\\samples\\s500_frame.parquet",
+   "digest": "145148cefdc29c7fda612009+partial(191732921)"
+  }
+ },
+ "started_utc": "2026-11-05T14:11:31Z",
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T14:16:08Z",
+ "elapsed_s": 290.7,
+ "summary": "valid-selected best structured model: lgbm_struct_x33; test log loss by horizon 1D 1.0312 vs prior 1.0487, 2D 1.0565 vs prior 1.0674, 5D 1.0662 vs prior 1.0753, 10D 1.0740 vs prior 1.0798, 20D 1.0744 vs prior 1.0835, 1M 1.0768 vs prior 1.0851"
+}

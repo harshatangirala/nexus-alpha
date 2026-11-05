@@ -136,19 +136,22 @@ WEEKLY_PERMISSION = {"BULL_TREND": "LONG_PREFERRED", "BEAR_TREND": "SHORT_PREFER
                      "TRANSITION": "REDUCED_CONFIRMATION_REQUIRED", "HIGH_VOL_DISORDERLY": "BLOCKED", "UNKNOWN": "NONE"}
 
 
-def weekly_regime(wk: pd.DataFrame) -> dict:
-    """Regime of the LAST row of `wk` (completed weekly bars only): E011-E015, E018. Returns the state, permission,
-    evidence values and the rule events that produced it."""
-    n = len(wk)
-    asof = str(pd.Timestamp(wk.iloc[-1].get("last_day", wk.index[-1])).date()) if n else ""
+def weekly_regime(wk: pd.DataFrame, i: int | None = None, x: pd.DataFrame | None = None,
+                  piv_all: pd.DataFrame | None = None) -> dict:
+    """Regime at completed week i (default: the last row) of `wk` (completed weekly bars only): E011-E015, E018.
+    Precomputed causal indicators `x` and pivots `piv_all` for the whole series may be passed; values at row i use
+    rows <= i only, so this equals recomputing on wk.iloc[:i+1]."""
+    i = len(wk) - 1 if i is None else i
+    n = i + 1
+    asof = str(pd.Timestamp(wk.iloc[i].get("last_day", wk.index[i])).date()) if n else ""
     if n < 30:
         return {"regime": "UNKNOWN", "permission": "NONE", "reason": "fewer than 30 completed weeks", "evidence": {}}
-    h, l, c = (wk[k].to_numpy(float) for k in ("high", "low", "close"))
-    x = indicators(wk)
-    piv = confirmed_pivots(h, l, PIVOT_K_WEEKLY).iloc[-1]
+    h, l, c = (wk[k].to_numpy(float)[:n] for k in ("high", "low", "close"))
+    x = indicators(wk.iloc[:n]) if x is None else x.iloc[:n]
+    piv = (confirmed_pivots(h, l, PIVOT_K_WEEKLY) if piv_all is None else piv_all.iloc[:n]).iloc[-1]
     sma20 = x.sma20.to_numpy()
     slope = sma20[-1] / sma20[-5] - 1 if np.isfinite(sma20[-5]) else np.nan
-    atr_pct = (x.atr14 / wk.close).to_numpy()
+    atr_pct = (x.atr14.to_numpy() / c)
     hist = atr_pct[-104:]
     vol_rank = float((hist[np.isfinite(hist)] <= atr_pct[-1]).mean()) if np.isfinite(atr_pct[-1]) else np.nan
     ev = {"swing_high_last": piv.sh_last, "swing_high_prev": piv.sh_prev, "swing_low_last": piv.sl_last,
@@ -178,17 +181,18 @@ def weekly_regime(wk: pd.DataFrame) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------ daily setups
-def daily_setups(d: pd.DataFrame, k: int, weekly: dict) -> list[dict]:
+def daily_setups(d: pd.DataFrame, k: int, weekly: dict, x_all: pd.DataFrame | None = None,
+                 piv_all: pd.DataFrame | None = None) -> list[dict]:
     """Daily setup candidates at bar k (E023/E024 pullbacks, E027/E066/E067 breakouts, E026/E031/E032 range edges).
     Each carries a structural invalidation price, the first opposing obstacle and its rule ids. Levels come from OHLCV,
-    never from chart pixels."""
+    never from chart pixels. Precomputed causal indicators/pivots for the whole series may be passed (rows <= k used)."""
     if k < 252:
         return []
     o, h, l, c, v = (d[x].to_numpy(float)[: k + 1] for x in ("open", "high", "low", "close", "volume"))
-    x = indicators(d.iloc[: k + 1])
+    x = indicators(d.iloc[: k + 1]) if x_all is None else x_all.iloc[: k + 1]
     atr, sma20, sma50 = x.atr14.iloc[-1], x.sma20.iloc[-1], x.sma50.iloc[-1]
     vol_ratio = x.vol_ratio.iloc[-1]
-    piv = confirmed_pivots(h, l, PIVOT_K_DAILY)
+    piv = confirmed_pivots(h, l, PIVOT_K_DAILY) if piv_all is None else piv_all.iloc[: k + 1].reset_index(drop=True)
     sh_last, sl_last = piv.sh_last.iloc[-1], piv.sl_last.iloc[-1]
     hh = pd.Series(h)
     ll = pd.Series(l)

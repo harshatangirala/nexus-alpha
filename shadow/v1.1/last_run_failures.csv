@@ -1,0 +1,4 @@
+ticker,error
+BZH,ValueError('only 66 usable daily bars from Yahoo for BZH: insufficient history')
+WY,"TypeError('Cannot convert tz-naive timestamps, use tz_localize to localize')"
+BMI,ValueError('no daily data for BMI')

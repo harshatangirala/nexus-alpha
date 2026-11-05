@@ -1,0 +1,76 @@
+{
+  "version": "v1.1",
+  "bundle_id": "20261106T020411_e08_final_model_5c4327",
+  "files": {
+    "bundle_meta.json": "8b3d1b472a63894a7940a2bb63097319f822f13c8014b4d7c395e342cf0f7567",
+    "calibrators.pkl": "574b0b67888e96de43f149deecb37d1149531058c32251263c8535dbaa673e2e",
+    "fusion.pt": "5bce087d40cfb38f61fb6185eea6de8b10030e3b7c45673080ad676ef8340dff",
+    "fusion_seed101.pt": "8e5a71e49c0e1c07420441b137e9833ba50e34d75a58cd2cab11622423b544c6",
+    "fusion_seed11.pt": "19dadedee2d6a82024ce836109c3b36d6b39dd454c04c56d5ce38a07810643b4",
+    "fusion_seed23.pt": "1e4896561ce22c4d153f4f0e3f306da84e3fb0330ab14ee09d28f5a9a8364f71",
+    "fusion_seed42.pt": "e441780ea66db74814bcaea6a88a065e22c7c38e7e4f728835efe2822b4cb339",
+    "fusion_seed7.pt": "5bce087d40cfb38f61fb6185eea6de8b10030e3b7c45673080ad676ef8340dff",
+    "lgbm_10D.txt": "02c93f0a982d0a1cabfaff4433ca5ebdc1266b5a68e5fb9e36f7c5f8d6994407",
+    "lgbm_1D.txt": "5a9de11a7a876d925109d95d76cb2362a2ea858e5eb21a66dac85d50985e6ff4",
+    "lgbm_1M.txt": "047f61bfe34666a2fd479de2d56cefb0599d3080549859999e61037f9d17c6c1",
+    "lgbm_20D.txt": "e3c221121a746fd2f3862e7d81f947fbaf38d588ae89e01775d89781a4b08ba1",
+    "lgbm_2D.txt": "d7717fbdc3cb437c9060c82aa6863928d86208b7ead4c5ed55f88a613d5e379b",
+    "lgbm_5D.txt": "de90b02a06699a9ddbe0e5724089da26ba76064efe53697da34f667a64da40d5",
+    "logistic.pkl": "7be38c9eff6556e7be3ff8a86727d11d10337576b81f8646b987edaecf62f63d",
+    "news_tfidf_svd.pkl": "3a14fa1c657026a48832e98956be8ec069f268687599bedced3a233875e39895",
+    "preprocessor.pkl": "17feaa199ebf4a55cf46272dfd2fb6bcdde79f38bfb5feb4daa57f63dc36e82b",
+    "sec_tfidf_svd.pkl": "f5bdb1571b0286b8dfb206231a2159853121727438d69d637f02eba76a3469c9"
+  },
+  "frozen_utc": "2026-11-05T22:43:23+00:00",
+  "code_commit_at_freeze": "a93577727d5d95ef5e1ccc653a1176a297f77c48",
+  "recipe": "blend_l0.1_f0.6_g0.3",
+  "trained_through_block": "refit 2003-2018",
+  "label_version": "nexus-labels-v1",
+  "horizons": {
+    "1D": 1,
+    "2D": 2,
+    "5D": 5,
+    "10D": 10,
+    "20D": 20,
+    "1M": 21
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid"
+  ],
+  "train_class_prior": {
+    "1D": [
+      0.25449762629199146,
+      0.4802397981360324,
+      0.26526257557197613
+    ],
+    "2D": [
+      0.26166673252459793,
+      0.4524835025882167,
+      0.2858497648871854
+    ],
+    "5D": [
+      0.26244573776877095,
+      0.4283794997431541,
+      0.309174762488075
+    ],
+    "10D": [
+      0.25505083291466507,
+      0.42170715047784635,
+      0.32324201660748864
+    ],
+    "20D": [
+      0.24968247068851646,
+      0.40715442932220897,
+      0.3431630999892746
+    ],
+    "1M": [
+      0.24937199758395476,
+      0.4039763137246047,
+      0.34665168869144053
+    ]
+  },
+  "note": "Deployed v1.1 blend after chief audit A-01..A-21 (+A-22 live-data fix, which changes no weights). Frozen 2026-11-06 on the owner's instruction: forward shadow test starts; sealed 2023+ evaluation deferred to one joint opening with v2."
+}

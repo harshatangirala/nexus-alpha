@@ -117,9 +117,17 @@ class Bundle:
         return p, q
 
 
+def yahoo_symbol(ticker: str) -> str:
+    """Universe tickers use a dot for share classes (BRK.B); Yahoo uses a dash (BRK-B) (audit finding A-23)."""
+    return ticker.replace(".", "-")
+
+
 def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     import yfinance as yf
-    d = yf.download(ticker, period="3y", interval="1d", auto_adjust=False, actions=False, progress=False,
+    ysym = yahoo_symbol(ticker)
+    # Explicit start date: "3y" is not a valid Yahoo range and returns no rows (audit finding A-22).
+    start = (pd.Timestamp.now(tz="America/New_York").normalize() - pd.Timedelta(days=3 * 365 + 7)).strftime("%Y-%m-%d")
+    d = yf.download(ysym, start=start, interval="1d", auto_adjust=False, actions=False, progress=False,
                     multi_level_index=False, threads=False)
     if d is None or len(d) == 0:
         raise ValueError(f"no daily data for {ticker}")
@@ -127,7 +135,7 @@ def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     di = di.tz_localize(None) if di.tz is not None else di
     daily = pd.DataFrame({"date": di.normalize(), "open": d["Open"].values, "high": d["High"].values,
                           "low": d["Low"].values, "close": d["Close"].values, "volume": d["Volume"].values}).dropna()
-    h = yf.download(ticker, period="60d", interval="60m", auto_adjust=False, actions=False, prepost=False,
+    h = yf.download(ysym, period="60d", interval="60m", auto_adjust=False, actions=False, prepost=False,
                     progress=False, multi_level_index=False, threads=False)
     if h is None or len(h) == 0:
         hourly = pd.DataFrame(columns=["timestamp", "open", "high", "low", "close", "volume"])
@@ -140,6 +148,8 @@ def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     if len(daily) and daily.date.iloc[-1] == now.tz_localize(None).normalize() and (now.hour, now.minute) < (16, 5):
         daily = daily.iloc[:-1]                                     # today's session is still forming
     daily = daily[(daily[["open", "high", "low", "close"]] > 0).all(axis=1)].reset_index(drop=True)
+    if len(daily) < 130:      # the visible-window features need a 126-session window (data contract)
+        raise ValueError(f"only {len(daily)} usable daily bars from Yahoo for {ticker}: insufficient history")
     return daily, hourly
 
 

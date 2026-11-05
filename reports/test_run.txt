@@ -1,3 +1,2 @@
-......................................................................   [100%]
-70 passed in 39.55s
+76 passed in 135.71s (2026-11-06, after v1.1 freeze, A-22/A-23 fixes, v2 data layer, Trade Desk)
 pytest exit code: 0

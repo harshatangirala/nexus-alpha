@@ -35,6 +35,29 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 * TriFrame: images add ~0 to volatility R².
 * SEC study: models know whether a stock moves, not which way.
 
+## Now in progress: v1.1 frozen, forward test running, v2 being built
+
+* **v1.1 is frozen** (`registry/frozen_models/v1.1.json`, SHA-256 of every bundle file) and is in a **forward shadow test**:
+  every evening it forecasts all 500 stocks before the next open, into a hash-chained log in `shadow/v1.1/`
+  ([`docs/FORWARD_SHADOW_TEST.md`](docs/FORWARD_SHADOW_TEST.md)). A golden test pins its outputs while v2 is built.
+* **v2** ([`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md), pre-registered before any v2 fit) adds:
+  * S&P 500 (SPY) and sector, rates, credit and commodity ETF bars at 1H/1D/1W, from the same minute source as TriFrame;
+  * VIX, Treasury yields, dollar, oil, gold and copper;
+  * Global Macro Database annual data, publication-lagged;
+  * FRED/ALFRED real-time vintages;
+  * FinBERT text features;
+  * every trade length the dashboard offers: intraday (1D), swing of 2-20 days, and 4 weeks, 3 months, 6 months and 1 year.
+* **Trade Desk** (first dashboard tab):
+  * Inputs: trade type, three chart screenshots and 1-10 texts.
+  * Model output: the frozen model's forecast and risk plan.
+  * Context: market and macro context.
+  * Screenshot check: legend values checked against real bars.
+  * Optional Gemini read: live and unvalidated, logged for forward scoring.
+* **Sealed 2023+ evaluation:** it will be opened once, after v2 is frozen, scoring v1.1 and v2 together (owner decision D-018).
+* **Keys the owner sets** (environment variables, never committed):
+  * `FRED_API_KEY` for ALFRED vintages;
+  * `GEMINI_API_KEY` for the Trade Desk's LLM read.
+
 ## What is in the repository
 
 | Path | Contents |

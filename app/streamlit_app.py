@@ -108,8 +108,15 @@ if go:
             st.error(f"Analysis failed: {type(e).__name__}: {e}")
 
 res = st.session_state.get("res")
-tabs = st.tabs(["A Forecast", "B Charts", "C News", "D SEC", "E Indicators", "F Explain", "G Trade planner",
-                "H Model diagnostics", "I Backtesting", "J Knowledge base", "K Configuration", "L Audit"])
+all_tabs = st.tabs(["Trade Desk", "A Forecast", "B Charts", "C News", "D SEC", "E Indicators", "F Explain",
+                    "G Trade planner", "H Model diagnostics", "I Backtesting", "J Knowledge base", "K Configuration",
+                    "L Audit"])
+with all_tabs[0]:
+    import trade_desk_tab  # noqa: E402  (app/ is on sys.path when Streamlit runs this script)
+    trade_desk_tab.render(predictor if bundle_ok else None, universe(),
+                          dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
+                               allow_short=allow_short, cost_scenario=cost_sc))
+tabs = all_tabs[1:]
 
 with tabs[0]:
     st.header("Forecast overview")
@@ -129,13 +136,13 @@ with tabs[0]:
                                "direction skill validated": f.direction_skill_validated,
                                "median return": f.expected_return, "return q10": f.return_q10, "return q90": f.return_q90}
                            for h, f in res.forecasts.items()}).T
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width="stretch")
         st.caption("Return range: quantile heads of the fusion seeds (10%, 50%, 90% of the horizon's simple return), shown only "
                    "where the 10-90% band covered 80% ± 8 points on 2017-2018 validation. A range, not a direction call.")
         st.bar_chart(df[["UP", "SIDEWAYS", "DOWN"]].astype(float))
         st.subheader("Decision (separate risk engine)")
         st.dataframe(pd.DataFrame({h: {"decision": p.decision, "first reason": (p.reasons or [""])[0]}
-                                   for h, p in res.trade_plans.items()}).T, use_container_width=True)
+                                   for h, p in res.trade_plans.items()}).T, width="stretch")
         for lim in res.limitations:
             st.warning(lim)
 
@@ -152,13 +159,13 @@ with tabs[1]:
         st.subheader("Your screenshots (displayed only)")
         st.caption("Screenshots are never parsed for price levels; the model uses structured OHLCV (spec 13.4).")
         for s in shots:
-            st.image(s, use_container_width=True)
+            st.image(s, width="stretch")
     if res is not None:
         st.json(res.evidence.get("charts", {}))
         occ = res.evidence.get("chart_occlusion")
         if occ:
             st.subheader("Occlusion attribution of the 5D score (diagnostic, not proof of a pattern)")
-            st.dataframe(pd.DataFrame({v: d["attribution"] for v, d in occ.items()}), use_container_width=True)
+            st.dataframe(pd.DataFrame({v: d["attribution"] for v, d in occ.items()}), width="stretch")
 
 with tabs[2]:
     st.header("News intelligence")
@@ -167,7 +174,7 @@ with tabs[2]:
         if not news:
             st.info("No articles supplied. In historical training data, missing news is a mask, never neutral news.")
         else:
-            st.dataframe(pd.DataFrame(news), use_container_width=True)
+            st.dataframe(pd.DataFrame(news), width="stretch")
             st.caption("User-supplied articles are inference-time inputs; the model was trained on the 2003-2015 corpus.")
 
 with tabs[3]:
@@ -175,7 +182,7 @@ with tabs[3]:
     if res is not None:
         sec = res.evidence.get("sec_filings") or []
         if sec:
-            st.dataframe(pd.DataFrame(sec), use_container_width=True)
+            st.dataframe(pd.DataFrame(sec), width="stretch")
         missing = [m for m in res.confluence.get("missing_information", []) if "SEC" in m]
         for m in missing:
             st.warning(m)
@@ -186,7 +193,7 @@ with tabs[4]:
         st.subheader(f"Daily indicators as of {res.evidence['indicators']['asof_session']} (deterministic calculations)")
         st.json(res.evidence["indicators"])
         st.subheader("Model inputs (scale-free features)")
-        st.dataframe(pd.Series(res.evidence.get("structured_features", {}), name="value"), use_container_width=True)
+        st.dataframe(pd.Series(res.evidence.get("structured_features", {}), name="value"), width="stretch")
 
 with tabs[5]:
     st.header("Explain my prediction")
@@ -204,12 +211,12 @@ with tabs[5]:
         if diag:
             st.subheader("Leave-one-modality-out diagnostic: change in P(UP) - P(DOWN) by horizon")
             st.dataframe(pd.DataFrame({k: v["delta_up_minus_down"] for k, v in diag["by_modality"].items()},
-                                      index=diag["horizons"]), use_container_width=True)
+                                      index=diag["horizons"]), width="stretch")
             st.caption("Attributions describe this model's sensitivity, not causes.")
         st.subheader("Rule events")
         st.json(res.evidence.get("rules", {}))
         st.subheader("RAG citations (explanation only; RAG never changes a probability)")
-        st.dataframe(pd.DataFrame(res.evidence.get("rag_sources", [])), use_container_width=True)
+        st.dataframe(pd.DataFrame(res.evidence.get("rag_sources", [])), width="stretch")
 
 with tabs[6]:
     st.header("Trade planner (paper)")
@@ -220,7 +227,7 @@ with tabs[6]:
         st.write(p.reasons)
         if p.decision in ("LONG", "SHORT"):
             st.dataframe(pd.Series({k: v for k, v in p.model_dump().items() if v is not None and k not in ("reasons",)},
-                                   dtype=object), use_container_width=True)
+                                   dtype=object), width="stretch")
         elif p.setup_family:
             st.caption(f"A {p.setup_family} setup exists, but a gate failed (see reasons). Levels are not shown for "
                        "rejected plans to avoid implying a trade.")
@@ -236,7 +243,7 @@ with tabs[7]:
             if isinstance(v, dict) and "valid" in v and "test_raw" in v:
                 rows.append({"model": name, "modalities": ",".join(v["modalities"]), "valid mean log loss": v["valid"]["mean_log_loss"],
                              "test mean log loss": v["test_raw"]["mean_log_loss"]})
-        st.dataframe(pd.DataFrame(rows).sort_values("valid mean log loss"), use_container_width=True)
+        st.dataframe(pd.DataFrame(rows).sort_values("valid mean log loss"), width="stretch")
         if "hypotheses" in m:
             st.subheader("Registered hypotheses (positive = improvement)")
             hy = m["hypotheses"]
@@ -272,7 +279,7 @@ with tabs[8]:
                    "costs 10/15/20 bps round trip plus 0.5%/yr short borrow. Benchmark: equal-weight survivors.")
         st.dataframe(pd.DataFrame(b["test_final"]).T[["trades", "sharpe", "sharpe_ci95_month_blocks", "cagr", "max_drawdown",
                                                        "win_rate", "profit_factor", "expectancy_R", "psr_vs_0"]]
-                     if b["test_final"] else pd.DataFrame(), use_container_width=True)
+                     if b["test_final"] else pd.DataFrame(), width="stretch")
         st.json({"frozen_thresholds": b["frozen_thresholds"], "pbo": b["pbo"], "benchmark_test": b["benchmark_ew_survivors"]["test"]})
     else:
         st.info("Backtest not run yet (scripts/experiments/e04_backtest.py).")
@@ -286,15 +293,15 @@ with tabs[9]:
     if ev.exists():
         e = json.loads(ev.read_text(encoding="utf-8"))
         st.subheader("Retrieval evaluation")
-        st.dataframe(pd.DataFrame(e["book"]).T, use_container_width=True)
-        st.dataframe(pd.DataFrame(e["rule"]).T, use_container_width=True)
+        st.dataframe(pd.DataFrame(e["book"]).T, width="stretch")
+        st.dataframe(pd.DataFrame(e["rule"]).T, width="stretch")
     if kb is not None:
         q = st.text_input("Search the knowledge base")
         meth = st.selectbox("Method", ["bm25", "hybrid_rrf", "dense", "rule_lookup", "hybrid_rerank"])
         if q:
             r = kb.search(meth, q, k=8)
             r["snippet"] = r.text.str.slice(0, 200)
-            st.dataframe(r[["doc_id", "page", "rule_id", "section", "score", "snippet"]], use_container_width=True)
+            st.dataframe(r[["doc_id", "page", "rule_id", "section", "score", "snippet"]], width="stretch")
             st.caption("Snippets are limited to 200 characters; the books are private research material.")
 
 with tabs[10]:
@@ -320,4 +327,4 @@ with tabs[11]:
         st.info("Run scripts/report/audit_report.py to build the figures.")
     for f in figs:
         st.subheader(f.stem)
-        st.image(str(f), use_container_width=True)
+        st.image(str(f), width="stretch")

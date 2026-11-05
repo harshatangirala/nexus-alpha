@@ -20,6 +20,14 @@ Architecture and methodology decisions, with the alternatives considered. Confli
 | D-014 | 2026-11-05 | Calibration: none / temperature / vector scaling per horizon, chosen on chronological halves of the calib block; no isotonic | TriFrame's audit: isotonic worsened log loss (0.590 → 0.604) by producing exact 0/1 | Isotonic; Platt one-vs-rest |
 | D-015 | 2026-11-05 | The trading engine requires validated directional skill per horizon (validation up-vs-down AUROC 95% CI above 0.5) before LONG or SHORT | A probability without demonstrated skill is not a trading signal; E01 found no direction edge | Trade on any probability edge |
 | D-016 | 2026-11-05 | Market-context features kept only as an ablation group | They hurt in E01 (as in TriFrame's audit) | Always include |
+| D-017 | 2026-11-06 | Owner: freeze v1.1 (registry/frozen_models/v1.1.json) and start the forward shadow test | The only clean test of direction skill | Keep iterating on v1.1 |
+| D-018 | 2026-11-06 | Owner: open the sealed 2023+ period once, after v2 is frozen, scoring v1.1 and v2 together | One opening gives both models a clean test | Open now for v1.1 only (v2 would then have no clean multi-year test) |
+| D-019 | 2026-11-06 | Owner: screenshots are ticker-anchored; legend values are checked against real bars; the model never reads pixels | The vision branch was trained on our renderer, and only 66 real screenshots exist to validate anything else | Digitize pixels; feed raw pixels |
+| D-020 | 2026-11-06 | Owner: local text encoders in the model; Gemini only as a live, logged, unvalidated reader | A modern LLM has read about the outcomes of the training years, so it cannot be backtested honestly | LLM features in the model |
+| D-021 | 2026-11-06 | Owner: FRED/ALFRED real-time vintages (owner provides FRED_API_KEY); keyless sources otherwise; no paid sources | Exact as-known macro values remove revision look-ahead | Latest-vintage macro with lags; Trading Economics/CEIC (paid) |
+| D-022 | 2026-11-06 | Owner: the repository becomes public after a pre-publication scan (no secrets, no data, no third-party text) | Owner's decision | Keep private |
+| D-023 | 2026-11-06 | v2 horizons 1D-20D, 3M, 6M, 1Y; intraday = 1D (a separate intraday label would duplicate 1D's return); per-horizon purge | Dashboard trade types; parsimony in trials | A separate "ID" label (dropped before any fit) |
+| D-024 | 2026-11-06 | Market context re-tested in v2 (E11) despite D-016, under a pre-registered keep rule and a date-permutation placebo | The v2 block is broader (S&P 500 bars, rates, credit, macro) and the owner asked for it; the placebo separates information from date fitting | Skip market context |
 
 ## Conflicts between source documents
 

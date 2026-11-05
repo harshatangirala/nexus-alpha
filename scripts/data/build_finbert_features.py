@@ -28,29 +28,35 @@ from nexus_alpha import paths  # noqa: E402
 MODEL = "ProsusAI/finbert"
 
 
-def encode(heads: list[str], batch: int = 128, threads: int = 8) -> tuple[np.ndarray, np.ndarray, dict]:
+def encode(heads: list[str], batch: int = 256, threads: int = 10) -> tuple[np.ndarray, np.ndarray, dict]:
     import torch
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
     torch.set_num_threads(threads)
     tok = AutoTokenizer.from_pretrained(MODEL)
     mdl = AutoModelForSequenceClassification.from_pretrained(MODEL).eval()
     id2 = {int(k): v.lower() for k, v in mdl.config.id2label.items()}
+    # length-sorted batches: far less padding; results are scattered back to the input order at the end
+    order = np.argsort([len(h) for h in heads], kind="stable")
+    sh = [heads[j] for j in order]
     probs, embs, t0 = [], [], time.time()
     with torch.inference_mode():
-        for i in range(0, len(heads), batch):
-            b = tok(heads[i:i + batch], padding=True, truncation=True, max_length=64, return_tensors="pt")
+        for i in range(0, len(sh), batch):
+            b = tok(sh[i:i + batch], padding=True, truncation=True, max_length=64, return_tensors="pt")
             o = mdl(**b, output_hidden_states=True)
             probs.append(torch.softmax(o.logits, -1).numpy())
             hs, m = o.hidden_states[-1], b["attention_mask"].unsqueeze(-1).float()
             embs.append(((hs * m).sum(1) / m.sum(1)).numpy().astype(np.float16))
-            if (i // batch) % 200 == 0:
-                print(f"{i + len(heads[i:i + batch])}/{len(heads)} {time.time() - t0:.0f}s", flush=True)
+            if (i // batch) % 40 == 0:
+                print(f"{i + len(sh[i:i + batch])}/{len(sh)} {time.time() - t0:.0f}s", flush=True)
     try:
         from huggingface_hub import model_info
         rev = model_info(MODEL).sha
     except Exception:
         rev = getattr(mdl.config, "_commit_hash", None)
-    return np.concatenate(probs), np.concatenate(embs), {"id2label": id2, "revision": rev}
+    P, E = np.concatenate(probs), np.concatenate(embs)
+    inv = np.empty_like(order)
+    inv[order] = np.arange(len(order))
+    return P[inv], E[inv], {"id2label": id2, "revision": rev}
 
 
 def main() -> None:

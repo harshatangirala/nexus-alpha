@@ -1,0 +1,40 @@
+# Implementation status
+
+Status words: **passed** (ran and passed), **done** (built and exercised), **partial**, **not run**, **blocked**, **not applicable**. Updated 6 November 2026.
+
+| Phase | Item | Status | Evidence |
+|---|---|---|---|
+| 0 | Paths, git state, hashes, target folder | passed | `data_manifests/source_inventory.json`, `triframe_copy_comparison.json` |
+| 1 | Source audit | done | `docs/PROJECT_AUDIT.md` |
+| 1 | OHLCV coverage by ticker/timeframe (sealed) | passed | `docs/DATA_COVERAGE_AUDIT.md` |
+| 1 | News schema and true date coverage | passed | max date 2025-09-06; `data_manifests/news_date_coverage.json` |
+| 1 | SEC, books, rulebooks, checkpoints | done | `data_manifests/sec_audit.json`, `books_audit.json`, `model_registry/` |
+| 2 | Specification and pre-registration (before fusion) | done | `docs/PROJECT_SPECIFICATION.md`, commit `1b17168` |
+| 2 | Architecture, point-in-time, labels, fusion, RAG, risk docs | done | `docs/` |
+| 3 | Sealed readers, calendar, indicators, labels, splits | passed | tests; label parity 99.32% with TriFrame; indicator parity < 1e-9 |
+| 3 | News selection, dedup, availability; SEC availability | passed | tests; 648,468 articles fetched for 91,936 samples |
+| 3 | Leakage tests | passed | see `docs/VALIDATION_AND_BACKTESTING.md` |
+| 4 | CV branch: renderer and embedding parity, 5 backbones | passed | `reports/verification/cv_parity.json` |
+| 4 | Structured branch (E01), chart branch (E02) | done | `docs/EXPERIMENT_LOG.md`, `reports/RESULTS.md` |
+| 4 | Text branch (classical, CPU) | done | `data_manifests/text_features_summary.json` |
+| 4 | Transformer text encoders, chart fine-tuning on NEXUS labels | not run | GPU profile; registered in `configs/` |
+| 5 | RAG ingestion with page provenance; 6 retrieval methods; evaluation | done | `docs/RAG_DESIGN_AND_EVALUATION.md` |
+| 6 | Five fusion variants, ablations, missing-modality tests | done | E03 |
+| 7 | Calibration on 2019, registered hypotheses, walk-forward, backtest | done | E03, E05, E04 |
+| 7 | Sealed final evaluation | blocked | needs the owner's decision and key (by design) |
+| 8 | Rule catalogue (270), executable detectors, decision engine | done | `model_registry/rule_catalog.csv`, `tests/test_rules.py`, `tests/test_trading.py` |
+| 8 | Attribution (leave-one-modality-out, chart occlusion) | done | inference pipeline |
+| 8 | Grad-CAM | not run | occlusion used instead (model-agnostic, CPU-feasible) |
+| 9 | Streamlit app on the real bundle | done | `app/streamlit_app.py`, `tests/test_app.py` |
+| 9 | Colab orchestrator, pinned requirements, run profiles | done | `notebooks/`, `scripts/run_pipeline.py`, `requirements-colab.txt` |
+| 9 | Colab execution | not run | no GPU session in this work |
+| 10 | Automated tests | see `reports/test_run.txt` | |
+| 10 | Model card, limitations, results report | done | `docs/MODEL_CARD.md`, `docs/LIMITATIONS.md`, `reports/RESULTS.md` |
+| — | GitHub repository | not created | outward-facing: waits for the owner's approval |
+
+## Next steps, in order
+
+1. Owner review of results and of what to freeze; then (optionally) the single sealed evaluation, reported as semi-confirmatory.
+2. GPU profile: transformer text encoders (FinBERT/BGE/ChronoBERT) as a pre-registered comparison against the classical features; native-resolution chart embeddings.
+3. Forward shadow test: score each session from the freeze date and log forecasts, the only clean test of direction.
+4. Five seeds for the selected fusion model; surface calibrated quantile outputs as expected-return ranges.

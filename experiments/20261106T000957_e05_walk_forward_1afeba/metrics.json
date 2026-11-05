@@ -1,0 +1,37 @@
+{
+ "summary": {
+  "1D": {
+   "mean_d_logloss": 0.016385414283670248,
+   "years_improved": 15,
+   "t_years": 10.23479504417727,
+   "p_years": 7.00224585281205e-08,
+   "mean_auc_up_vs_down": 0.5165917856248693,
+   "years_up_vs_down_above_0.5": 14,
+   "t_up_vs_down": 6.409764741492492,
+   "p_up_vs_down": 1.6278197559325262e-05,
+   "mean_auc_sideways": 0.5980775071525459
+  },
+  "5D": {
+   "mean_d_logloss": 0.010073023768171267,
+   "years_improved": 15,
+   "t_years": 12.70844936748237,
+   "p_years": 4.4640445328978725e-09,
+   "mean_auc_up_vs_down": 0.5174968579000148,
+   "years_up_vs_down_above_0.5": 12,
+   "t_up_vs_down": 3.8485100856813967,
+   "p_up_vs_down": 0.0017727465193387803,
+   "mean_auc_sideways": 0.580762637323311
+  },
+  "20D": {
+   "mean_d_logloss": 0.009546154929395988,
+   "years_improved": 14,
+   "t_years": 6.765560425331904,
+   "p_years": 9.087926049241863e-06,
+   "mean_auc_up_vs_down": 0.5135465384398558,
+   "years_up_vs_down_above_0.5": 11,
+   "t_up_vs_down": 1.2560820542841544,
+   "p_up_vs_down": 0.22964359578625296,
+   "mean_auc_sideways": 0.583531318857111
+  }
+ }
+}

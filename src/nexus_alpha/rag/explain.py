@@ -8,17 +8,38 @@ from __future__ import annotations
 import pandas as pd
 
 SNIPPET = 200
+# Concept index: (document, term regex). The cited page is the page of that document where the term occurs most often
+# (ties -> earliest page), like looking a term up in a book's index. Deterministic and auditable.
 FAMILY_TOPICS = {
-    "TREND_PULLBACK_LONG": ("pullback to a rising moving average in an uptrend", "tsam"),
-    "TREND_PULLBACK_SHORT": ("rally to a falling moving average in a downtrend", "tsam"),
-    "BREAKOUT_LONG": ("breakout above resistance with volume confirmation", "ta_workbook"),
-    "BREAKDOWN_SHORT": ("breakdown below support", "ta_workbook"),
-    "RANGE_SUPPORT_LONG": ("buying near support at the bottom of a trading range", "complete_guide_to_trading"),
-    "RANGE_RESISTANCE_SHORT": ("selling near resistance at the top of a trading range", "complete_guide_to_trading"),
+    "TREND_PULLBACK_LONG": ("tsam", r"pullback|retracement"),
+    "TREND_PULLBACK_SHORT": ("tsam", r"pullback|retracement"),
+    "BREAKOUT_LONG": ("ta_workbook", r"breakout"),
+    "BREAKDOWN_SHORT": ("ta_workbook", r"breakdown|breaks? (below|through) support"),
+    "RANGE_SUPPORT_LONG": ("complete_guide_to_trading", r"support"),
+    "RANGE_RESISTANCE_SHORT": ("complete_guide_to_trading", r"resistance"),
 }
-TRIGGER_TOPICS = {"ENGULFING_CONFIRMATION": ("engulfing pattern reversal", "nison_candlesticks"),
-                  "REJECTION_CANDLE": ("hammer long lower shadow reversal", "nison_candlesticks"),
-                  "STRUCTURE_BREAK": ("price breaking above a prior swing high", "tsam")}
+TRIGGER_TOPICS = {("ENGULFING_CONFIRMATION", "LONG"): ("nison_candlesticks", r"bullish engulfing"),
+                  ("ENGULFING_CONFIRMATION", "SHORT"): ("nison_candlesticks", r"bearish engulfing"),
+                  ("REJECTION_CANDLE", "LONG"): ("nison_candlesticks", r"hammer"),
+                  ("REJECTION_CANDLE", "SHORT"): ("nison_candlesticks", r"shooting star"),
+                  ("STRUCTURE_BREAK", "LONG"): ("tsam", r"swing high|breakout"),
+                  ("STRUCTURE_BREAK", "SHORT"): ("tsam", r"swing low|breakdown")}
+
+
+def concept_page(kb, doc: str, regex: str):
+    import re
+    c = kb.chunks[kb.chunks.doc_id == doc]
+    if c.empty:
+        return None
+    pat = re.compile(regex, re.I)
+    hits = c.text.map(lambda t: len(pat.findall(t)))
+    if hits.max() == 0:
+        return None
+    page_hits = hits.groupby(c.page).sum()
+    best_page = page_hits[page_hits == page_hits.max()].index.min()
+    row = c[(c.page == best_page)].loc[hits[c.page == best_page].idxmax()].copy()
+    row["method"], row["score"] = "concept_index", float(page_hits.max())
+    return row
 
 
 def _cite(r: pd.Series, why: str) -> dict:
@@ -28,7 +49,7 @@ def _cite(r: pd.Series, why: str) -> dict:
             "snippet": (r.text[:SNIPPET] + "...") if len(r.text) > SNIPPET else r.text}
 
 
-def citations_for(kb, ev, setups: list[dict], triggers: dict, method: str = "bm25") -> list[dict]:
+def citations_for(kb, ev, setups: list[dict], triggers: dict) -> list[dict]:
     out = []
     rule_mask = kb.chunks.kind.eq("rule").to_numpy()
     rule_ids = sorted({rid for s in setups for rid in s.get("rule_ids", [])}
@@ -38,12 +59,12 @@ def citations_for(kb, ev, setups: list[dict], triggers: dict, method: str = "bm2
         if len(r) and r.rule_id.iloc[0] == rid:
             out.append(_cite(r.iloc[0], f"rule {rid} fired in the detectors"))
     topics = [FAMILY_TOPICS[s["family"]] + (s["family"],) for s in setups if s["family"] in FAMILY_TOPICS]
-    topics += [TRIGGER_TOPICS[t["trigger"]] + (t["trigger"],) for t in triggers.values() if t.get("trigger") in TRIGGER_TOPICS]
-    for query, doc, label in topics:
-        mask = kb.chunks.doc_id.eq(doc).to_numpy()
-        r = kb.search(method, query, k=1, mask=mask)
-        if len(r) and r.score.iloc[0] > 0:
-            out.append(_cite(r.iloc[0], f"background for {label}"))
+    topics += [TRIGGER_TOPICS[(t["trigger"], side)] + (f"{t['trigger']} ({side.lower()})",)
+               for side, t in triggers.items() if (t.get("trigger"), side) in TRIGGER_TOPICS]
+    for doc, regex, label in topics:
+        row = concept_page(kb, doc, regex)
+        if row is not None:
+            out.append(_cite(row, f"background for {label} (page where the term occurs most)"))
     if not out:
         out.append({"why": "no setup, trigger or pattern fired, so no rule or book passage is relevant", "doc_id": None})
     return out

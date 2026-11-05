@@ -1,0 +1,37 @@
+# Limitations and known defects
+
+## Data
+
+1. **Survivorship.** 979 current survivors from one vendor lineage (Finnhub-derived 1-minute data plus Yahoo). No delisted firms, no point-in-time index membership. Long-side returns and the equal-weight benchmark are flattered; risk is understated. Nothing here is survivorship-free.
+2. **Licences.** The bar data declare no licence; the news corpus is non-commercial research only with no text redistribution; the Loughran-McDonald dictionary restricts redistribution; the books are copyrighted. No data, features, embeddings, article or book text, or weights may be published. The GitHub repository, if created, must contain code and documentation only.
+3. **Retrospective adjustment.** Prices are split-adjusted with later split information; dollar screens use adjusted prices. Labels are price-only (no dividends): 0.68% of 5-day labels differ from TriFrame's dividend-inclusive labels.
+4. **Timeframes are not independent sources.** Weekly and hourly bars are aggregations of the same 1-minute feed as the daily bars.
+5. **News coverage is uneven.** Explicit ticker tags only: renamed tickers are missed (for example FB before META), general news is unmapped, coverage before 2010 is thin (11-17% of samples have any article), 2024 is nearly empty and the corpus ends 2025-09-06. 2.92 million rows stamped at midnight are treated as day-level, so their true intraday timing is unused.
+6. **SEC coverage** is the SEC study's 500 firms: 262 of the 500 sample stocks. Public availability is acceptance + 5 minutes by assumption, not observed.
+7. **Market context** comes from the survivor cross-section, not from a real index or VIX.
+
+## Design
+
+8. **Sample frame.** NEXUS reuses TriFrame's s500 chart sets (one decision every ~10 sessions per stock) so stored embeddings can be reused. That limits the sample to 500 stocks and those dates.
+9. **Charts are OHLC bars, not candlesticks**, scaled to each window (so they cannot show the volatility level), resized to 224² (TriFrame's review flags resolution loss). A candlestick renderer and native-resolution inputs are registered, not run.
+10. **Fine-tuned chart embeddings** may be evaluated only from 2017; their weights saw TriFrame targets through 2014.
+11. **Text features are classical** in the local profile (TF-IDF/SVD, lexicon tone). Transformer encoders are registered adapters for GPU runs, not results.
+12. **Single seed** for each fusion model (CPU budget); seed variation is not reported.
+13. **The 20D and 1M horizons differ by one session**, so they are near-duplicates by construction.
+14. **Hourly triggers** are evaluated only on the as-of session's completed bars; intrabar decisions (rule E141) are out of scope.
+15. **The quantile heads** are trained but not yet calibrated or shown as expected returns; the app leaves expected return as None.
+
+## Evaluation
+
+16. **The test years 2020-2022 were already read** by TriFrame for its own targets; NEXUS's test results are a historical diagnostic.
+17. **The sealed period 2023-2026 is not virgin**: TriFrame opened it twice and it is the SEC study's spent locked test. A clean confirmation needs forward data.
+18. **E01 and E02 printed test-block metrics before the pre-registration** (disclosed in the specification).
+19. **RAG gold pages are lexical**, which can favour BM25; five evaluation queries had no gold page.
+20. **The backtest** has no quotes (spreads bounded by cost scenarios), no market impact, no partial fills, no borrow availability; stops inside a bar assume the stop came first.
+
+## Engineering
+
+21. Live mode depends on Yahoo Finance, whose hourly bars can differ slightly between requests.
+22. The live mode does not fetch SEC filings.
+23. A final-evaluation script for the sealed period is not written yet; it should be written only after the owner decides what to freeze.
+24. Screenshots are displayed but never read; TriFrame's OCR screen reader was not integrated.

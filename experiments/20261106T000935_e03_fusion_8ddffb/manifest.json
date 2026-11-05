@@ -112,5 +112,8 @@
  },
  "inputs": {},
  "started_utc": "2026-11-05T18:40:09Z",
- "status": "RUNNING"
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T18:58:47Z",
+ "elapsed_s": 1152.7,
+ "summary": "selected gated; valid 1.05923; test calibrated 1.06618; H: H1_triframe +0.00104 [-0.00158,+0.00440] holm p 0.693, H2_nlp_matched +0.00122 [-0.00035,+0.00283] holm p 0.312, H3_indicators +0.00424 [-0.00021,+0.00858] holm p 0.185, H4_fusion_vs_late -0.00076 [-0.00331,+0.00085] holm p 1.000, H5_calibration -0.00042 [-0.00072,-0.00011] holm p 1.000"
 }

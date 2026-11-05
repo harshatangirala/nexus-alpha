@@ -47,5 +47,8 @@
  },
  "inputs": {},
  "started_utc": "2026-11-05T18:40:09Z",
- "status": "RUNNING"
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-05T18:57:33Z",
+ "elapsed_s": 1056.5,
+ "summary": "1D: dLL +0.0164 (15/15 yrs), up-vs-down AUC 0.517 (p 0.00); 5D: dLL +0.0101 (15/15 yrs), up-vs-down AUC 0.517 (p 0.00); 20D: dLL +0.0095 (14/15 yrs), up-vs-down AUC 0.514 (p 0.23)"
 }

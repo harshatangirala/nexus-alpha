@@ -56,6 +56,10 @@ experiments) and never drives a choice.
   previous rung is > 0 with a bootstrap lower bound > 0 in at least one of the three horizon groups (1D intraday, 2D-20D swing,
   3M-1Y long-term) and is not negative (upper bound < 0) in any group. Controls: date-permutation placebo of the `mkt_*`,
   `gmd_*`, `fred_*` blocks (shuffle whole dates) must remove the gain.
+  *Clarification (2026-11-06, before E11 ran):* the rule is applied per model family. A block enters the carried-forward
+  feature set if it passes for at least one family whose placebo also passes (placebo vs F1 does not meet the keep rule).
+  Gains are measured on the nested ladder as run (each block on top of all earlier blocks), whether or not an earlier
+  block was kept. If FRED vintages arrive after E11, F4 is run as a separate rung on top of F3 and counted as a new trial.
 * **E12 v2 fusion.** The E06 network with one head per v2 horizon and the kept numeric blocks added to the numeric
   modality; image, news, SEC modalities as v1.1; 5 seeds; E06 settings (no new tuning).
 * **E13 sequence branch.** A small causal TCN and a GRU over the last 63 daily bars of the stock and SPY (scale-free

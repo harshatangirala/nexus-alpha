@@ -295,3 +295,66 @@ in the Trade Desk (still not traded) only if, on on-time rows after at least 120
 
 1D-15D results and the log loss against the class prior are reported, but they are not part of the criterion. 3M-1Y
 are reported once they mature.
+
+## E24 Kronos zero-shot (pre-registered 2026-11-07, before any Kronos forecast on project data was scored)
+
+**What Kronos is.** A family of decoder-only foundation models for K-lines. The code is MIT
+(shiyu-coder/Kronos, commit 67b630e, vendored in `src/nexus_alpha/kronos/vendor/`) and so are the weights (Hugging
+Face `NeoQuasar/*`, safetensors, pinned revisions, SHA-256 recorded). Paper: Shi et al., arXiv:2508.02739, AAAI 2026.
+
+**Contamination (the deciding fact).** Verbatim from the paper:
+* "The pre-training data for Kronos extends up to June 2024. Consequently, our test period for all tasks begins in July
+  2024" (p. 14).
+* Table, p. 21: "Nasdaq Stock Exchange | Stock, ETF | T, 5T, 15T, 30T, H, D, W | 8,725 | 2,478,662,459 | 2000/1/1" and
+  "New York Stock Exchange | Stock, ETF | T, 5T, 15T, 30T, H, D, W | 7,073 | 2,133,143,549 | 2000/1/1".
+
+So the daily bars of US-listed stocks from 2000 to June 2024 were in its training data, and almost certainly so were
+our 979 tickers. Every development year (2003-2022) and the first 18 months of the sealed period lie inside it. Three
+rules follow:
+1. **Never a feature.** Kronos output never becomes a feature of any trained NEXUS model: it would carry pre-training
+   knowledge of our training and validation labels into the fit, and that knowledge disappears live.
+2. **History can only rule it out.** A result on our history cannot show skill. Contamination can inflate skill but
+   not hide it, so a historical test is used only as a necessary condition.
+3. **Only the forward test is evidence.** It is clean by construction. (The sealed period from July 2024 is also clean
+   for Kronos, but the sealed plan is fixed. Adding Kronos to it would be an owner decision taken before opening.)
+
+**Configuration (one, fixed before any result; no tuning).**
+* **Model:** Kronos-small (24.7M parameters, the smallest model the paper evaluates) with Kronos-Tokenizer-base.
+  Kronos-base is about 4x slower and does not fit the nightly CPU budget.
+* **Context:** the last 400 daily bars up to and including the as-of session: open, high, low, close, volume, and
+  amount = volume x mean(OHLC). Split-adjusted vendor bars in development, Yahoo bars live. Z-scored per window, as in
+  the paper.
+* **Sampling:** temperature 1.0 and top-p 1.0, so the paths come from the model's own predictive distribution, which
+  probabilities need. The paper's T = 0.6 is for point forecasts. 32 paths, 20 sessions ahead, seeds from (ticker,
+  as-of date).
+* **Engine:** NEXUS's sampler is bit-identical to the vendored predictor under deterministic decoding and to its own
+  uncached reference under seeded sampling (`scripts/kronos/parity_and_speed.py`). Kronos-small takes 2.8 s per stock on
+  this CPU.
+* **Outputs per horizon (1D, 2D, 5D, 10D, 15D, 20D):**
+  * P(down / sideways / up) by the v2 label rule applied to each path: R_h = close[t+h] / open[t+1] - 1, threshold
+    max(0.5 sigma_t sqrt(h), 10 bps), probabilities (count + 0.5) / (32 + 1.5);
+  * `rank_score` = the mean path return;
+  * the path quantiles.
+
+**E24 contaminated diagnostic (necessary condition).**
+* **Rows:** the v2 frame's validation block (2017-18), all rows on every 5th as-of session that has rows (sessions
+  numbered in date order; the rule is deterministic). Rows without 400 prior bars are skipped and counted.
+* **Endpoints** (the project's existing metrics and block bootstrap, D-032 blocks):
+  1. the log-loss gain over the training class prior, swing group (2D-20D) and 1D;
+  2. the mean daily rank IC of `rank_score` against the realised R_h, swing group.
+* **Reference, descriptive only:** v2's F0 LightGBM (B0) on the same rows, from E22's stored B predictions.
+* **Decision.**
+  * The necessary condition is met if endpoint 1's swing-group interval lies above 0, or endpoint 2's does.
+  * If met, Kronos (`kronos_zs`) is frozen (weight hashes) and logged nightly in the forward test. A result here is
+    still not evidence: it may be memory.
+  * If not met, Kronos is dropped from the forward test. A model without skill on data it was trained on has none to
+    find live. The Trade Desk view stays, labelled accordingly.
+
+**Forward criterion (`kronos_zs`, only if E24's condition is met).** On on-time rows, after at least 120 scored
+sessions at 20D, Kronos becomes a shown signal in the Trade Desk (still not traded) only if:
+1. its mean daily rank IC at 20D has a date-block 95% lower bound above 0; and
+2. its paired daily rank-IC difference against `ranker_v3` on the same dates and stocks has a lower bound above 0.
+
+The forward IC minus the 2017-18 IC is reported as the estimated inflation from contamination.
+
+**Trial budget.** 1 configuration x 6 horizons x 2 endpoints. Nothing is selected on 2020-22, which E24 does not read.

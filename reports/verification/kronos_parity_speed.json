@@ -1,0 +1,35 @@
+{
+ "threads": 6,
+ "lookback": 400,
+ "horizon": 20,
+ "paths": 32,
+ "ticker_asof": "AAPL 2018-06-29",
+ "Kronos-mini": {
+  "max_context": 2048,
+  "total_check_s": 20.2,
+  "top1_reference_vs_vendored_predictor_max_rel": 0.0,
+  "top1_cached_vs_reference_max_rel": 0.0,
+  "seeded_cached_vs_reference_identical_paths": "8/8",
+  "seeded_cached_vs_reference_max_rel": 0.0,
+  "deterministic": true,
+  "batch_independent": true,
+  "speedup_cache_8_paths": 10.6,
+  "sec_per_stock_single": 1.6,
+  "sec_per_stock_batch8": 1.2,
+  "minutes_for_500_stocks": 10.0
+ },
+ "Kronos-small": {
+  "max_context": 512,
+  "total_check_s": 67.1,
+  "top1_reference_vs_vendored_predictor_max_rel": 0.0,
+  "top1_cached_vs_reference_max_rel": 0.0,
+  "seeded_cached_vs_reference_identical_paths": "8/8",
+  "seeded_cached_vs_reference_max_rel": 0.0,
+  "deterministic": true,
+  "batch_independent": true,
+  "speedup_cache_8_paths": 18.8,
+  "sec_per_stock_single": 3.13,
+  "sec_per_stock_batch8": 2.94,
+  "minutes_for_500_stocks": 24.5
+ }
+}

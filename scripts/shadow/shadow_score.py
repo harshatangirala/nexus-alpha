@@ -58,6 +58,8 @@ def main() -> None:
     files = sorted((root / "forecasts").glob("*.csv"))
     if not files:
         sys.exit("no forecasts logged yet")
+    meta = json.loads((SH.FROZEN_DIR / f"{a.version}.json").read_text(encoding="utf-8"))
+    horizons = {h: int(n) for h, n in meta.get("horizons", HORIZONS).items()}
     fc = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
     fc = fc[~fc.late.astype(bool)]
     first = (pd.Timestamp(fc.asof_session.min()) - pd.Timedelta(days=60)).strftime("%Y-%m-%d")
@@ -65,7 +67,7 @@ def main() -> None:
     for t, g in fc.groupby("ticker"):
         d = yahoo_daily(t, first)
         for asof, gg in g.groupby("asof_session"):
-            lab = SH.realized_labels(d, pd.Timestamp(asof), HORIZONS)
+            lab = SH.realized_labels(d, pd.Timestamp(asof), horizons)
             for _, r in gg.iterrows():
                 if r.horizon in lab:
                     out.append({**r.to_dict(), **{f"real_{k}": v for k, v in lab[r.horizon].items()}})
@@ -74,7 +76,6 @@ def main() -> None:
         return
     sc = pd.DataFrame(out)
     sc.to_csv(root / "scores.csv", index=False, float_format="%.6g")
-    meta = json.loads((SH.FROZEN_DIR / f"{a.version}.json").read_text(encoding="utf-8"))
     prior = meta.get("train_class_prior", {})
     summ, rng = {}, np.random.default_rng(0)
     for h, g in sc.groupby("horizon"):

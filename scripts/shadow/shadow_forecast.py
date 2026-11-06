@@ -40,26 +40,36 @@ def main() -> None:
     tickers = a.tickers or sorted(ST.sample_index().ticker.unique())
     if a.limit:
         tickers = tickers[: a.limit]
-    P = NexusPredictor(bdir)
+    is_v2 = a.version.startswith("v2")
+    if is_v2:
+        from nexus_alpha.inference.pipeline_v2 import NexusPredictorV2
+        P = NexusPredictorV2(bdir)
+    else:
+        P = NexusPredictor(bdir)
     rows, failed, t0 = [], [], time.time()
 
     def forecast(t: str) -> bool:
         try:
-            r = P.predict(t, mode="live", explain=False)
+            r = P.predict(t, mode="live") if is_v2 else P.predict(t, mode="live", explain=False)
         except Exception as e:  # missing Yahoo data, rate limit, short history
             failed.append({"ticker": t, "error": repr(e)[:200]})
             return False
         run = SH.now_utc()
-        asof = pd.Timestamp(r.instrument.asof_session)
-        dec = SH.decision_utc_for(asof)
-        for h, f in r.forecasts.items():
-            rows.append({"asof_session": r.instrument.asof_session, "ticker": t, "horizon": h,
-                         "p_down": f.down_probability, "p_side": f.sideways_probability, "p_up": f.up_probability,
-                         "ret_q10": f.return_q10, "ret_q50": f.expected_return, "ret_q90": f.return_q90,
-                         "direction_skill_validated": f.direction_skill_validated,
-                         "reference_close": r.instrument.reference_price, "data_quality": r.instrument.data_quality,
-                         "bundle_id": rec["bundle_id"], "run_utc": run.isoformat(timespec="seconds"),
-                         "decision_utc": dec.isoformat(), "late": bool(run > dec)})
+        if is_v2:
+            asof_s, ref, dq = r["asof_session"], r["reference_close"], f"missing_share={r['features_missing_share']:.2f}"
+            fc = {h: (f["p_down"], f["p_side"], f["p_up"], f["ret_q10"], f["ret_q50"], f["ret_q90"],
+                      f["direction_skill_validated"]) for h, f in r["forecasts"].items()}
+        else:
+            asof_s, ref, dq = r.instrument.asof_session, r.instrument.reference_price, r.instrument.data_quality
+            fc = {h: (f.down_probability, f.sideways_probability, f.up_probability, f.return_q10, f.expected_return,
+                      f.return_q90, f.direction_skill_validated) for h, f in r.forecasts.items()}
+        dec = SH.decision_utc_for(pd.Timestamp(asof_s))
+        for h, (pd_, ps, pu, q10, q50, q90, sk) in fc.items():
+            rows.append({"asof_session": asof_s, "ticker": t, "horizon": h, "p_down": pd_, "p_side": ps, "p_up": pu,
+                         "ret_q10": q10, "ret_q50": q50, "ret_q90": q90, "direction_skill_validated": sk,
+                         "reference_close": ref, "data_quality": dq, "bundle_id": rec["bundle_id"],
+                         "run_utc": run.isoformat(timespec="seconds"), "decision_utc": dec.isoformat(),
+                         "late": bool(run > dec)})
         return True
 
     for i, t in enumerate(tickers):

@@ -66,8 +66,12 @@ experiments) and never drives a choice.
   inputs), trained per E06 settings; enters only through the blend.
 * **E14 v2 blend and freeze.** Simplex blend of E11/E12/E13 components per horizon group on validation, refit on
   2003-2018 with fixed epochs/trees, calibration chosen on 2019 halves, quantile coverage check, then **freeze v2**.
-* **E15 v2 backtest** with the E04 v1.1 engine per trade type, thresholds frozen on validation with >= 30 trades;
-  benchmark SPY buy-and-hold total return and equal-weight survivors.
+* **E15 v2 backtest** with the E04 v1.1 engine (orders, fills, costs, kill-switch, gross cap unchanged) on the deployed
+  v2 bundle's calibrated probabilities, one horizon per trade type (1D; 5D, 10D; 20D, 3M). Policy thresholds are frozen
+  on **2019** with >= 30 trades (D-025, stated before E15 ran), then 2020-2022 under base, stressed and severe costs;
+  benchmarks: equal-weight survivors and SPY buy-and-hold with dividends.
+* **E17 screenshot legend reader** (validates D-019's screenshot check, not a forecast): Gemini reads the O/H/L/C legend
+  of TriFrame's 66 real TradingView screenshots (22 stocks x 1W/1D/1H); accuracy against the hand-recorded values.
 * **E16 text encoder comparison** (added 2026-11-06, before any E11/E16 result): on the E11-kept feature set, compare
   (a) + v1 news features (TF-IDF/SVD, Loughran-McDonald tone) with (b) + FinBERT features (`fb_*`: cluster-weighted tone,
   min/max, negative share, count, 16-d PCA of the mean embedding fitted on training rows) and (c) both. Same models, same

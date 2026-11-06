@@ -258,6 +258,12 @@ def main() -> None:
         Pc[:, j] = c.transform(P_ref[:, j])
     with open(bdir / "calibrators.pkl", "wb") as f:
         pickle.dump(cal, f)
+    # deployed-model predictions for every 2019-2022 row (E15 backtest input)
+    pd_dir = paths.artifact("predictions", run.run_id, "x").parent
+    fr.iloc[out_rows][["sample_id", "ticker", "asof_date", "block"]].reset_index(drop=True).to_parquet(pd_dir / "rows.parquet")
+    np.save(pd_dir / "probs_calibrated.npy", Pc.astype(np.float32))
+    if Q_ref is not None:
+        np.save(pd_dir / "quantiles.npy", Q_ref.astype(np.float32))
     # ---- skill gate from the validation blend; quantile coverage of the selection-stage fusion on validation
     skill, cover = {}, {}
     mb = month_blocks(fr.asof_date.iloc[va])

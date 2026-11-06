@@ -28,6 +28,7 @@ Architecture and methodology decisions, with the alternatives considered. Confli
 | D-022 | 2026-11-06 | Owner: the repository becomes public after a pre-publication scan (no secrets, no data, no third-party text) | Owner's decision | Keep private |
 | D-023 | 2026-11-06 | v2 horizons 1D-20D, 3M, 6M, 1Y; intraday = 1D (a separate intraday label would duplicate 1D's return); per-horizon purge | Dashboard trade types; parsimony in trials | A separate "ID" label (dropped before any fit) |
 | D-024 | 2026-11-06 | Market context re-tested in v2 (E11) despite D-016, under a pre-registered keep rule and a date-permutation placebo | The v2 block is broader (S&P 500 bars, rates, credit, macro) and the owner asked for it; the placebo separates information from date fitting | Skip market context |
+| D-025 | 2026-11-06 | E15 (v2 backtest) freezes policy thresholds on 2019 with the deployed v2 refit (>= 30 trades), then runs 2020-2022; horizons 1D, 5D, 10D, 20D, 3M | The tabular v2 components store 2017-2018 predictions only for labelled rows, so E04's validation-block freezing cannot be reproduced row for row; 2019 is out of sample for the 2003-2018 refit. Stated before E15 ran | Re-predict 2017-2018 with selection-stage models (not saved) |
 
 ## Conflicts between source documents
 

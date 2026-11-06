@@ -51,7 +51,8 @@ experiments) and never drives a choice.
 
 * **E11 macro ladder (tabular).** Multinomial logistic (L2 1e-3, standardised) and LightGBM (E07 parameters, early stopping
   on inner 2016 only) on nested feature sets: F0 v1 numeric; F1 = F0 + `rel_*`; F2 = F1 + `mkt_*`; F3 = F2 + `gmd_*`;
-  F4 = F3 + `fred_*` (run when the key is available). Every horizon. Report valid and test log loss, gain vs F0 with
+  F4 = F3 + `fred_*` (run when the key is available). Nine representative horizons (D-026: 1D; 2D, 5D, 10D, 15D, 20D;
+  3M, 6M, 1Y); the chosen set is then fitted on all 23 horizons in **E18** for the blend. Report valid and test log loss, gain vs F0 with
   month-block bootstrap 95% CIs, up-vs-down AUROC. **Keep rule:** a block is kept if its mean validation gain over the
   previous rung is > 0 with a bootstrap lower bound > 0 in at least one of the three horizon groups (1D intraday, 2D-20D swing,
   3M-1Y long-term) and is not negative (upper bound < 0) in any group. Controls: date-permutation placebo of the `mkt_*`,

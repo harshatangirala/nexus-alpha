@@ -31,7 +31,7 @@ def carried_set() -> tuple[list[str], str]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--threads", type=int, default=6)
+    ap.add_argument("--threads", type=int, default=8)
     ap.add_argument("--horizons", nargs="*")
     a = ap.parse_args()
     base, e11 = carried_set()
@@ -45,7 +45,7 @@ def main() -> None:
     v1 = [c for c in nv1.columns if c != "sample_id"]
     fbc = [c for c in fb.columns if c != "sample_id"]
     sets = {"B": base, "B_newsv1": base + v1, "B_finbert": base + fbc, "B_both": base + v1 + fbc}
-    horizons = a.horizons or list(HORIZONS_V2)
+    horizons = a.horizons or list(L.REP_HORIZONS)
     run = Run("e16_text_encoders", {"base_from": e11, "sets": {k: len(v) for k, v in sets.items()},
                                     "horizons": horizons, "finbert": "ProsusAI/finbert (fixed weights)"},
               inputs={"v2_frame": paths.ARTIFACTS / "samples" / "v2_frame.parquet",

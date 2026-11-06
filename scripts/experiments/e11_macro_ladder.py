@@ -33,7 +33,7 @@ SEED = 11
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--threads", type=int, default=6)
+    ap.add_argument("--threads", type=int, default=8)
     ap.add_argument("--horizons", nargs="*")
     a = ap.parse_args()
     t0 = time.time()
@@ -57,7 +57,7 @@ def main() -> None:
     plac.columns = [f"PL_{c}" for c in date_level]
     fr = pd.concat([fr, plac], axis=1)
     sets[f"{top}_placebo"] = num + rel + [f"PL_{c}" for c in date_level]
-    horizons = a.horizons or list(HORIZONS_V2)
+    horizons = a.horizons or list(L.REP_HORIZONS)
     run = Run("e11_macro_ladder", {"sets": {k: len(v) for k, v in sets.items()}, "horizons": horizons,
                                    "lgb": L.E07_PARAMS, "logistic_l2_per_row": 1e-3, "n_boot": 1000,
                                    "placebo": "whole-date permutation of date-level blocks", "seed": SEED},

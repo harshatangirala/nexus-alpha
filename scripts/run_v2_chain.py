@@ -73,6 +73,7 @@ def main() -> None:
     fb = REPO / "artifacts" / "features" / "finbert_features.parquet"
     wait_for(fb.exists, "FinBERT features", 8)
     step("e16", ["scripts/experiments/e16_text_encoders.py"])
+    step("e18", ["scripts/experiments/e18_tabular_final.py"])
     print("v2 chain complete")
 
 

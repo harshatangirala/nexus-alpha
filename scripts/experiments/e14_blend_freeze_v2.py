@@ -54,8 +54,13 @@ def latest(prefix):
     return None, None
 
 
-def tabular_choice():
-    """(feature columns, prediction dir, set name) from E16's keep decisions on top of E11's carried set."""
+def tabular_choice(final: bool = True):
+    """(feature columns, prediction dir, set name, source run, per-horizon results) from E16's keep decisions on top of
+    E11's carried set. With final=True and a completed E18 run, its all-horizon predictions are used."""
+    if final:
+        e18_id, e18 = latest("e18_tabular_final")
+        if e18:
+            return e18["cols"], paths.ARTIFACTS / "predictions" / "e18", "FINAL", e18_id, e18["by_horizon"]
     e11_id, e11 = latest("e11_macro_ladder")
     base, _ = L.carried_feature_set(EXP)
     e16_id, e16 = latest("e16_text_encoders")

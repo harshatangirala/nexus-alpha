@@ -41,7 +41,7 @@ def fit_eval(fr: pd.DataFrame, sets: dict[str, list[str]], horizons: list[str], 
     t0 = time.time()
     blk = fr.block.to_numpy()
     month = (fr.asof_date.dt.year * 12 + fr.asof_date.dt.month).to_numpy()
-    res, rows_ll = {}, {}
+    res, rows_ll, last_trees = {}, {}, {}
     for h in horizons:
         y_all = fr[f"y_{h}"].to_numpy()
         lab = ~np.isnan(y_all)
@@ -52,10 +52,19 @@ def fit_eval(fr: pd.DataFrame, sets: dict[str, list[str]], horizons: list[str], 
             out = {}
             cat = ["rel_sector_id"] if "rel_sector_id" in cols else "auto"
             dtr = lgb.Dataset(X[tr], ytr, free_raw_data=False, categorical_feature=cat)
-            din = lgb.Dataset(X[inn], yin, reference=dtr)
-            bst = lgb.train({**LGB_BASE, **E07_PARAMS, "num_threads": threads}, dtr, num_boost_round=3000,
-                            valid_sets=[din], valid_names=["inner"], callbacks=[lgb.early_stopping(100, verbose=False)])
-            out["lgbm"] = {"trees": int(bst.best_iteration),
+            prm = {**LGB_BASE, **E07_PARAMS, "num_threads": threads}
+            if inn.sum() > 0:
+                din = lgb.Dataset(X[inn], yin, reference=dtr)
+                bst = lgb.train(prm, dtr, num_boost_round=3000, valid_sets=[din], valid_names=["inner"],
+                                callbacks=[lgb.early_stopping(100, verbose=False)])
+                trees, rule = int(bst.best_iteration), "early stopping on inner (2016)"
+            else:   # pre-registered fallback: no inner labels (1Y) -> tree count of the previous horizon, same set
+                trees = last_trees.get(name, 200)
+                bst = lgb.train(prm, dtr, num_boost_round=trees)
+                bst.best_iteration = trees
+                rule = "inherited from the previous horizon (no inner labels)"
+            last_trees[name] = trees
+            out["lgbm"] = {"trees": trees, "trees_rule": rule,
                            "P": {"valid": bst.predict(X[va], num_iteration=bst.best_iteration),
                                  "test": bst.predict(X[te], num_iteration=bst.best_iteration)}}
             Xl = X[[c for c in cols if c != "rel_sector_id"]]         # categorical id is not a linear feature
@@ -76,7 +85,7 @@ def fit_eval(fr: pd.DataFrame, sets: dict[str, list[str]], horizons: list[str], 
                     r[f"{split}_n"] = int(len(yy))
                     np.save(pred_dir / f"{h}_{name}_{mdl}_{split}.npy", o["P"][split].astype(np.float32))
                 if mdl == "lgbm":
-                    r["trees"] = o["trees"]
+                    r["trees"], r["trees_rule"] = o["trees"], o["trees_rule"]
                 res.setdefault(h, {}).setdefault(name, {})[mdl] = r
             log(f"{h} {name}: lgbm valid {res[h][name]['lgbm']['valid_ll']:.5f} | logistic valid "
                 f"{res[h][name]['logistic']['valid_ll']:.5f} ({time.time() - t0:.0f}s)")

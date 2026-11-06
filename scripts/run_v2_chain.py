@@ -49,19 +49,27 @@ def main() -> None:
     secrets.load()                      # keys from NEXUS_ENV_FILES (owner-held files) if not already in the environment
     ap = argparse.ArgumentParser()
     ap.add_argument("--wait-for-fetch")
+    ap.add_argument("--from", dest="start", default="fetch", choices=["fetch", "etf_bars", "fred", "v2_frame", "e11", "e16"])
     a = ap.parse_args()
-    if a.wait_for_fetch:
+    order = ["fetch", "etf_bars", "fred", "v2_frame", "e11", "e16"]
+    todo = set(order[order.index(a.start):])
+    if "fetch" not in todo:
+        pass
+    elif a.wait_for_fetch:
         p = REPO / a.wait_for_fetch
         wait_for(lambda: p.exists() and p.read_text(encoding="utf-8", errors="ignore").rstrip().endswith("done"),
                  "the ETF download", 12)
     else:
         step("fetch", ["scripts/data/fetch_etf_minute.py"])
-    step("etf_bars", ["scripts/data/build_etf_bars.py"])
-    if os.environ.get("FRED_API_KEY") and not (REPO / "artifacts" / "macro" / "alfred_vintages.parquet").exists():
+    if "etf_bars" in todo:
+        step("etf_bars", ["scripts/data/build_etf_bars.py"])
+    if "fred" in todo and os.environ.get("FRED_API_KEY") and not (REPO / "artifacts" / "macro" / "alfred_vintages.parquet").exists():
         step("fred", ["-c", "import sys; sys.path.insert(0, 'src'); from nexus_alpha.macro import fred; "
                             "d = fred.build_store(); print(d.groupby('series_id').realtime_start.agg(['min', 'max', 'count']))"])
-    step("v2_frame", ["scripts/data/build_v2_frame.py", "--rebuild-mkt"])
-    step("e11", ["scripts/experiments/e11_macro_ladder.py"])
+    if "v2_frame" in todo:
+        step("v2_frame", ["scripts/data/build_v2_frame.py", "--rebuild-mkt"])
+    if "e11" in todo:
+        step("e11", ["scripts/experiments/e11_macro_ladder.py"])
     fb = REPO / "artifacts" / "features" / "finbert_features.parquet"
     wait_for(fb.exists, "FinBERT features", 8)
     step("e16", ["scripts/experiments/e16_text_encoders.py"])

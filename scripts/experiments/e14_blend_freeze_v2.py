@@ -253,6 +253,11 @@ def main() -> None:
     cal, cal_info, Pc = {}, {}, P_ref.copy()
     for j, h in enumerate(H):
         m = ca_o & (Yo[:, j] >= 0)
+        if m.sum() < 500:            # pre-registered: 1Y has no 2019 labels after the purge -> left uncalibrated
+            from nexus_alpha.calibration.scalers import Identity
+            cal[h], cal_info[h] = Identity(), "none (no 2019 labels)"
+            Pc[:, j] = P_ref[:, j]
+            continue
         c, inf = fit_best(P_ref[m, j], Yo[m, j], np.argsort(dates[out_rows][m], kind="stable"))
         cal[h], cal_info[h] = c, inf["chosen"]
         Pc[:, j] = c.transform(P_ref[:, j])

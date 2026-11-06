@@ -60,6 +60,11 @@ experiments) and never drives a choice.
   feature set if it passes for at least one family whose placebo also passes (placebo vs F1 does not meet the keep rule).
   Gains are measured on the nested ladder as run (each block on top of all earlier blocks), whether or not an earlier
   block was kept. If FRED vintages arrive after E11, F4 is run as a separate rung on top of F3 and counted as a new trial.
+  *1Y labels (2026-11-06, after the v2 frame was built and before any E11 result):* the per-horizon purge leaves no 1Y
+  labels in the one-year blocks inner (2016) and calib (2019), because every 1-year window there reaches the next block.
+  Therefore LightGBM's 1Y tree count is inherited from the previous horizon (6M, same feature set) instead of early
+  stopping, and 1Y is left uncalibrated in E14. 1Y validation (11,708 labels) and test (24,575) are unaffected. A first E11
+  launch was stopped at its first horizon to apply this rule; no result was read.
 * **E12 v2 fusion.** The E06 network with one head per v2 horizon and the kept numeric blocks added to the numeric
   modality; image, news, SEC modalities as v1.1; 5 seeds; E06 settings (no new tuning).
 * **E13 sequence branch.** A small causal TCN and a GRU over the last 63 daily bars of the stock and SPY (scale-free

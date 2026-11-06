@@ -1,0 +1,2 @@
+asof_session,ticker,horizon,p_down,p_side,p_up,ret_q10,ret_q50,ret_q90,direction_skill_validated,reference_close,data_quality,bundle_id,run_utc,decision_utc,late
+2026-11-05,SPY,20D,0.317152,0.258555,0.424293,,,,True,733,universe=978; missing_share=0.00,20261106T133917_e19_refit_c55304,2026-11-06T08:18:09+00:00,2026-11-06T14:00:00+00:00,False

@@ -170,6 +170,7 @@ def main() -> None:
     probs = SH.verify_chain(a.version)
     print("chain:", "intact" if not probs else probs, flush=True)
     sys.stdout.flush()
+    sys.stderr.flush()
     os._exit(0 if not probs else 1)   # do not wait for abandoned (timed-out) request threads
 
 

@@ -8,3 +8,6 @@ for %%V in (v1.1) do (
   .venv\Scripts\python.exe -B scripts\shadow\shadow_forecast.py --version %%V >> artifacts\logs\shadow_daily.log 2>&1
   .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version %%V >> artifacts\logs\shadow_daily.log 2>&1
 )
+rem E19 market-direction read (SPY 20D, D-031): logged the same way and scored by the same scorer
+.venv\Scripts\python.exe -B scripts\shadow\market_read.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1
+.venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1

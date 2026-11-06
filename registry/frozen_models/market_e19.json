@@ -1,0 +1,31 @@
+{
+  "version": "market_e19",
+  "bundle_id": "20261106T133917_e19_refit_c55304",
+  "files": {
+    "bundle_meta.json": "8dcc3bbd626c8d2c2a5ce9c038f95ed1e77790beb7ec55f1ed042c032f096e02",
+    "market_model.pkl": "80d5f26bfb59a32535075a528077567aae7d6dce24274ee369e14cdb5cf0f2d8"
+  },
+  "frozen_utc": "2026-11-06T08:12:35+00:00",
+  "code_commit_at_freeze": "21b1e446c8e901e26be6c919edd77d51ab406fe3",
+  "recipe": "E19 logistic M2, refit 2003-2018 (D-031)",
+  "trained_through_block": "valid",
+  "kind": "market",
+  "label_version": "nexus-labels-v2",
+  "horizons": {
+    "20D": 20
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid"
+  ],
+  "train_class_prior": {
+    "20D": [
+      0.20460876171182577,
+      0.3897189161813117,
+      0.4056723221068625
+    ]
+  },
+  "note": "E19 logistic M2, SPY 20D direction lean (D-031); shown with its 2020-2022 calibration caveat"
+}

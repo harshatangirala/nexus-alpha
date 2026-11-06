@@ -76,6 +76,27 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
         st.dataframe(pd.DataFrame(r["forecasts"]).T, width="stretch")
 
 
+def _e19_note() -> str:
+    """One line on whether market/macro information has validated skill for the market's direction (E19)."""
+    import json
+    from pathlib import Path
+    runs = sorted(Path(__file__).resolve().parents[1].joinpath("experiments").glob("*_e19_market_model_*"), reverse=True)
+    for r in runs:
+        try:
+            man = json.loads((r / "manifest.json").read_text(encoding="utf-8"))
+            if man.get("status") != "COMPLETED":
+                continue
+            m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        kept = [k for k, v in m["keep_rule_decisions"].items() if v and m["placebo_shows_no_gain"].get(k.split("|")[0])]
+        if kept:
+            return f"E19 (market-direction model): validated gain for {', '.join(kept)} on 2017-2018 (see the report)."
+        return ("E19 (market-direction model): these market and macro readings showed no validated skill for predicting "
+                "SPY's direction on 2017-2018, so they are context, not a signal.")
+    return "E19 (market-direction model) has not been run yet: these readings are context, not a validated signal."
+
+
 @st.cache_data(ttl=3600, show_spinner="Fetching live market context...")
 def _live_ctx():
     from nexus_alpha.macro.context import live_date_features
@@ -98,6 +119,43 @@ def _gmd(asof: str):
         return G.asof_features(pd.DatetimeIndex([asof])).iloc[0]
     except Exception:
         return None
+
+
+# feature suffix -> (FRED series short name used for the data-age column, label)
+FRED_LABELS = {
+    "cpi_yoy": ("cpi", "CPI inflation, % y/y"), "core_cpi_yoy": ("core_cpi", "Core CPI, % y/y"),
+    "core_pce_yoy": ("core_pce", "Core PCE, % y/y"),
+    "payrolls_chg3m_avg": ("payrolls", "Payrolls, avg monthly change over 3 months (thousands)"),
+    "unrate_level": ("unrate", "Unemployment rate, %"),
+    "unrate_sahm": ("unrate", "Sahm-rule gap, pp (>= 0.5 has marked US recessions)"),
+    "claims_log4w_vs_52w": ("claims", "Jobless claims, 4-week vs 52-week average (log)"),
+    "indpro_yoy": ("indpro", "Industrial production, % y/y"), "retail_yoy": ("retail", "Retail sales, % y/y"),
+    "housing_starts_yoy": ("housing_starts", "Housing starts, % y/y"),
+    "umich_sentiment_level": ("umich_sentiment", "UMich consumer sentiment"),
+    "real_gdp_qoq_saar": ("real_gdp", "Real GDP, % q/q annualised"), "m2_yoy": ("m2", "M2 money stock, % y/y"),
+    "nfci_level": ("nfci", "Chicago Fed NFCI (> 0 = tighter than average)"),
+    "fedfunds_level": ("fedfunds", "Fed funds rate, %")}
+
+
+@st.cache_data(ttl=6 * 3600, show_spinner="Fetching FRED releases...")
+def _fred(asof: str, live: bool):
+    """US macro releases known at the as-of date: exact ALFRED vintages for historical dates, the latest release live."""
+    from nexus_alpha.macro import fred as F
+    try:
+        if live:
+            if not F.have_key():
+                return None
+            s = F.live_features(pd.Timestamp(asof))
+        else:
+            s = F.asof_features(pd.DatetimeIndex([asof])).iloc[0]
+    except Exception:
+        return None
+    rows = []
+    for k, (series, lab) in FRED_LABELS.items():
+        v, age = s.get(f"fred_{k}"), s.get(f"fred_{series}_obs_age_days")
+        rows.append({"release": lab, "value": None if v is None or pd.isna(v) else round(float(v), 3),
+                     "data age (days)": None if age is None or pd.isna(age) else int(age)})
+    return pd.DataFrame(rows).set_index("release")
 
 
 def _bars_for_check(ticker: str, mode: str, asof):
@@ -222,6 +280,12 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         st.caption(f"Global Macro Database (2026_09), latest year usable at this date: {int(g['gmd_data_year'])}")
         st.dataframe(g.drop("gmd_data_year").rename(lambda s: s.replace("gmd_", "")).to_frame("value").T,
                      width="stretch")
+    fz = _fred(str(pd.Timestamp(asof).date()) if mode == "historical" else str(pd.Timestamp.now().date()), mode == "live")
+    if fz is not None:
+        st.caption("US releases from FRED/ALFRED as known at this date (historical: exact real-time vintages; live: the "
+                   "latest release). Data age = days since the observation period the latest value refers to.")
+        st.dataframe(fz, width="stretch")
+    st.caption(_e19_note())
 
     st.subheader("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]

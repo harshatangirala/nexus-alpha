@@ -22,9 +22,9 @@ Nested sets:
 
 The placebo permutes whole dates of the date-level blocks. Nine representative horizons (D-026).
 
-Group gains (validation | test):
+Group gains (validation | test), as registered: one-month bootstrap blocks; the long group averages 3M, 6M and 1Y on both splits. D-032's recomputation, which uses horizon-length blocks and only 3M in the validation long group, gives the same keep decisions.
 
-| Comparison | Family | 1D | 2D-20D | 3M (+6M, 1Y on test) |
+| Comparison | Family | 1D | 2D-20D | 3M-1Y |
 |---|---|---|---|---|
 | F1 vs F0 (stock-relative) | LightGBM | +0.0001 \| -0.0005 | +0.0010 \| +0.0021 | +0.0000 \| +0.0024 |
 | F2 vs F1 (market) | LightGBM | **-0.0069** \| -0.0047 | -0.0087 \| +0.0002 | **-0.0037** \| -0.0040 |

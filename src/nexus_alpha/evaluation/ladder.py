@@ -150,6 +150,14 @@ def carried_feature_set(experiments_dir) -> tuple[list[str], str]:
             continue
         m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
         sets, keep, plac = m["sets"], m["keep_rule_decisions"], m["placebo_shows_no_gain"]
+        # D-032: decisions recomputed with horizon-length bootstrap blocks take precedence for the same E11 run
+        for rk in sorted(Path(experiments_dir).glob("*_e11_rekeep_*"), reverse=True):
+            if json.loads((rk / "manifest.json").read_text(encoding="utf-8")).get("status") != "COMPLETED":
+                continue
+            mk = json.loads((rk / "metrics.json").read_text(encoding="utf-8"))
+            if mk.get("e11_run") == r.name:
+                keep, plac = mk["keep_rule_decisions"], mk["placebo_shows_no_gain"]
+                break
         order = [k for k in sets if not k.endswith("placebo")]
         cols = list(sets["F0"])
         for i in range(1, len(order)):

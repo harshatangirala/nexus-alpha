@@ -6,3 +6,11 @@
 [17:13:51] backtests v1.1 done
 [17:14:46] backtests v2 done
 [17:15:05] report written to C:\Users\harsh\nexus-alpha\reports\verification\sealed_dry_run_2022 (225s)
+[19:27:49] reusing the rehearsal build (11,334 rows)
+[19:28:50] SEC texts loaded: 3,594 of 3,594 needed
+[19:28:54] assembled {'rows': 11334, 'news_present_share': 0.461355214399153, 'sec_covered_share': 0.5292041644609141, 'news_pairs': 24505, 'gmd_cols': 20, 'fred_cols': 39}
+[19:29:10] models scored
+[19:30:03] endpoints computed
+[19:30:26] backtests v1.1 done
+[19:31:24] backtests v2 done
+[19:31:42] report written to C:\Users\harsh\nexus-alpha\reports\verification\sealed_dry_run_2022 (234s)

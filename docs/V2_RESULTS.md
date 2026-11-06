@@ -184,7 +184,12 @@ So in the forward test (no live news feed), v1.1 and v2 both run with the news m
 | 3M | +60.8% / +53.0% | 0.73 / 0.67 | 790 / 0 |
 
 * Benchmarks: equal-weight survivors +39.7% (Sharpe 0.53, max drawdown -41%); SPY total return +24.6% (Sharpe 0.42, max drawdown -34%).
-* The model + ATR-stop policy is almost entirely long on a survivor universe. The fair comparison is equal-weight survivors, which it beats on Sharpe at 10D and 3M, before deflating for 50 trials and for the reuse of 2020-2022.
+* The model + ATR-stop policy is almost entirely long on a survivor universe. The fair comparison is equal-weight survivors, which it beats on Sharpe at 10D and 3M before deflation.
+* **After deflation it is not significant** (audit A-33):
+  * 10D: Sharpe 0.82, 95% interval [-0.25, 2.02], deflated Sharpe ratio 0.0001 after 50 trials;
+  * the same holds at the other horizons;
+  * 2020-2022 has also been reused many times.
+* No economic edge is demonstrated.
 * The full rules engine (`nexus`, `nexus_gated`) is flat to slightly negative with few trades.
 * The rules alone lose at every horizon.
 

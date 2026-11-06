@@ -72,3 +72,8 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
   * every version it scores is frozen and monitored by SPC.
 
   Audit 4 found a vertical-tab byte that a patch had written into a script path.
+* **Kronos (`kronos_zs`, D-043): prepared, not yet logged.**
+  * **Forecaster:** `scripts/shadow/kronos_forecast.py`. It uses only tonight's cached bars, takes about 24 minutes
+    for 500 stocks on CPU, and is hash-checked through a flat bundle.
+  * **When:** it joins `run_daily.cmd` only if E24's pre-registered necessary condition is met on 2017-18.
+  * **Promotion:** the forward criterion in `docs/V3_RESEARCH.md`.

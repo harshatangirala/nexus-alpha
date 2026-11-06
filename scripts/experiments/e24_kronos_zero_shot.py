@@ -137,7 +137,9 @@ def b0_predictions(R: pd.DataFrame) -> dict[str, pd.DataFrame]:
     return out
 
 
-def score() -> None:
+def score(smoke: bool = False) -> None:
+    """smoke=True: run the whole scoring path on the chunks written so far and report only that it ran (no metric values
+    are printed or stored), to test the code without looking at results before the registered run is complete."""
     import e19_market_model as E19
     import e21_ranker as E21
     from nexus_alpha.experiments import Run
@@ -187,6 +189,9 @@ def score() -> None:
         if all(h in per_ll_b0 for h in hs):
             res[f"b0_logloss_gain_vs_prior|{g}"] = dict(zip(("gain", "ci95"), E19.block_boot([per_ll_b0[h] for h in hs], L_, rng)))
             res[f"b0_rank_ic|{g}"] = dict(zip(("ic", "ci95"), E21.block_ci([ics_b0[h] for h in hs], L_, rng)))
+    if smoke:
+        print(f"smoke: scored {len(D)} rows, {len(by_h)} horizons, endpoints {sorted(res)}; no values shown")
+        return
     cond_ll = res["logloss_gain_vs_prior|swing"]["ci95"][0] > 0
     cond_ic = res["rank_ic|swing"]["ci95"][0] > 0
     met = bool(cond_ll or cond_ic)
@@ -211,6 +216,6 @@ def score() -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--phase", choices=["sample", "score"], required=True)
+    ap.add_argument("--phase", choices=["sample", "score", "smoke"], required=True)
     a = ap.parse_args()
-    sample() if a.phase == "sample" else score()
+    sample() if a.phase == "sample" else score(smoke=a.phase == "smoke")

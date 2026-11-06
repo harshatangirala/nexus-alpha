@@ -86,6 +86,14 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
   * **Trade Desk:** the three statements, all ratios with universe and industry percentiles (live from a nightly
     cross-section), Piotroski and Altman zones, and an adjustable DCF.
   * **Audit:** [`docs/AUDIT_3_4_2026-11-07.md`](docs/AUDIT_3_4_2026-11-07.md).
+* **Kronos foundation model** ([`docs/KRONOS.md`](docs/KRONOS.md)): the MIT Kronos model for daily candles,
+  vendored at a pinned commit, with weights at pinned revisions and SHA-256.
+  * **Sampler:** NEXUS's own path sampler, bit-identical to Kronos's predictor, with an exact cache that makes it
+    17-19x faster (2.9 s per stock on CPU). Probabilities use the NEXUS label rule.
+  * **Contamination:** its pre-training data covers US daily stock bars from 2000 to June 2024, so it is never a model
+    feature. A 2017-18 test (E24, pre-registered) can only rule it out.
+  * **Forward test:** only if E24's condition is met; it is the only evidence.
+  * **Trade Desk:** a fan chart of sampled paths.
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.
 * **Keys the owner sets** (environment variables, never committed):

@@ -53,7 +53,17 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
   * Context: market and macro context.
   * Screenshot check: legend values checked against real bars.
   * Optional Gemini read: live and unvalidated, logged for forward scoring.
-* **Sealed 2023+ evaluation:** it will be opened once, after v2 is frozen, scoring v1.1 and v2 together (owner decision D-018).
+* **What v2 has found so far** ([`docs/V2_RESULTS.md`](docs/V2_RESULTS.md)):
+  * **Stock-level model.** Market and macro blocks did not beat the v1.1 numeric features on validation once tested
+    against that baseline (D-033). v2's tabular component is the v1.1 feature set. Macro reaches v2 only through the
+    fusion network's context and a separate market read.
+  * **Market level (E19).** SPY technicals plus cross-asset features rank SPY's **20-session direction**: AUROC 0.72 on
+    2017-18 and 0.68 on 2020-22. It is frozen as `market_e19`, logged every evening in the forward test, and shown in the
+    Trade Desk as a lean, because its 2020-22 probabilities were no better than the base rate.
+  * **Screenshots (E17).** Gemini read every legend value of 57 real TradingView screenshots exactly to the cent.
+* **Sealed 2023+ evaluation:** it will be opened once, after v2 is frozen, scoring v1.1 and v2 together (owner decision
+  D-018). The plan is in [`docs/SEALED_EVALUATION_PLAN.md`](docs/SEALED_EVALUATION_PLAN.md) and is finalised at the v2
+  freeze.
 * **Keys the owner sets** (environment variables, never committed):
   * `FRED_API_KEY` for ALFRED vintages;
   * `GEMINI_API_KEY` for the Trade Desk's LLM read.

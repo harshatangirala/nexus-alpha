@@ -124,3 +124,7 @@ wrapt==2.5.2
 xxhash==4.0.2
 yarl==1.25.1
 yfinance==1.8.0
+reportlab==4.2.5
+pypdf==5.1.0
+pypdfium2==4.30.0
+chardet==7.7.0

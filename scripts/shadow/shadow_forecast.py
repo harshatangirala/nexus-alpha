@@ -37,6 +37,7 @@ RETRY_PAUSES_S = (60, 600, 1800)
 RETRYABLE = ("no daily data", "TimeoutError", "Rate", "rate limit", "Too Many Requests")
 STOP_BEFORE_DECISION = pd.Timedelta(minutes=10)
 BLOCK_MIN_FAILS = 10       # long retry pauses only when this many tickers came back empty
+BREAKER_FAILS = 20         # abort when the first 20 tickers all fail (Yahoo unreachable; audit 3)
 
 
 def with_timeout(fn, timeout_s: float):
@@ -133,6 +134,12 @@ def main() -> None:
             print(f"stopped at the decision-time deadline after {i} tickers", flush=True)
             break
         forecast(t)
+        if not rows and len(failed) >= BREAKER_FAILS:
+            # audit 3: when Yahoo is unreachable every ticker fails slowly and no deadline is ever set; stop early so the
+            # day's next trigger can retry instead of running into the task's time limit
+            print(f"CIRCUIT BREAKER: the first {len(failed)} tickers all failed ({failed[0]['error'][:80]}); aborting",
+                  flush=True)
+            sys.exit(3)
         if (i + 1) % 50 == 0:
             print(f"{i + 1}/{len(tickers)} done, {time.time() - t0:.0f}s, failed so far {len(failed)}", flush=True)
     # retry passes for empty or timed-out Yahoo answers (rate limiting / blocking), after growing pauses

@@ -20,6 +20,7 @@ NINE = (260, 290)
 TTM_CONCEPTS = ["revenue", "cogs", "gross_profit", "operating_income", "pretax_income", "net_income", "eps_diluted", "da",
                 "interest_expense", "income_tax", "rnd", "sga", "cfo", "capex", "dividends", "buybacks"]
 LAST_Q = ["eps_diluted", "diluted_shares"]
+AVERAGES = {"diluted_shares"}      # period averages: not additive across quarters
 INSTANTS = ["assets", "assets_current", "liabilities", "liabilities_current", "equity", "cash", "lt_debt_total",
             "lt_debt_noncurrent", "lt_debt_current", "st_borrowings", "inventory", "receivables", "retained_earnings", "ppe"]
 
@@ -29,12 +30,13 @@ def _best(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     return df.sort_values(["rank", "filed"], ascending=[True, False]).drop_duplicates(keys, keep="first")
 
 
-def _quarters(flow: pd.DataFrame) -> pd.Series:
+def _quarters(flow: pd.DataFrame, additive: bool = True) -> pd.Series:
     """Quarterly values indexed by period end (as known in `flow`).
 
     Direct 3-month facts first. Missing quarters come from year-to-date chains with the same fiscal-year start
     (10-Q cash-flow statements report 6- and 9-month YTD): Q = YTD(end) - YTD(previous end), e.g. Q2 = 6M - 3M,
-    Q3 = 9M - 6M, Q4 = 12M - 9M."""
+    Q3 = 9M - 6M, Q4 = 12M - 9M. A period average (weighted shares) is not additive: a missing quarter then takes the
+    year-to-date average itself (Q4 ~ the fiscal-year weighted average; audit 3 found FY - 9M gave 0 or negative)."""
     if flow.empty:
         return pd.Series(dtype=float)
     f = flow.assign(dur=(flow.end - flow.start).dt.days)
@@ -51,7 +53,7 @@ def _quarters(flow: pd.DataFrame) -> pd.Series:
                 continue
             e = ends[i]
             if not any(abs((e - k).days) <= 20 for k in list(q.index) + list(add)):
-                add[e] = vals[i] - vals[i - 1]
+                add[e] = vals[i] - vals[i - 1] if additive else vals[i]
     if add:
         q = pd.concat([q, pd.Series(add)])
     q = q[~q.index.duplicated()].sort_index()
@@ -94,7 +96,8 @@ def snapshots(facts: pd.DataFrame, at: list | None = None) -> pd.DataFrame:
         ends = {}
         for c in TTM_CONCEPTS + ["diluted_shares"]:
             g = flows.get(c)
-            q = _quarters(g[(g.filed <= F) & (g.end >= F - WINDOW)]) if g is not None else pd.Series(dtype=float)
+            q = (_quarters(g[(g.filed <= F) & (g.end >= F - WINDOW)], additive=c not in AVERAGES)
+                 if g is not None else pd.Series(dtype=float))
             if c in TTM_CONCEPTS:
                 r[f"ttm_{c}"], end = _ttm(q, 0)
                 r[f"ttm_{c}_prev"], _ = _ttm(q, 4)
@@ -132,13 +135,20 @@ def snapshots(facts: pd.DataFrame, at: list | None = None) -> pd.DataFrame:
             prev = k[(last.end - k.end).dt.days.between(320, 410)]
             r[f"{c}_prev"] = float(prev.value.iloc[-1]) if len(prev) else np.nan
         g = inst.get("shares_outstanding")
-        if g is not None and len(g[g.filed <= F]):
-            k = g[g.filed <= F].sort_values(["end", "filed"]).iloc[-1]
-            r["shares_outstanding"], r["shares_date"] = float(k.value), k.end
-        else:
-            r["shares_outstanding"], r["shares_date"] = np.nan, pd.NaT
-        f_today = facts[facts.filed == F]
-        r["filed_form"] = f_today.form.iloc[0] if len(f_today) else None
+        r["shares_outstanding"], r["shares_date"] = np.nan, pd.NaT
+        if g is not None:
+            k = g[(g.filed <= F) & (g.value > 0)]
+            # a cover-page count older than the company's latest period is stale (audit 3: TAP reused a 2010 value)
+            floor = (latest_end - pd.Timedelta(days=STALE_DAYS)) if latest_end is not None else F - pd.Timedelta(days=400)
+            k = k[k.end >= floor]
+            if len(k):
+                k = k.sort_values(["end", "filed"]).iloc[-1]
+                r["shares_outstanding"], r["shares_date"] = float(k.value), k.end
+        # form of the latest filing on or before F (identical to "filed on F" for the development snapshots, which sit
+        # on filing dates; a live snapshot sits on a non-filing day and still needs it for the foreign-filer guard)
+        last_f = facts.filed[facts.filed <= F].max() if (facts.filed <= F).any() else None
+        f_last = facts[facts.filed == last_f] if last_f is not None else facts.iloc[:0]
+        r["filed_form"] = f_last.form.iloc[0] if len(f_last) else None
         rows.append(r)
     s = pd.DataFrame(rows)
     return s

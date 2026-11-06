@@ -124,17 +124,32 @@ def fetch(cik: int, refresh: bool = False, attempts: int = 4) -> Path | None:
     raise RuntimeError(f"companyfacts download failed for CIK {cik}")
 
 
+def reporting_currency(facts: dict) -> str | None:
+    """The unit most balance-sheet facts are reported in. Audit 3: Canadian, Japanese, Korean, Chinese and Indian filers
+    report in their own currency and add a few USD convenience translations, which must not be mixed in."""
+    g = facts.get("us-gaap") or {}
+    n: dict[str, int] = {}
+    for tag in ("Assets", "Liabilities", "StockholdersEquity", "LiabilitiesAndStockholdersEquity"):
+        for unit, vals in ((g.get(tag) or {}).get("units") or {}).items():
+            n[unit] = n.get(unit, 0) + len(vals)
+    return max(n, key=n.get) if n else None
+
+
 def parse(cik: int) -> pd.DataFrame:
-    """Long table of the needed concepts from the cached raw file (all filing dates; see load() for the seal)."""
+    """Long table of the needed concepts from the cached raw file (all filing dates; see load() for the seal).
+    For a company that does not report in USD, only share counts are kept (no money facts)."""
     p = raw_path(cik)
     if not p.exists():
         return pd.DataFrame(columns=COLS)
     js = json.loads(gzip.decompress(p.read_bytes()))
     facts = js.get("facts") or {}
+    usd_reporter = reporting_currency(facts) in (None, "USD")
     rows = []
     for tax, spec_map, kind in (("us-gaap", FLOW, "flow"), ("us-gaap", INSTANT, "instant"), ("dei", DEI_INSTANT, "instant")):
         block = facts.get(tax) or {}
         for concept, tags in spec_map.items():
+            if not usd_reporter and UNITS.get(concept, "USD").startswith("USD"):
+                continue
             for rank, tag in enumerate(tags):
                 spec = block.get(tag)
                 if not spec:

@@ -26,8 +26,9 @@ Pre-registered as E22 (`docs/V3_RESEARCH.md`); owner decision D-039. Code in `sr
 | TTM | The sum of the last four consecutive quarters (gaps 75-105 days). Prior TTM = the four quarters before those |
 | Balance sheet | The latest instant on or before t; the prior value is the instant 320-410 days earlier |
 | Staleness | Any item whose latest period ends more than 45 days before the company's latest period is missing. This prevents a tag the company stopped using from being carried forward |
-| Units | Money in USD, EPS in USD/share, share counts in shares; other currencies are excluded |
-| Prices | As-traded close = the vendor's split-adjusted close x all later split factors (SEC study S03). Cover-page share counts are moved to the session's share basis |
+| Units | Money in USD, EPS in USD/share, share counts in shares. A company whose balance sheet is mostly in another currency (14 Canadian, Japanese, Korean, Chinese and Indian filers) keeps no money facts at all: their few USD convenience translations are not mixed in |
+| Prices | As-traded close = the vendor's split-adjusted close x the later split factors **that the vendor applied**: splits up to 2026-02-27, when its Yahoo split history was taken (later splits such as KLAC 10:1 in 2026-06 are not in its prices). Split history: the vendor's own Yahoo files, Yahoo through yfinance for 38 tickers without one, plus S03 (`fundamentals/splits.py`). Cover-page share counts are moved to the session's share basis |
+| Shares | Cover-page count if dated within the company's latest period (a stale count is missing); otherwise the latest quarter's weighted diluted shares; otherwise TTM net income / TTM diluted EPS (multi-class issuers such as GOOG and META report cover counts per class). Weighted shares are averages, so a missing Q4 takes the fiscal-year average, never FY minus 9 months |
 | Earnings surprise | SUE from the SEC study's S06, at the later of the filing's acceptance time and the time its EPS history was public |
 
 **Verified on Apple, FY2019 10-K (as known 2019-11-15):**
@@ -44,6 +45,19 @@ Pre-registered as E22 (`docs/V3_RESEARCH.md`); owner decision D-039. Code in `sr
 | Equity | 90.5B |
 | Market cap (2019-12-31) | 1.30T |
 | P/E | 23.6 |
+
+## Share-basis guards (audit 3)
+
+Market cap, EV and every price-based ratio are missing when:
+
+* the snapshot comes from a **foreign private issuer** (latest report a 20-F or 40-F). Their statements are annual and
+  often in local currency, and the cover page counts ordinary shares, not ADS. TSM, DEO, TM, VOD, NGG and GSK were
+  2-10x too large before this guard. All fundamentals are missing for these rows (`foreign_filer` = 1);
+* the ticker **shares its CIK with another listed class** (BRK.A / BRK.B): one company-wide count cannot be matched to
+  one class's price;
+* the cover-page count and the diluted-share reference **disagree by more than 1.5x**.
+
+`shares_basis_ok` records whether a share count was usable.
 
 ## The 31 ratios (model features as within-session universe percentiles)
 

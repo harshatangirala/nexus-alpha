@@ -19,13 +19,16 @@ def cik_for(ticker: str) -> int | None:
     return int(r.cik.iloc[0]) if len(r) else None
 
 
+def share_class_ambiguous(ticker: str) -> bool:
+    """True when another listed class shares this ticker's CIK (BRK.A / BRK.B)."""
+    m = pd.read_parquet(paths.ARTIFACTS / "fundamentals" / "cik_map.parquet")
+    c = m[m.ticker == ticker].cik
+    return bool(len(c) and (m.cik == c.iloc[0]).sum() > 1)
+
+
 def _splits(ticker: str) -> pd.Series:
-    import glob
-    p = glob.glob(str(paths.SEC_FULL500_RUN / "S03" / "*" / "corporate_actions.parquet"))
-    if not p:
-        return pd.Series(dtype=float)
-    ca = pd.read_parquet(p[0])
-    return ca[(ca.ticker == ticker) & (ca.type == "split")].set_index("date").value
+    from . import splits as SP
+    return SP.for_ticker(ticker)
 
 
 def historical(ticker: str, asof) -> dict | None:
@@ -63,7 +66,8 @@ def live(ticker: str) -> dict | None:
     if bars.empty:
         return None
     s["snap_date"] = bars.date.iloc[-1]
-    d = RT.daily(s, bars.tail(1), pd.Series(dtype=float))
+    d = RT.daily(s, bars.tail(1), _splits(ticker), price_basis=None,             # Yahoo closes are as traded
+                 share_class_ambiguous=share_class_ambiguous(ticker))
     return {"snapshot": s.iloc[-1], "ratios": d.iloc[-1] if len(d) else None,
             "source": f"SEC XBRL live (latest filing {f.filed.max().date()}), Yahoo close {bars.date.iloc[-1].date()}"}
 

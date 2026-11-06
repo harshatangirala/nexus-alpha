@@ -153,3 +153,35 @@ reported, with the two-endpoint multiplicity disclosed.
   percentiles, the three statements, an adjustable DCF, Piotroski and Altman.
 
 **Trial budget.** 3 sets x 2 models x 9 horizons x 2 endpoints.
+
+**Amendment before any E22 fit (D-040, audit 3).** The data audit found share-basis defects. They were corrected
+before E22 was run; the sets, endpoints, placebo and keep rule are unchanged.
+* The as-traded price applies only the splits the price vendor applied (those up to 2026-02-27). The split history
+  comes from the vendor's own Yahoo files, plus yfinance and S03 where those lack a ticker, because S03 covered only
+  part of the universe.
+* Weighted diluted shares are averages: a missing Q4 takes the fiscal-year average rather than FY minus 9 months.
+  Flows are still differenced as registered.
+* Price-based ratios are missing for 20-F/40-F filers, for tickers whose CIK has another listed class, and where the
+  cover-page count and the diluted-share reference disagree by more than 1.5x.
+* Companies that report mostly in another currency keep no money facts.
+
+## E23 industry-neutral fundamentals (pre-registered 2026-11-06, before any E22 result and before any E23 code)
+
+**Why.** Valuation and quality ratios differ structurally by industry: a bank's book-to-price, a utility's leverage and
+a software firm's margins are not comparable. A universe-wide rank partly measures industry membership. The
+literature's industry-adjusted versions of these signals are the standard remedy.
+
+**Design.** The same as E22 except for one feature set.
+* B_FUND_IND: each of the 31 ratios and days since filing, ranked within the stock's **SIC major group** (first two
+  digits, SEC study S02 `universe.parquet`) on each session. When fewer than 8 stocks in the group have the ratio that
+  day, the rank is taken within the SIC division (A-J) instead, and failing that within the universe. Present flag as
+  in E22.
+* Placebo: the B_FUND_IND ranks permuted across tickers within each as-of date.
+* Same rows, blocks, models, 9 horizons, two endpoints and keep rule as E22.
+* Comparisons: B_FUND_IND vs B (keep rule), with B_FUND_IND vs B_FUND reported descriptively.
+
+**Use.** If B_FUND_IND passes and E22's B_FUND does not, the industry-neutral set replaces it in the `v3_fund`
+candidate. If both pass, the one with the larger validation log-loss gain is used. Either way the choice and the trial
+count (E22 + E23) are disclosed.
+
+**Trial budget.** 2 sets (B_FUND_IND and its placebo) x 2 models x 9 horizons x 2 endpoints, on top of E22's.

@@ -1,8 +1,18 @@
 """Daily point-in-time ratios for one ticker: the latest snapshot filed on or before each session, priced at that
 session's as-traded close.
 
-As-traded price = the vendor's split-adjusted close x the product of all later split factors. Shares outstanding from
-the cover page are moved to the session's share basis with the splits between the cover date and the session.
+As-traded price = the vendor's split-adjusted close x the product of the later split factors that the vendor applied
+(splits up to VENDOR_SPLIT_BASIS; audit 3: a later split, e.g. KLAC 10:1 in 2026-06, is not in the vendor's prices).
+Shares outstanding from the cover page are moved to the session's share basis with the splits between the cover date
+and the session.
+
+Share basis guards (audit 3): market cap and every price-based field are missing when
+* the snapshot comes from a foreign private issuer (20-F / 40-F: ordinary shares vs ADS, local-currency statements);
+* the ticker shares its CIK with another listed class (BRK.A / BRK.B: the price of one class cannot be matched to a
+  company-wide share count);
+* the cover-page count disagrees with the latest quarter's weighted diluted shares by more than a factor of 1.5.
+When the cover page has no count (multi-class issuers report it per class, e.g. GOOG, META), the latest quarter's
+weighted diluted shares are used instead, and failing those TTM net income / TTM diluted EPS (the same for every class).
 The 31 pre-registered ratios (docs/V3_RESEARCH.md, E22) are in RATIOS; the multiples in MULTIPLES are display only.
 """
 from __future__ import annotations
@@ -11,6 +21,9 @@ import numpy as np
 import pandas as pd
 
 TAX = 0.21
+VENDOR_SPLIT_BASIS = pd.Timestamp("2026-02-27")   # us_stocks_ohlcv: Yahoo split history as of the 1-minute feed end
+FOREIGN_FORMS = ("20-F", "40-F")
+SHARE_TOL = 1.5
 DCF = {"years": 5, "g_lo": -0.05, "g_hi": 0.15, "g_term": 0.025, "r": 0.09}
 RATIOS = ["earnings_yield", "sales_yield", "book_to_price", "ebitda_to_ev", "fcf_yield", "dividend_yield",
           "shareholder_yield", "dcf_to_price",
@@ -55,8 +68,13 @@ def dcf_equity(fcf, growth, debt, cash):
 
 
 def daily(snap: pd.DataFrame, bars: pd.DataFrame, splits: pd.Series, sue: pd.DataFrame | None = None,
-          start: str | None = None, end: str | None = None) -> pd.DataFrame:
-    """bars: date, close (vendor split-adjusted). Returns one row per session with RATIOS + MULTIPLES."""
+          start: str | None = None, end: str | None = None, price_basis: pd.Timestamp | None = VENDOR_SPLIT_BASIS,
+          share_class_ambiguous: bool = False) -> pd.DataFrame:
+    """bars: date, close. Returns one row per session with RATIOS + MULTIPLES.
+
+    price_basis: the date up to which the bars' vendor applied splits (VENDOR_SPLIT_BASIS for the development store);
+    None for as-traded bars (live Yahoo closes), where no split factor is applied to the price.
+    share_class_ambiguous: the ticker is one of several listed classes on one CIK (price-based fields are missing)."""
     if snap is None or snap.empty or bars.empty:
         return pd.DataFrame()
     b = bars[["date", "close"]].copy()
@@ -66,20 +84,39 @@ def daily(snap: pd.DataFrame, bars: pd.DataFrame, splits: pd.Series, sue: pd.Dat
         b = b[b.date <= pd.Timestamp(end)]
     if b.empty:
         return pd.DataFrame()
-    s = snap.sort_values("snap_date")
+    s = snap.sort_values("snap_date").copy()
+    s["snap_date"] = pd.to_datetime(s["snap_date"]).astype("datetime64[ns]")
+    b["date"] = pd.to_datetime(b["date"]).astype("datetime64[ns]")         # parquet round trips may give us-resolution
     m = pd.merge_asof(b.sort_values("date"), s, left_on="date", right_on="snap_date", direction="backward")
     m = m[m["snap_date"].notna()].reset_index(drop=True)
     if m.empty:
         return pd.DataFrame()
     dates = pd.DatetimeIndex(m.date)
-    price = m.close.to_numpy(float) * split_factor_after(dates, splits)
-    sd = pd.DatetimeIndex(m.shares_date)
-    sh_adj = np.ones(len(m))
-    if splits is not None and not splits.empty:
-        f_sd = split_factor_after(sd.fillna(dates[0]), splits)
-        f_t = split_factor_after(dates, splits)
-        sh_adj = _div(f_sd, f_t)
-    shares = m.shares_outstanding.to_numpy(float) * sh_adj
+    if splits is None or splits.empty:
+        splits = pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    if price_basis is None:
+        px_factor = np.ones(len(m))
+    else:
+        px_factor = split_factor_after(dates, splits[splits.index <= price_basis])
+    price = m.close.to_numpy(float) * px_factor
+    f_t = split_factor_after(dates, splits)
+
+    def to_session_basis(values, basis_dates):
+        bd = pd.DatetimeIndex(basis_dates)
+        return np.asarray(values, float) * _div(split_factor_after(bd.fillna(dates[0]), splits), f_t)
+
+    sh_cover = to_session_basis(m.shares_outstanding, m.shares_date)
+    sh_dil = to_session_basis(m.q_diluted_shares, m["snap_date"])            # reported on the filing's share basis
+    eps_ttm = m.ttm_eps_diluted.to_numpy(float)
+    impl = _div(m.ttm_net_income, np.where(np.abs(eps_ttm) >= 0.05, eps_ttm, np.nan), True)   # same sign only
+    sh_impl = to_session_basis(impl, m["snap_date"])                          # net income / EPS (class-free)
+    ref = np.where(np.isfinite(sh_dil), sh_dil, sh_impl)
+    shares = np.where(np.isfinite(sh_cover), sh_cover, ref)
+    agree = _div(shares, ref, True)
+    shares = np.where(np.isfinite(ref) & ~((agree >= 1 / SHARE_TOL) & (agree <= SHARE_TOL)), np.nan, shares)
+    foreign = m.filed_form.astype(str).str.startswith(FOREIGN_FORMS).to_numpy()
+    if share_class_ambiguous:
+        shares = np.full(len(m), np.nan)
     mcap = shares * price
     debt = np.where(m.lt_debt_total.notna(), m.lt_debt_total,
                     m.lt_debt_noncurrent.fillna(0) + m.lt_debt_current.fillna(0)) + m.st_borrowings.fillna(0)
@@ -143,7 +180,10 @@ def daily(snap: pd.DataFrame, bars: pd.DataFrame, splits: pd.Series, sue: pd.Dat
                      + 0.6 * _div(mcap, liab, True) + 1.0 * _div(rev, ta, True))
     o["sue"] = np.nan
     if sue is not None and len(sue):
-        sm = pd.merge_asof(o[["date"]], sue.sort_values("avail_date")[["avail_date", "sue"]], left_on="date",
+        su = sue.sort_values("avail_date")[["avail_date", "sue"]].copy()
+        su["avail_date"] = pd.to_datetime(su.avail_date).astype("datetime64[ns]")
+        o["date"] = pd.to_datetime(o["date"]).astype("datetime64[ns]")
+        sm = pd.merge_asof(o[["date"]], su, left_on="date",
                            right_on="avail_date", direction="backward")
         age = (sm.date - sm.avail_date).dt.days
         o["sue"] = np.where(age <= 120, sm.sue, np.nan)                 # a surprise older than ~one quarter is stale
@@ -154,4 +194,9 @@ def daily(snap: pd.DataFrame, bars: pd.DataFrame, splits: pd.Series, sue: pd.Dat
     o["pb"] = _div(mcap, m.equity, True)
     o["p_fcf"] = _div(mcap, fcf, True)
     o["price_as_traded"] = price
+    o["shares_basis_ok"] = np.isfinite(shares).astype(float)
+    if foreign.any():                    # foreign private issuer: local currency, annual only, ADS vs ordinary shares
+        cols = [c for c in o.columns if c not in ("date", "price_as_traded")]
+        o.loc[foreign, cols] = np.nan
+    o["foreign_filer"] = foreign.astype(float)
     return o

@@ -41,7 +41,12 @@ def main() -> None:
     fr = fr[fr.block.isin(["train", "inner", "valid", "test"]) & (fr.asof_date >= "2009-01-02")].reset_index(drop=True)
     P = pd.read_parquet(paths.ARTIFACTS / "fundamentals" / "panel.parquet")
     fcols = [f"fr_{c}" for c in RATIOS + ["days_since_filing"]] + ["fund_present"]
-    fr = fr.merge(P[["ticker", "date"] + fcols].rename(columns={"date": "asof_date"}), on=["ticker", "asof_date"], how="left")
+    P = P[["ticker", "date"] + fcols].rename(columns={"date": "asof_date"})
+    P["asof_date"] = pd.to_datetime(P.asof_date).astype("datetime64[ns]")     # parquet may round-trip as [us]
+    fr["asof_date"] = pd.to_datetime(fr.asof_date).astype("datetime64[ns]")
+    n0 = len(fr)
+    fr = fr.merge(P, on=["ticker", "asof_date"], how="left", validate="many_to_one")
+    assert len(fr) == n0
     fr["fund_present"] = fr.fund_present.fillna(0.0)
     rng = np.random.default_rng(SEED)
     pl = fr[["asof_date"] + fcols].copy()

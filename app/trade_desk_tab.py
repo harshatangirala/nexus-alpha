@@ -429,6 +429,12 @@ def _fundamentals_section(tick, mode, asof) -> None:
     if r is None:
         st.info("No price-based ratios for this date.")
         return
+    if pd.notna(r.get("foreign_filer")) and r.get("foreign_filer") == 1:
+        st.info("Foreign private issuer (20-F / 40-F): statements are annual and often in another currency, and the "
+                "cover-page count is ordinary shares rather than ADS, so ratios are not computed (audit 3).")
+    elif pd.notna(r.get("shares_basis_ok")) and r.get("shares_basis_ok") == 0:
+        st.info("Share basis not reliable for this listing (another share class on the same filer, or the cover-page "
+                "count disagrees with diluted shares): price-based ratios are not computed (audit 3).")
     c = st.columns(6)
     for col, (lab, k) in zip(c, (("P/E", "pe"), ("EV/EBITDA", "ev_ebitda"), ("P/S", "ps"), ("P/B", "pb"), ("P/FCF", "p_fcf"),
                                  ("Market cap ($bn)", "market_cap"))):

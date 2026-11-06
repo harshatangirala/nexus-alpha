@@ -4,7 +4,7 @@
 
 1. per CIK: as-known statements at every filing date (facts filed before the seal only) -> artifacts/fundamentals/
    snapshots/CIK<cik>.parquet (cached);
-2. per ticker: daily ratios for 2009-01-02 .. 2022-12-30 at the as-traded close (split factors from the SEC study's S03),
+2. per ticker: daily ratios for 2009-01-02 .. 2022-12-30 at the as-traded close (split history: fundamentals/splits.py),
    SUE from the SEC study's S06 at its public time (acceptance per S07, or the time its history became public);
 3. within-session cross-sectional percentile ranks of every ratio among universe stocks that have it;
 4. artifacts/fundamentals/panel.parquet and reports/data/fundamentals_coverage.csv.
@@ -38,8 +38,9 @@ def _stage(stage: str, name: str) -> str:
 
 
 def splits_table() -> pd.DataFrame:
-    ca = pd.read_parquet(_stage("S03", "corporate_actions.parquet"))
-    return ca[ca.type == "split"][["ticker", "date", "value"]]
+    """The combined split history (vendor Yahoo files, yfinance, S03; nexus_alpha.fundamentals.splits)."""
+    from nexus_alpha.fundamentals import splits as SP
+    return SP.table()[["ticker", "date", "value"]]
 
 
 def sue_table() -> pd.DataFrame:
@@ -66,7 +67,7 @@ def snap_one(cik: int) -> tuple[int, int]:
 
 
 def ratios_one(args) -> pd.DataFrame:
-    ticker, cik, spl, sue = args
+    ticker, cik, spl, sue, ambiguous = args
     from nexus_alpha.data import bars as B
     from nexus_alpha.fundamentals import ratios as RT
     p = paths.ARTIFACTS / SNAP / f"CIK{int(cik):010d}.parquet"
@@ -79,7 +80,7 @@ def ratios_one(args) -> pd.DataFrame:
         bars = B.read_daily(ticker)
     except Exception:
         return pd.DataFrame()
-    d = RT.daily(s, bars, spl, sue, start=START, end=END)
+    d = RT.daily(s, bars, spl, sue, start=START, end=END, share_class_ambiguous=ambiguous)
     if d.empty:
         return d
     d.insert(0, "ticker", ticker)
@@ -101,10 +102,11 @@ def main() -> None:
     spl = splits_table()
     sue = sue_table()
     jobs = []
-    for t, c in cm.itertuples(index=False):
+    n_cls = cm.groupby("cik").ticker.transform("size")
+    for (t, c), k in zip(cm[["ticker", "cik"]].itertuples(index=False), n_cls):
         sp = spl[spl.ticker == t].set_index("date").value
         su = sue[sue.cik == c]
-        jobs.append((t, c, sp, su))
+        jobs.append((t, c, sp, su, bool(k > 1)))
     parts = []
     with cf.ProcessPoolExecutor(max_workers=a.workers) as ex:
         for i, d in enumerate(ex.map(ratios_one, jobs, chunksize=4)):

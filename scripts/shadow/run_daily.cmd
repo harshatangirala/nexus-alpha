@@ -13,3 +13,6 @@ for %%V in (v1.1 v2) do (
 rem E19 market-direction read (SPY 20D, D-031): logged the same way and scored by the same scorer
 .venv\Scripts\python.exe -B scripts\shadow\market_read.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1
 .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1
+rem Public timestamp: commit and push ONLY the forward-test logs (shadow/), never anything else
+git add shadow >> artifacts\logs\shadow_daily.log 2>&1
+git diff --cached --quiet -- shadow || (git -c user.name="Krishna Harsha Tangirala" -c user.email="70001399+harshatangirala@users.noreply.github.com" commit -q -m "Forward test: logs of %DATE%" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- shadow >> artifacts\logs\shadow_daily.log 2>&1 && git push -q origin HEAD >> artifacts\logs\shadow_daily.log 2>&1)

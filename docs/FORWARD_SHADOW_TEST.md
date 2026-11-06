@@ -36,3 +36,19 @@ Register-ScheduledTask -TaskName "NEXUS Alpha shadow test" -Action $a -Trigger $
 **How long until it says anything.** Roughly 20 matured dates for a first interval at 1D, about two months at 20D. Direction
 skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a year of daily forecasts to separate from
 0.5 with confidence.
+
+## Changes on 2026-11-06 (after the first session)
+
+* **What is logged.** Three frozen models are logged every evening, all starting with session 2026-11-05:
+  * v1.1;
+  * v2 (`registry/frozen_models/v2.json`);
+  * the E19 SPY 20D market read (`market_e19`, `scripts/shadow/market_read.py`).
+* **Same scorer.** All three are scored by `shadow_score.py` with each record's horizons and training class prior.
+* **Robustness (D-028).** The forecaster has:
+  * a 180 s timeout per ticker;
+  * retry passes that wait longer only when at least 10 tickers come back empty;
+  * a stop 10 minutes before the decision time.
+* **Bars.** The bars fetched in one New York evening are cached and shared by v1.1 and v2, so both forecast from identical inputs.
+* **Keys.** The task reads the paths of the owner's key files from the git-ignored `scripts/shadow/local_env.cmd`. v2's FRED context needs it (audit A-27).
+* **Public timestamps.** After scoring, the task commits **only `shadow/`** and pushes it to the public repository. That fixes a public time for each forecast before its outcome is known.
+* **No news.** In live mode the news modality is always missing for both stock models: there is no live news feed, and texts reach the models only through the Trade Desk.

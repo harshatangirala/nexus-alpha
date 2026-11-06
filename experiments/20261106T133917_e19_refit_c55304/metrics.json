@@ -1,0 +1,168 @@
+{
+ "evidence": {
+  "1D": {
+   "valid_auroc_ud": 0.5414442700156986,
+   "valid_auroc_ci95": [
+    0.4872146342336699,
+    0.5900142855766265
+   ],
+   "valid_ll": 1.0106211018343374,
+   "valid_ll_prior": 1.0227095108548394,
+   "test_auroc_ud": 0.5716517857142858,
+   "test_auroc_ci95": [
+    0.5327723005675836,
+    0.6139847189456314
+   ],
+   "test_ll": 0.980448014763861,
+   "test_ll_prior": 1.0268599601701651,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "2D": {
+   "valid_auroc_ud": 0.4868244436594843,
+   "valid_auroc_ci95": [
+    0.4160162689505446,
+    0.5657789451735482
+   ],
+   "valid_ll": 1.035960935712695,
+   "valid_ll_prior": 1.043115085124662,
+   "test_auroc_ud": 0.5499945980985307,
+   "test_auroc_ci95": [
+    0.49993024201439623,
+    0.6040006652893056
+   ],
+   "test_ll": 1.0282238253115046,
+   "test_ll_prior": 1.0553692605409164,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "5D": {
+   "valid_auroc_ud": 0.5202197802197802,
+   "valid_auroc_ci95": [
+    0.42459181480458075,
+    0.6229035904776845
+   ],
+   "valid_ll": 1.060280061179916,
+   "valid_ll_prior": 1.0668444676054516,
+   "test_auroc_ud": 0.5537562710357529,
+   "test_auroc_ci95": [
+    0.4529768420433145,
+    0.6533588523146493
+   ],
+   "test_ll": 1.0602371147826783,
+   "test_ll_prior": 1.079798409839705,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "10D": {
+   "valid_auroc_ud": 0.603974358974359,
+   "valid_auroc_ci95": [
+    0.4804690458291569,
+    0.728503189918802
+   ],
+   "valid_ll": 1.0288049835091486,
+   "valid_ll_prior": 1.0440271742139215,
+   "test_auroc_ud": 0.6845906548641388,
+   "test_auroc_ci95": [
+    0.5625752350121022,
+    0.8073604154065835
+   ],
+   "test_ll": 1.108624134882138,
+   "test_ll_prior": 1.0743585037826453,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "15D": {
+   "valid_auroc_ud": 0.6429249762583096,
+   "valid_auroc_ci95": [
+    0.4878465431647719,
+    0.7678388865854762
+   ],
+   "valid_ll": 1.0124010948937094,
+   "valid_ll_prior": 1.0435095267853802,
+   "test_auroc_ud": 0.6401367977982839,
+   "test_auroc_ci95": [
+    0.5053017289623584,
+    0.7840809126600132
+   ],
+   "test_ll": 1.0609756881705856,
+   "test_ll_prior": 1.0777566687878213,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "20D": {
+   "valid_auroc_ud": 0.7202670746974544,
+   "valid_auroc_ci95": [
+    0.524623763192426,
+    0.8570487837853832
+   ],
+   "valid_ll": 1.0020852913611187,
+   "valid_ll_prior": 1.0514761144133038,
+   "test_auroc_ud": 0.682921146953405,
+   "test_auroc_ci95": [
+    0.5355814357292763,
+    0.8137642246954465
+   ],
+   "test_ll": 1.085978997593901,
+   "test_ll_prior": 1.0841554606653083,
+   "in_keep_decision": true,
+   "direction_skill_validated": true
+  },
+  "3M": {
+   "valid_auroc_ud": 0.7802077922077922,
+   "valid_auroc_ci95": [
+    0.49839904802431056,
+    0.9588942346139082
+   ],
+   "valid_ll": 0.9391698268885309,
+   "valid_ll_prior": 0.9826669182393508,
+   "test_auroc_ud": 0.5670249849433322,
+   "test_auroc_ci95": [
+    0.28112242372428903,
+    0.764878784421266
+   ],
+   "test_ll": 1.2921326945679943,
+   "test_ll_prior": 1.0621417196185368,
+   "in_keep_decision": true,
+   "direction_skill_validated": false
+  },
+  "6M": {
+   "valid_auroc_ud": 0.9979494190020506,
+   "valid_auroc_ci95": [
+    0.988394584139265,
+    1.0
+   ],
+   "valid_ll": 0.6777220762474776,
+   "valid_ll_prior": 0.7796359950976933,
+   "test_auroc_ud": 0.4695648343904158,
+   "test_auroc_ci95": [
+    0.06117538354253836,
+    0.6055663025239516
+   ],
+   "test_ll": 1.7224968466170003,
+   "test_ll_prior": 1.0251321730462262,
+   "in_keep_decision": false,
+   "direction_skill_validated": false
+  },
+  "1Y": {
+   "valid_auroc_ud": 0.48722466960352423,
+   "valid_auroc_ci95": [
+    0.48722466960352423,
+    0.48722466960352423
+   ],
+   "valid_ll": 0.3880143785841457,
+   "valid_ll_prior": 0.5245028976623275,
+   "test_auroc_ud": 0.48271942846539245,
+   "test_auroc_ci95": [
+    0.28359622989142846,
+    0.6262975644250681
+   ],
+   "test_ll": 1.9564569800512863,
+   "test_ll_prior": 0.9745661989223994,
+   "in_keep_decision": false,
+   "direction_skill_validated": false
+  }
+ },
+ "bundle": "20261106T133917_e19_refit_c55304",
+ "elapsed_s": 30.0
+}

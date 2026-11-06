@@ -1,6 +1,8 @@
 """Freeze a deployed bundle for the forward shadow test and the joint sealed evaluation.
 
     python scripts/shadow/freeze_model.py --version v1.1 --bundle 20261106T020411_e08_final_model_5c4327
+    python scripts/shadow/freeze_model.py --kind v2 --version v2 --bundle <E14 run id>
+    python scripts/shadow/freeze_model.py --kind market --version market_e19 --bundle <e19_refit run id>
 
 Writes registry/frozen_models/<version>.json: SHA-256 of every bundle file, the code commit, label rule, horizons and the
 class prior of the bundle's training blocks (the baseline the forward test scores against). Refuses to overwrite an
@@ -23,10 +25,24 @@ sys.path.insert(0, str(REPO / "src"))
 
 from nexus_alpha import paths, shadow as SH  # noqa: E402
 from nexus_alpha.targets import HORIZONS, LABEL_VERSION  # noqa: E402
+from nexus_alpha.targets_v2 import HORIZONS_V2, LABEL_VERSION_V2  # noqa: E402
+
+
+def stock_prior(frame: str, horizons: dict, blocks: list[str]) -> dict:
+    cols = ["block"] + [f"y_{h}" for h in horizons]
+    fr = pq.read_table(paths.ARTIFACTS / "samples" / frame, columns=cols).to_pandas()
+    fr = fr[fr.block.isin(blocks)]
+    prior = {}
+    for h in horizons:
+        y = fr[f"y_{h}"].dropna().astype(int).to_numpy()
+        y = y[y >= 0]
+        prior[h] = [float((y == c).mean()) for c in range(3)]
+    return prior
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--kind", choices=["v1", "v2", "market"], default="v1")
     ap.add_argument("--version", required=True)
     ap.add_argument("--bundle", required=True)
     ap.add_argument("--train-blocks", nargs="+", default=["train", "inner", "valid"])
@@ -37,20 +53,22 @@ def main() -> None:
         sys.exit(f"{out} exists: frozen records are never overwritten")
     bdir = paths.ARTIFACTS / "bundles" / a.bundle
     meta = json.loads((bdir / "bundle_meta.json").read_text(encoding="utf-8"))
-    cols = ["block"] + [f"y_{h}" for h in HORIZONS]
-    fr = pq.read_table(paths.ARTIFACTS / "samples" / "s500_frame.parquet", columns=cols).to_pandas()
-    fr = fr[fr.block.isin(a.train_blocks)]
-    prior = {}
-    for h in HORIZONS:
-        y = fr[f"y_{h}"].dropna().astype(int).to_numpy()
-        y = y[y >= 0]
-        prior[h] = [float((y == c).mean()) for c in range(3)]
+    if a.kind == "v1":
+        horizons, label_version = HORIZONS, LABEL_VERSION
+        prior = stock_prior("s500_frame.parquet", horizons, a.train_blocks)
+    elif a.kind == "v2":
+        horizons, label_version = HORIZONS_V2, LABEL_VERSION_V2
+        prior = stock_prior("v2_frame.parquet", horizons, a.train_blocks)
+    else:   # market read (E19): one instrument (SPY); prior over the refit sessions (train, inner, valid)
+        horizons, label_version = meta["horizons"], meta["label_version"]
+        prior = meta["refit_class_prior"]
+        a.train_blocks = ["train", "inner", "valid"]
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     rec = SH.freeze_record(a.version, bdir, {
         "frozen_utc": SH.now_utc().isoformat(timespec="seconds"),
         "code_commit_at_freeze": commit,
         "recipe": meta.get("recipe"), "trained_through_block": meta.get("trained_through_block"),
-        "label_version": LABEL_VERSION, "horizons": HORIZONS,
+        "kind": a.kind, "label_version": label_version, "horizons": horizons,
         "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
         "train_class_prior_blocks": a.train_blocks, "train_class_prior": prior,
         "note": a.note})

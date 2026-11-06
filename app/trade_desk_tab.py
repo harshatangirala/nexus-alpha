@@ -97,6 +97,68 @@ def _e19_note() -> str:
     return "E19 (market-direction model) has not been run yet: these readings are context, not a validated signal."
 
 
+@st.cache_resource(show_spinner=False)
+def _market_model():
+    from nexus_alpha import shadow as SH
+    from nexus_alpha.macro import market_model as MM
+    try:
+        bdir, _ = SH.verify_frozen("market_e19")
+        return MM.MarketModel(bdir)
+    except Exception:
+        return None
+
+
+@st.cache_data(show_spinner="Loading development market features...")
+def _dev_market_rows(cols: tuple):
+    from nexus_alpha import paths
+    fr = pd.read_parquet(paths.ARTIFACTS / "samples" / "v2_frame.parquet", columns=["asof_date", *cols])
+    return fr.groupby("asof_date").first()
+
+
+def _latest_logged_read():
+    from nexus_alpha import shadow as SH
+    files = sorted((SH.SHADOW_ROOT / "market_e19" / "forecasts").glob("*.csv"))
+    return pd.read_csv(files[-1]) if files else None
+
+
+def _market_read_section(mode, asof):
+    """E19 SPY 20D direction lean (D-031): the only market/macro read with validated direction skill."""
+    mm = _market_model()
+    if mm is None:
+        return
+    ev = mm.meta["evidence"]["20D"]
+    st.markdown("**SPY 20-session direction lean (E19 market model, frozen `market_e19`)**")
+    if mode == "live":
+        r = _latest_logged_read()
+        if r is None or r.empty:
+            st.caption("No logged read yet (the daily task logs one every evening).")
+            return
+        row = r.iloc[0]
+        p_up, p_down, p_side, when = float(row.p_up), float(row.p_down), float(row.p_side), row.asof_session
+        src = f"logged in the forward test for session {when} ({row.data_quality})"
+    else:
+        cols = tuple(mm.models["20D"]["cols"])
+        dev = _dev_market_rows(cols)
+        d = dev.loc[:pd.Timestamp(asof)]
+        if d.empty:
+            st.caption("No development market features at this date.")
+            return
+        when = d.index[-1]
+        p = mm.predict(d.iloc[-1])["20D"]
+        p_up, p_down, p_side = p["p_up"], p["p_down"], p["p_side"]
+        insample = when <= pd.Timestamp("2018-12-31")
+        src = f"session {when.date()}; " + ("IN-SAMPLE (the deployed refit used 2003-2018)" if insample
+                                            else "out of sample for the 2003-2018 refit")
+    c = st.columns(3)
+    c[0].metric("SPY 20D lean", "UP" if p_up > p_down else "DOWN", f"{p_up - p_down:+.3f} (up - down)")
+    c[1].metric("P(up / sideways / down)", f"{p_up:.2f} / {p_side:.2f} / {p_down:.2f}")
+    c[2].metric("Direction AUROC (2017-18 | 2020-22)", f"{ev['valid_auroc_ud']:.2f} | {ev['test_auroc_ud']:.2f}")
+    st.caption(f"{src}. Validation interval {ev['valid_auroc_ci95'][0]:.2f}-{ev['valid_auroc_ci95'][1]:.2f}; "
+               f"2020-2022 interval {ev['test_auroc_ci95'][0]:.2f}-{ev['test_auroc_ci95'][1]:.2f}. Its probabilities "
+               f"were no better than the base rate in 2020-2022 (log loss {ev['test_ll']:.3f} vs {ev['test_ll_prior']:.3f}), "
+               "so read it as a lean, not as calibrated odds. Market and macro inputs only; it does not use this stock.")
+
+
 @st.cache_data(ttl=3600, show_spinner="Fetching live market context...")
 def _live_ctx():
     from nexus_alpha.macro.context import live_date_features
@@ -286,6 +348,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
                    "latest release). Data age = days since the observation period the latest value refers to.")
         st.dataframe(fz, width="stretch")
     st.caption(_e19_note())
+    _market_read_section(mode, asof)
 
     st.subheader("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]

@@ -119,6 +119,25 @@ the one-sided bootstrap p-values across the three groups per model. Implemented 
    * builds the inputs, scores both models and writes `reports/sealed/`.
 5. Results are committed with the access-log row.
 
+## 7b. Owner's commands (PowerShell, in the repository folder)
+
+```powershell
+# 1. pin the committed plan, scorer and frozen records (refuses if anything is uncommitted); prints the config's SHA-256
+.venv\Scripts\python.exe -B scripts\sealed\run_sealed_eval.py --write-config
+# 2. the owner's deliberate act: point the gate at that file and paste the printed SHA-256 yourself
+$env:NEXUS_HOLDOUT_CONFIG = "$PWD\governance\sealed_eval_config.json"
+$env:NEXUS_HOLDOUT_UNLOCK = "<the SHA-256 printed in step 1>"
+$env:NEXUS_ENV_FILES      = "C:\Users\harsh\Downloads\FRED_API.env"
+# 3. the evaluation (about 3-5 hours on CPU); results in reports\sealed\
+.venv\Scripts\python.exe -B scripts\sealed\run_sealed_eval.py --who "<your name>"
+```
+
+Rehearsal evidence (2022, development data):
+* `reports/verification/sealed_rehearsal_2022.json`: 309 feature columns exact; embeddings cosine >= 0.99997; v1.1 and
+  v2 reproduce the stored predictions (max |dp| 0.00058 / 0.00057).
+* `reports/verification/sealed_dry_run_2022/`: the full evaluation pipeline end to end (endpoints, market read,
+  frozen backtests, descriptive splits) in 225 s on the rehearsal rows.
+
 ## 8. To fill in at v2 freeze
 
 | Item | Value |

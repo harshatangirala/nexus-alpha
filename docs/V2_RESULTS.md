@@ -9,7 +9,7 @@ Pre-registration: `docs/V2_ARCHITECTURE.md` section 4. Decisions and disclosures
 * "Test" is 2020-2022, a **reused diagnostic** that never drives a choice.
 * Intervals are 95% month-block bootstrap intervals.
 
-Status: E11, E12, E13 and E19 are complete. E16, E18, E14 (blend and freeze) and E15 (backtest) are running in sequence.
+Status: E11, E12, E13, E16, E17 (19 of 22 stocks) and E19 are complete. E18, then E14 (blend and freeze) and E15 (backtest) run in sequence.
 
 ## E11: market and macro blocks in the stock model (tabular)
 
@@ -106,6 +106,35 @@ First read, session 2026-11-05: P(up / sideways / down) = 0.424 / 0.259 / 0.317.
 * TCN: no skill.
 * GRU: slight validation skill at short horizons that does not hold on test.
 * TCN best epochs were 1-2: it learned nothing beyond the first epoch.
+
+## E16: text encoders on top of the carried set B (F0 + GMD + FRED)
+
+| Comparison (LightGBM, validation) | 1D | 2D-20D | 3M-1Y |
+|---|---|---|---|
+| + FinBERT vs B | **+0.0028 [+0.0003, +0.0052]** | -0.0007 [-0.0023, +0.0010] | -0.0008 [-0.0021, +0.0006] |
+| + v1 news features vs B | +0.0021 [-0.0008, +0.0051] | -0.0017 [-0.0037, -0.0000] | +0.0049 [+0.0017, +0.0087] |
+
+* The keep rule kept FinBERT (LightGBM, 1D) and the "both" set; logistic kept nothing.
+* E16 chose B + FinBERT.
+
+## D-033 baseline guard: is the chosen set better than F0?
+
+* Comparing B + FinBERT with F0 under the D-032 bootstrap, the keep rule **fails for both families**.
+* **The v2 tabular component is therefore F0** (the v1.1 numeric features), fitted on all 23 horizons in E18. Its 1D and 2D validation log losses reproduce E11's F0 exactly (1.03472, 1.05250).
+* Market and macro blocks reach v2 only through the E12 fusion context (GMD + FRED), weighted by E14's validation blend, and through the separate E19 market read.
+* FinBERT on top of F0 is untested: it is a candidate for a later version (new trial).
+
+## E17: Gemini reads the legends of real TradingView screenshots
+
+19 of 22 stocks (57 screenshots, 228 O/H/L/C values):
+* every value read, **all exact to the cent**, on all three timeframes;
+* ticker named correctly on 94.7% of the screenshots it read.
+
+The other three stocks (TTEC, URI, WERN) are scheduled for 2026-11-07 13:45 IST, after the free-tier reset. Reads are cached, so a re-run never re-spends.
+
+This validates D-019's screenshot check: legend values typed in, or read by Gemini, are compared with real bars.
+
+The free tier allows 20 requests per model per day, and on this key only `gemini-3.6-flash` answered. E17 used that day's quota, so the Trade Desk's Gemini read was unavailable until the next reset.
 
 ## Operational notes from this run
 

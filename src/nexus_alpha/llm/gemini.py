@@ -120,17 +120,23 @@ def _usage_path():
     return paths.artifact("llm_reads", "usage.json")
 
 
+def _quota_day() -> str:
+    """The free-tier daily quota resets at midnight Pacific time, so usage is counted per Pacific calendar day."""
+    from zoneinfo import ZoneInfo
+    return dt.datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
+
+
 def usage_today() -> dict:
-    """Successful calls per model today (UTC), from artifacts/llm_reads/usage.json."""
+    """Successful calls per model in the current quota day (Pacific), from artifacts/llm_reads/usage.json."""
     p = _usage_path()
     d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    return d.get(dt.datetime.now(dt.timezone.utc).date().isoformat(), {})
+    return d.get(_quota_day(), {})
 
 
 def _count(model: str) -> None:
     p = _usage_path()
     d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
-    day = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    day = _quota_day()
     d.setdefault(day, {})[model] = d.get(day, {}).get(model, 0) + 1
     p.write_text(json.dumps(d, indent=1), encoding="utf-8")
 

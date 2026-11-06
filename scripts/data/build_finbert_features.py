@@ -112,6 +112,9 @@ def main() -> None:
     mu = M[tr].mean(0)
     U, S, Vt = np.linalg.svd(M[tr] - mu, full_matrices=False)
     Z = (M - mu) @ Vt[:16].T
+    # projection saved for inference on user-supplied headlines (same mean and components)
+    np.savez(paths.artifact("features", "finbert_pca.npz"), mean=mu, components=Vt[:16],
+             id2label=np.array([lab[k] for k in sorted(lab)]))
     emb = pd.DataFrame(Z, index=sid, columns=[f"fb_pc{i}" for i in range(16)])
     out = agg.join(emb).reset_index().rename(columns={"index": "sample_id"})
     out.to_parquet(paths.artifact("features", "finbert_features.parquet"), index=False)

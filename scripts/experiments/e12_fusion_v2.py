@@ -54,7 +54,7 @@ def load_frame() -> pd.DataFrame:
     return fr
 
 
-def ctx_block(fr: pd.DataFrame, cols: list[str], fit_rows: np.ndarray) -> np.ndarray:
+def ctx_block(fr: pd.DataFrame, cols: list[str], fit_rows: np.ndarray, return_stats: bool = False):
     num = [c for c in cols if c != "rel_sector_id"]
     X = fr[num].to_numpy(np.float64)
     mu = np.nan_to_num(np.nanmean(X[fit_rows], 0))
@@ -64,7 +64,7 @@ def ctx_block(fr: pd.DataFrame, cols: list[str], fit_rows: np.ndarray) -> np.nda
     if "rel_sector_id" in cols:
         sid = fr.rel_sector_id.to_numpy()
         Z = np.concatenate([Z, np.stack([(sid == k).astype(float) for k in range(9)], 1)], 1)
-    return Z.astype(np.float32)
+    return (Z.astype(np.float32), mu, sd) if return_stats else Z.astype(np.float32)
 
 
 def auroc_ud(y, P):

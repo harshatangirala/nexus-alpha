@@ -141,3 +141,20 @@ def asof_features(dates: pd.DatetimeIndex, store: pd.DataFrame | None = None) ->
         df.columns = [f"fred_{name}_{c}" for c in df.columns]
         out = out.join(df)
     return out
+
+
+def live_features(asof: pd.Timestamp | None = None) -> pd.Series:
+    """Features from the vintage in force today (inference only): latest observations of each series, same transforms."""
+    asof = pd.Timestamp(asof or pd.Timestamp.now().normalize())
+    out = {}
+    for sid, (name, how) in SERIES.items():
+        j = _get({"series_id": sid, "observation_start": "1990-01-01", "limit": 100000})
+        d = pd.DataFrame(j.get("observations", []))
+        if d.empty:
+            continue
+        v = pd.to_numeric(d["value"].replace(".", np.nan), errors="coerce")
+        s = pd.Series(v.values, index=pd.to_datetime(d["date"])).sort_index()
+        for k, x in _transform(s, how).items():
+            out[f"fred_{name}_{k}"] = x
+        out[f"fred_{name}_obs_age_days"] = float((asof - s.dropna().index.max()).days)
+    return pd.Series(out)

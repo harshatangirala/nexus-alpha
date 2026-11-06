@@ -69,8 +69,11 @@ def available() -> bool:
 
 
 def _client():
+    """Client with a 90 s per-request timeout and the SDK's own retries off (generate() handles retries and fallback)."""
     from google import genai
-    return genai.Client(api_key=api_key())
+    from google.genai import types
+    return genai.Client(api_key=api_key(), http_options=types.HttpOptions(
+        timeout=90_000, retry_options=types.HttpRetryOptions(attempts=1)))
 
 
 def candidate_models(client=None) -> list[str]:
@@ -101,25 +104,36 @@ def pick_model(client=None) -> str:
     return candidate_models(client)[0]
 
 
-TRANSIENT = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "500", "INTERNAL", "DEADLINE")
+TRANSIENT = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "500", "INTERNAL", "504", "DEADLINE")
+SKIP = ("404", "NOT_FOUND")                  # listed but retired for this key: move on at once
+_STICKY: dict[str, str] = {}                 # the model that last answered, tried first next time (per process)
 
 
-def generate(parts, cfg, client=None, tries_per_model: int = 2, max_models: int = 4):
-    """generate_content with fallback: brief backoff retries on transient errors, then the next candidate model.
-    Returns (response, model_name)."""
+def generate(parts, cfg, client=None, tries_per_model: int = 2, max_models: int = 5):
+    """generate_content with fallback across candidate models. Transient errors (rate limit, overload, timeout) get one
+    short retry, then the next model; retired models are skipped. Returns (response, model_name)."""
     import time
     client = client or _client()
+    cands = candidate_models(client)[:max_models]
+    if _STICKY.get("model") in cands:
+        cands = [_STICKY["model"]] + [c for c in cands if c != _STICKY["model"]]
     last = None
-    for model in candidate_models(client)[:max_models]:
+    for model in cands:
         for k in range(tries_per_model):
             try:
-                return client.models.generate_content(model=model, contents=parts, config=cfg), model
+                r = client.models.generate_content(model=model, contents=parts, config=cfg)
+                _STICKY["model"] = model
+                return r, model
             except Exception as e:
                 last = e
-                if not any(t in str(e) for t in TRANSIENT):
+                msg = str(e)
+                if any(t in msg for t in SKIP):
+                    break
+                if not any(t in msg for t in TRANSIENT):
                     raise
-                time.sleep(5 * (k + 1))
-    raise RuntimeError(f"all Gemini candidates failed with transient errors; last: {str(last)[:200]}")
+                if k + 1 < tries_per_model:
+                    time.sleep(8)
+    raise RuntimeError(f"all Gemini candidates failed; last error: {str(last)[:200]}")
 
 
 def analyze(ticker: str, trade: str, decision_utc: str, texts: list[dict], images: list[tuple[str, bytes, str]],

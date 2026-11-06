@@ -18,6 +18,64 @@ from nexus_alpha.trading.plan import RiskConfig
 KINDS = ["company news", "macro release / commentary", "SEC filing (8-K, 10-K, 10-Q)", "other"]
 
 
+@st.cache_resource(show_spinner="Loading the v2 bundle...")
+def _v2():
+    from nexus_alpha.inference.pipeline_v2 import NexusPredictorV2, latest_v2_bundle
+    b = latest_v2_bundle()
+    return NexusPredictorV2(b) if b else None
+
+
+def _v2_frozen(bundle_id: str) -> bool:
+    import json
+    from nexus_alpha import shadow as SH
+    p = SH.FROZEN_DIR / "v2.json"
+    return p.exists() and json.loads(p.read_text(encoding="utf-8")).get("bundle_id") == bundle_id
+
+
+def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
+    """v2 forecast for the exact requested horizon, with the same deterministic risk engine."""
+    from nexus_alpha.targets_v2 import HORIZONS_V2
+    from nexus_alpha.trading.plan import plan_trade
+    try:
+        v2 = _v2()
+    except Exception as e:
+        st.info(f"v2 bundle could not be loaded: {type(e).__name__}: {e}")
+        return
+    if v2 is None:
+        st.caption("v2 (all swing lengths, 3M/6M/1Y) appears here once its bundle is built (E14).")
+        return
+    st.subheader("2b. v2 model (exact horizon)")
+    status = "FROZEN" if _v2_frozen(v2.meta["bundle_id"]) else "NOT YET FROZEN (research build; not in the forward test)"
+    choice = TD.choose_horizon(trade, swing_days=swing, long_term=lt, available=HORIZONS_V2)
+    with st.spinner("Scoring v2..."):
+        try:
+            r = v2.predict(tick, asof=str(asof) if mode == "historical" else None, mode=mode, articles=company_news)
+        except Exception as e:
+            st.warning(f"v2 failed: {type(e).__name__}: {e}")
+            return
+    h = choice.served_by
+    f = r["forecasts"][h]
+    c = st.columns(4)
+    c[0].metric(f"v2 {h}: lean", "UP" if f["p_up"] > f["p_down"] else "DOWN", f"{f['p_up'] - f['p_down']:+.3f} (up - down)")
+    c[1].metric("P(up / sideways / down)", f"{f['p_up']:.2f} / {f['p_side']:.2f} / {f['p_down']:.2f}")
+    c[2].metric("Direction skill (validation)", "validated" if f["direction_skill_validated"] else "NOT validated")
+    c[3].metric("Return range q10..q90", "-" if f["ret_q10"] is None else f"{f['ret_q10']:+.1%} .. {f['ret_q90']:+.1%}")
+    st.caption(f"Bundle {r['bundle_id']} ({status}); as-of {r['asof_session']}; share of model inputs missing "
+               f"{r['features_missing_share']:.0%}.")
+    ev = res.evidence.get("rules", {})
+    ind = res.evidence.get("indicators", {})
+    if ind.get("atr14") and ev:
+        tp = plan_trade(h, HORIZONS_V2[h], {"up": f["p_up"], "down": f["p_down"], "side": f["p_side"]}, calibrated=True,
+                        skill_validated=f["direction_skill_validated"], levels_available=True,
+                        weekly={"regime": ev.get("weekly_regime"), "permission": ev.get("weekly_permission")},
+                        setups=ev.get("daily_setups", []), trigger_by_side=ev.get("hourly_triggers", {}),
+                        atr=float(ind["atr14"]), close=float(ind["close"]), risk=risk, data_gate_reasons=[])
+        st.write(f"Risk engine on v2 probabilities: **{tp.decision}**")
+        st.json({k: v for k, v in tp.model_dump().items() if v not in (None, [], {})})
+    with st.expander("All v2 horizons"):
+        st.dataframe(pd.DataFrame(r["forecasts"]).T, width="stretch")
+
+
 @st.cache_data(ttl=3600, show_spinner="Fetching live market context...")
 def _live_ctx():
     from nexus_alpha.macro.context import live_date_features
@@ -144,6 +202,8 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         st.json({k: v for k, v in p.model_dump().items() if v not in (None, [], {})})
     for lim in res.limitations:
         st.caption(lim)
+
+    _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk)
 
     st.subheader("4. Market and macro context (descriptive; not inputs of the frozen v1.1 model)")
     try:

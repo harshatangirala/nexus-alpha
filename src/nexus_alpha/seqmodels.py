@@ -80,12 +80,14 @@ def masked_ce(logits, y):
     return nn.functional.cross_entropy(logits[m], y[m])
 
 
-def fit(model, Xtr, Ytr, Xes, Yes, epochs=30, batch=512, lr=3e-4, wd=1e-4, patience=6, seed=7, log=print):
+def fit(model, Xtr, Ytr, Xes=None, Yes=None, epochs=30, batch=512, lr=3e-4, wd=1e-4, patience=6, seed=7, log=print,
+        restore_best=True):
+    """restore_best=False (refits): train exactly `epochs` epochs and keep the final weights; Xes is not looked at."""
     torch.manual_seed(seed)
     np.random.seed(seed)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
     steps = epochs * int(np.ceil(len(Xtr) / batch))
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=steps, pct_start=1 / epochs,
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=steps + 2, pct_start=max(1 / epochs, 2.5 / (steps + 2)),
                                                 anneal_strategy="cos")       # linear-ish warm-up 1 epoch, cosine decay
     Xt, Yt = torch.from_numpy(np.ascontiguousarray(Xtr, np.float32)), torch.from_numpy(np.asarray(Ytr, np.int64))
     best, best_state, bad, hist = np.inf, None, 0, []
@@ -102,6 +104,9 @@ def fit(model, Xtr, Ytr, Xes, Yes, epochs=30, batch=512, lr=3e-4, wd=1e-4, patie
             opt.step()
             sched.step()
             tot += float(loss) * len(ix)
+        if not restore_best:
+            hist.append({"epoch": ep, "train_loss": tot / len(Xt)})
+            continue
         val = evaluate(model, Xes, Yes)
         hist.append({"epoch": ep, "train_loss": tot / len(Xt), "inner_ce": val})
         log(f"epoch {ep}: train {tot / len(Xt):.4f} inner {val:.4f}")
@@ -112,7 +117,8 @@ def fit(model, Xtr, Ytr, Xes, Yes, epochs=30, batch=512, lr=3e-4, wd=1e-4, patie
             bad += 1
             if bad >= patience:
                 break
-    model.load_state_dict(best_state)
+    if restore_best:
+        model.load_state_dict(best_state)
     return model, hist
 
 

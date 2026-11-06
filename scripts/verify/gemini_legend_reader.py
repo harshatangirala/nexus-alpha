@@ -68,7 +68,9 @@ def main() -> None:
     out = {"model": model, "models_used": d.model.value_counts().to_dict(), "failed_stocks": failed, "screenshots": int(d.groupby(["ticker", "tf"]).ngroups), "values": int(len(d)),
            "read_share": float(d.read.mean()), "exact_share_of_all": float(d.exact_cent.mean()),
            "within_0p3pct_share_of_all": float((d.rel_err_pct <= 0.3).mean()),
-           "ticker_correct_share": float((d.ticker_read.fillna("").str.upper().str.contains(d.ticker)).mean()),
+           "ticker_correct_share_of_read_screens": float(np.mean([str(tr).upper().find(str(tk).upper()) >= 0 for tr, tk in
+                                                         zip(d[d.read].ticker_read.fillna(""), d[d.read].ticker)]))
+           if d.read.any() else None,
            "by_timeframe": json.loads(by_tf.to_json(orient="index"))}
     (REPO / "reports" / "verification").mkdir(parents=True, exist_ok=True)
     d.to_csv(REPO / "reports" / "verification" / "gemini_legend_reader.csv", index=False)

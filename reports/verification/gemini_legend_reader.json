@@ -1,0 +1,49 @@
+{
+  "model": "gemini-3.6-flash",
+  "models_used": {
+    "gemini-3.6-flash": 228
+  },
+  "failed_stocks": [
+    {
+      "ticker": "TTEC",
+      "error": "Gemini free-tier daily quota used up on every model (20 requests per model per day); next reset in about 23.2 h"
+    },
+    {
+      "ticker": "URI",
+      "error": "Gemini free-tier daily quota used up on every model (20 requests per model per day); next reset in about 23.2 h"
+    },
+    {
+      "ticker": "WERN",
+      "error": "Gemini free-tier daily quota used up on every model (20 requests per model per day); next reset in about 23.2 h"
+    }
+  ],
+  "screenshots": 57,
+  "values": 228,
+  "read_share": 1.0,
+  "exact_share_of_all": 1.0,
+  "within_0p3pct_share_of_all": 1.0,
+  "ticker_correct_share_of_read_screens": 0.9473684210526315,
+  "by_timeframe": {
+    "1D": {
+      "values": 76,
+      "read_share": 1.0,
+      "exact_share": 1.0,
+      "max_rel_err_pct": 0.0,
+      "median_rel_err_pct": 0.0
+    },
+    "1H": {
+      "values": 76,
+      "read_share": 1.0,
+      "exact_share": 1.0,
+      "max_rel_err_pct": 0.0,
+      "median_rel_err_pct": 0.0
+    },
+    "1W": {
+      "values": 76,
+      "read_share": 1.0,
+      "exact_share": 1.0,
+      "max_rel_err_pct": 0.0,
+      "median_rel_err_pct": 0.0
+    }
+  }
+}

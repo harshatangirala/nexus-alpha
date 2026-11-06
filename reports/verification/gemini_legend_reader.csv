@@ -1,0 +1,229 @@
+ticker,tf,field,reference,gemini,model,ticker_read,tf_read,read,abs_err,exact_cent,rel_err_pct
+AMD,1W,open,630.61,630.61,gemini-3.6-flash,AMD,1W,True,0.0,True,0.0
+AMD,1W,high,658.52,658.52,gemini-3.6-flash,AMD,1W,True,0.0,True,0.0
+AMD,1W,low,606.0,606.0,gemini-3.6-flash,AMD,1W,True,0.0,True,0.0
+AMD,1W,close,608.1,608.1,gemini-3.6-flash,AMD,1W,True,0.0,True,0.0
+AMD,1D,open,626.89,626.89,gemini-3.6-flash,AMD,1D,True,0.0,True,0.0
+AMD,1D,high,627.37,627.37,gemini-3.6-flash,AMD,1D,True,0.0,True,0.0
+AMD,1D,low,606.0,606.0,gemini-3.6-flash,AMD,1D,True,0.0,True,0.0
+AMD,1D,close,608.1,608.1,gemini-3.6-flash,AMD,1D,True,0.0,True,0.0
+AMD,1H,open,609.71,609.71,gemini-3.6-flash,AMD,1h,True,0.0,True,0.0
+AMD,1H,high,609.92,609.92,gemini-3.6-flash,AMD,1h,True,0.0,True,0.0
+AMD,1H,low,606.0,606.0,gemini-3.6-flash,AMD,1h,True,0.0,True,0.0
+AMD,1H,close,608.09,608.09,gemini-3.6-flash,AMD,1h,True,0.0,True,0.0
+AOS,1W,open,56.23,56.23,gemini-3.6-flash,AOS,1W,True,0.0,True,0.0
+AOS,1W,high,57.88,57.88,gemini-3.6-flash,AOS,1W,True,0.0,True,0.0
+AOS,1W,low,54.55,54.55,gemini-3.6-flash,AOS,1W,True,0.0,True,0.0
+AOS,1W,close,56.38,56.38,gemini-3.6-flash,AOS,1W,True,0.0,True,0.0
+AOS,1D,open,56.9,56.9,gemini-3.6-flash,AOS,1D,True,0.0,True,0.0
+AOS,1D,high,57.27,57.27,gemini-3.6-flash,AOS,1D,True,0.0,True,0.0
+AOS,1D,low,56.17,56.17,gemini-3.6-flash,AOS,1D,True,0.0,True,0.0
+AOS,1D,close,56.38,56.38,gemini-3.6-flash,AOS,1D,True,0.0,True,0.0
+AOS,1H,open,56.77,56.77,gemini-3.6-flash,AOS,1h,True,0.0,True,0.0
+AOS,1H,high,56.77,56.77,gemini-3.6-flash,AOS,1h,True,0.0,True,0.0
+AOS,1H,low,56.38,56.38,gemini-3.6-flash,AOS,1h,True,0.0,True,0.0
+AOS,1H,close,56.39,56.39,gemini-3.6-flash,AOS,1h,True,0.0,True,0.0
+ASTE,1W,open,42.04,42.04,gemini-3.6-flash,ASTE,1W,True,0.0,True,0.0
+ASTE,1W,high,42.54,42.54,gemini-3.6-flash,ASTE,1W,True,0.0,True,0.0
+ASTE,1W,low,38.29,38.29,gemini-3.6-flash,ASTE,1W,True,0.0,True,0.0
+ASTE,1W,close,38.71,38.71,gemini-3.6-flash,ASTE,1W,True,0.0,True,0.0
+ASTE,1D,open,38.81,38.81,gemini-3.6-flash,ASTE,1D,True,0.0,True,0.0
+ASTE,1D,high,38.95,38.95,gemini-3.6-flash,ASTE,1D,True,0.0,True,0.0
+ASTE,1D,low,38.29,38.29,gemini-3.6-flash,ASTE,1D,True,0.0,True,0.0
+ASTE,1D,close,38.71,38.71,gemini-3.6-flash,ASTE,1D,True,0.0,True,0.0
+ASTE,1H,open,38.83,38.83,gemini-3.6-flash,ASTE,1h,True,0.0,True,0.0
+ASTE,1H,high,38.87,38.87,gemini-3.6-flash,ASTE,1h,True,0.0,True,0.0
+ASTE,1H,low,38.68,38.68,gemini-3.6-flash,ASTE,1h,True,0.0,True,0.0
+ASTE,1H,close,38.7,38.7,gemini-3.6-flash,ASTE,1h,True,0.0,True,0.0
+BRKR,1W,open,63.12,63.12,gemini-3.6-flash,BRKR,1W,True,0.0,True,0.0
+BRKR,1W,high,66.42,66.42,gemini-3.6-flash,BRKR,1W,True,0.0,True,0.0
+BRKR,1W,low,56.29,56.29,gemini-3.6-flash,BRKR,1W,True,0.0,True,0.0
+BRKR,1W,close,58.84,58.84,gemini-3.6-flash,BRKR,1W,True,0.0,True,0.0
+BRKR,1D,open,57.92,57.92,gemini-3.6-flash,BRKR,1D,True,0.0,True,0.0
+BRKR,1D,high,59.56,59.56,gemini-3.6-flash,BRKR,1D,True,0.0,True,0.0
+BRKR,1D,low,57.56,57.56,gemini-3.6-flash,BRKR,1D,True,0.0,True,0.0
+BRKR,1D,close,58.84,58.84,gemini-3.6-flash,BRKR,1D,True,0.0,True,0.0
+BRKR,1H,open,58.99,58.99,gemini-3.6-flash,BRKR,1h,True,0.0,True,0.0
+BRKR,1H,high,59.01,59.01,gemini-3.6-flash,BRKR,1h,True,0.0,True,0.0
+BRKR,1H,low,58.65,58.65,gemini-3.6-flash,BRKR,1h,True,0.0,True,0.0
+BRKR,1H,close,58.85,58.85,gemini-3.6-flash,BRKR,1h,True,0.0,True,0.0
+CCL,1W,open,25.89,25.89,gemini-3.6-flash,CCL,1W,True,0.0,True,0.0
+CCL,1W,high,26.71,26.71,gemini-3.6-flash,CCL,1W,True,0.0,True,0.0
+CCL,1W,low,25.34,25.34,gemini-3.6-flash,CCL,1W,True,0.0,True,0.0
+CCL,1W,close,26.35,26.35,gemini-3.6-flash,CCL,1W,True,0.0,True,0.0
+CCL,1D,open,26.15,26.15,gemini-3.6-flash,CCL,1D,True,0.0,True,0.0
+CCL,1D,high,26.46,26.46,gemini-3.6-flash,CCL,1D,True,0.0,True,0.0
+CCL,1D,low,26.02,26.02,gemini-3.6-flash,CCL,1D,True,0.0,True,0.0
+CCL,1D,close,26.35,26.35,gemini-3.6-flash,CCL,1D,True,0.0,True,0.0
+CCL,1H,open,26.26,26.26,gemini-3.6-flash,CCL,1h,True,0.0,True,0.0
+CCL,1H,high,26.38,26.38,gemini-3.6-flash,CCL,1h,True,0.0,True,0.0
+CCL,1H,low,26.23,26.23,gemini-3.6-flash,CCL,1h,True,0.0,True,0.0
+CCL,1H,close,26.35,26.35,gemini-3.6-flash,CCL,1h,True,0.0,True,0.0
+CFFN,1W,open,8.56,8.56,gemini-3.6-flash,CFFN,1W,True,0.0,True,0.0
+CFFN,1W,high,8.63,8.63,gemini-3.6-flash,CFFN,1W,True,0.0,True,0.0
+CFFN,1W,low,8.35,8.35,gemini-3.6-flash,CFFN,1W,True,0.0,True,0.0
+CFFN,1W,close,8.39,8.39,gemini-3.6-flash,CFFN,1W,True,0.0,True,0.0
+CFFN,1D,open,8.44,8.44,gemini-3.6-flash,CFFN,1D,True,0.0,True,0.0
+CFFN,1D,high,8.45,8.45,gemini-3.6-flash,CFFN,1D,True,0.0,True,0.0
+CFFN,1D,low,8.37,8.37,gemini-3.6-flash,CFFN,1D,True,0.0,True,0.0
+CFFN,1D,close,8.39,8.39,gemini-3.6-flash,CFFN,1D,True,0.0,True,0.0
+CFFN,1H,open,8.41,8.41,gemini-3.6-flash,CFFN,1h,True,0.0,True,0.0
+CFFN,1H,high,8.41,8.41,gemini-3.6-flash,CFFN,1h,True,0.0,True,0.0
+CFFN,1H,low,8.38,8.38,gemini-3.6-flash,CFFN,1h,True,0.0,True,0.0
+CFFN,1H,close,8.38,8.38,gemini-3.6-flash,CFFN,1h,True,0.0,True,0.0
+CX,1W,open,9.52,9.52,gemini-3.6-flash,CX,1W,True,0.0,True,0.0
+CX,1W,high,10.05,10.05,gemini-3.6-flash,CX,1W,True,0.0,True,0.0
+CX,1W,low,9.37,9.37,gemini-3.6-flash,CX,1W,True,0.0,True,0.0
+CX,1W,close,9.56,9.56,gemini-3.6-flash,CX,1W,True,0.0,True,0.0
+CX,1D,open,9.61,9.61,gemini-3.6-flash,CX,1D,True,0.0,True,0.0
+CX,1D,high,9.62,9.62,gemini-3.6-flash,CX,1D,True,0.0,True,0.0
+CX,1D,low,9.42,9.42,gemini-3.6-flash,CX,1D,True,0.0,True,0.0
+CX,1D,close,9.56,9.56,gemini-3.6-flash,CX,1D,True,0.0,True,0.0
+CX,1H,open,9.54,9.54,gemini-3.6-flash,CX,1h,True,0.0,True,0.0
+CX,1H,high,9.57,9.57,gemini-3.6-flash,CX,1h,True,0.0,True,0.0
+CX,1H,low,9.53,9.53,gemini-3.6-flash,CX,1h,True,0.0,True,0.0
+CX,1H,close,9.56,9.56,gemini-3.6-flash,CX,1h,True,0.0,True,0.0
+DGX,1W,open,232.93,232.93,gemini-3.6-flash,DGX,1W,True,0.0,True,0.0
+DGX,1W,high,233.65,233.65,gemini-3.6-flash,DGX,1W,True,0.0,True,0.0
+DGX,1W,low,225.78,225.78,gemini-3.6-flash,DGX,1W,True,0.0,True,0.0
+DGX,1W,close,230.97,230.97,gemini-3.6-flash,DGX,1W,True,0.0,True,0.0
+DGX,1D,open,227.86,227.86,gemini-3.6-flash,DGX,1D,True,0.0,True,0.0
+DGX,1D,high,232.18,232.18,gemini-3.6-flash,DGX,1D,True,0.0,True,0.0
+DGX,1D,low,227.86,227.86,gemini-3.6-flash,DGX,1D,True,0.0,True,0.0
+DGX,1D,close,230.97,230.97,gemini-3.6-flash,DGX,1D,True,0.0,True,0.0
+DGX,1H,open,231.58,231.58,gemini-3.6-flash,DGX,1h,True,0.0,True,0.0
+DGX,1H,high,231.85,231.85,gemini-3.6-flash,DGX,1h,True,0.0,True,0.0
+DGX,1H,low,229.9,229.9,gemini-3.6-flash,DGX,1h,True,0.0,True,0.0
+DGX,1H,close,231.31,231.31,gemini-3.6-flash,DGX,1h,True,0.0,True,0.0
+DOV,1W,open,189.49,189.49,gemini-3.6-flash,DOV,1W,True,0.0,True,0.0
+DOV,1W,high,194.77,194.77,gemini-3.6-flash,DOV,1W,True,0.0,True,0.0
+DOV,1W,low,186.65,186.65,gemini-3.6-flash,DOV,1W,True,0.0,True,0.0
+DOV,1W,close,188.83,188.83,gemini-3.6-flash,DOV,1W,True,0.0,True,0.0
+DOV,1D,open,189.26,189.26,gemini-3.6-flash,DOV,1D,True,0.0,True,0.0
+DOV,1D,high,190.22,190.22,gemini-3.6-flash,DOV,1D,True,0.0,True,0.0
+DOV,1D,low,188.07,188.07,gemini-3.6-flash,DOV,1D,True,0.0,True,0.0
+DOV,1D,close,188.83,188.83,gemini-3.6-flash,DOV,1D,True,0.0,True,0.0
+DOV,1H,open,189.74,189.74,gemini-3.6-flash,DOV,1h,True,0.0,True,0.0
+DOV,1H,high,189.89,189.89,gemini-3.6-flash,DOV,1h,True,0.0,True,0.0
+DOV,1H,low,188.6,188.6,gemini-3.6-flash,DOV,1h,True,0.0,True,0.0
+DOV,1H,close,188.84,188.84,gemini-3.6-flash,DOV,1h,True,0.0,True,0.0
+DOX,1W,open,57.85,57.85,gemini-3.6-flash,DOX,1W,True,0.0,True,0.0
+DOX,1W,high,60.76,60.76,gemini-3.6-flash,DOX,1W,True,0.0,True,0.0
+DOX,1W,low,57.73,57.73,gemini-3.6-flash,DOX,1W,True,0.0,True,0.0
+DOX,1W,close,58.84,58.84,gemini-3.6-flash,DOX,1W,True,0.0,True,0.0
+DOX,1D,open,60.62,60.62,gemini-3.6-flash,DOX,1D,True,0.0,True,0.0
+DOX,1D,high,60.76,60.76,gemini-3.6-flash,DOX,1D,True,0.0,True,0.0
+DOX,1D,low,58.6,58.6,gemini-3.6-flash,DOX,1D,True,0.0,True,0.0
+DOX,1D,close,58.84,58.84,gemini-3.6-flash,DOX,1D,True,0.0,True,0.0
+DOX,1H,open,58.91,58.91,gemini-3.6-flash,DOX,1h,True,0.0,True,0.0
+DOX,1H,high,59.01,59.01,gemini-3.6-flash,DOX,1h,True,0.0,True,0.0
+DOX,1H,low,58.55,58.55,gemini-3.6-flash,DOX,1h,True,0.0,True,0.0
+DOX,1H,close,58.85,58.85,gemini-3.6-flash,DOX,1h,True,0.0,True,0.0
+EZPW,1W,open,30.2,30.2,gemini-3.6-flash,EZPW,1W,True,0.0,True,0.0
+EZPW,1W,high,32.35,32.35,gemini-3.6-flash,EZPW,1W,True,0.0,True,0.0
+EZPW,1W,low,29.81,29.81,gemini-3.6-flash,EZPW,1W,True,0.0,True,0.0
+EZPW,1W,close,31.96,31.96,gemini-3.6-flash,EZPW,1W,True,0.0,True,0.0
+EZPW,1D,open,31.35,31.35,gemini-3.6-flash,EZPW,1D,True,0.0,True,0.0
+EZPW,1D,high,32.35,32.35,gemini-3.6-flash,EZPW,1D,True,0.0,True,0.0
+EZPW,1D,low,30.88,30.88,gemini-3.6-flash,EZPW,1D,True,0.0,True,0.0
+EZPW,1D,close,31.96,31.96,gemini-3.6-flash,EZPW,1D,True,0.0,True,0.0
+EZPW,1H,open,31.95,31.95,gemini-3.6-flash,EZPW,1h,True,0.0,True,0.0
+EZPW,1H,high,32.02,32.02,gemini-3.6-flash,EZPW,1h,True,0.0,True,0.0
+EZPW,1H,low,31.91,31.91,gemini-3.6-flash,EZPW,1h,True,0.0,True,0.0
+EZPW,1H,close,31.93,31.93,gemini-3.6-flash,EZPW,1h,True,0.0,True,0.0
+F,1W,open,12.15,12.15,gemini-3.6-flash,FORD MTR CO DEL,1W,True,0.0,True,0.0
+F,1W,high,12.33,12.33,gemini-3.6-flash,FORD MTR CO DEL,1W,True,0.0,True,0.0
+F,1W,low,12.0,12.0,gemini-3.6-flash,FORD MTR CO DEL,1W,True,0.0,True,0.0
+F,1W,close,12.17,12.17,gemini-3.6-flash,FORD MTR CO DEL,1W,True,0.0,True,0.0
+F,1D,open,12.28,12.28,gemini-3.6-flash,FORD MTR CO DEL,1D,True,0.0,True,0.0
+F,1D,high,12.33,12.33,gemini-3.6-flash,FORD MTR CO DEL,1D,True,0.0,True,0.0
+F,1D,low,12.14,12.14,gemini-3.6-flash,FORD MTR CO DEL,1D,True,0.0,True,0.0
+F,1D,close,12.17,12.17,gemini-3.6-flash,FORD MTR CO DEL,1D,True,0.0,True,0.0
+F,1H,open,12.2,12.2,gemini-3.6-flash,FORD MTR CO DEL,1h,True,0.0,True,0.0
+F,1H,high,12.21,12.21,gemini-3.6-flash,FORD MTR CO DEL,1h,True,0.0,True,0.0
+F,1H,low,12.15,12.15,gemini-3.6-flash,FORD MTR CO DEL,1h,True,0.0,True,0.0
+F,1H,close,12.17,12.17,gemini-3.6-flash,FORD MTR CO DEL,1h,True,0.0,True,0.0
+FCN,1W,open,151.49,151.49,gemini-3.6-flash,FCN,1W,True,0.0,True,0.0
+FCN,1W,high,152.94,152.94,gemini-3.6-flash,FCN,1W,True,0.0,True,0.0
+FCN,1W,low,138.35,138.35,gemini-3.6-flash,FCN,1W,True,0.0,True,0.0
+FCN,1W,close,141.18,141.18,gemini-3.6-flash,FCN,1W,True,0.0,True,0.0
+FCN,1D,open,140.2,140.2,gemini-3.6-flash,FCN,1D,True,0.0,True,0.0
+FCN,1D,high,140.2,140.2,gemini-3.6-flash,FCN,1D,True,0.0,True,0.0
+FCN,1D,low,135.69,135.69,gemini-3.6-flash,FCN,1D,True,0.0,True,0.0
+FCN,1D,close,136.16,136.16,gemini-3.6-flash,FCN,1D,True,0.0,True,0.0
+FCN,1H,open,136.76,136.76,gemini-3.6-flash,FCN,1h,True,0.0,True,0.0
+FCN,1H,high,136.87,136.87,gemini-3.6-flash,FCN,1h,True,0.0,True,0.0
+FCN,1H,low,135.71,135.71,gemini-3.6-flash,FCN,1h,True,0.0,True,0.0
+FCN,1H,close,136.02,136.02,gemini-3.6-flash,FCN,1h,True,0.0,True,0.0
+GD,1W,open,219.15,219.15,gemini-3.6-flash,GD,1W,True,0.0,True,0.0
+GD,1W,high,223.75,223.75,gemini-3.6-flash,GD,1W,True,0.0,True,0.0
+GD,1W,low,219.0,219.0,gemini-3.6-flash,GD,1W,True,0.0,True,0.0
+GD,1W,close,223.5,223.5,gemini-3.6-flash,GD,1W,True,0.0,True,0.0
+GD,1D,open,327.45,327.45,gemini-3.6-flash,GD,1D,True,0.0,True,0.0
+GD,1D,high,333.33,333.33,gemini-3.6-flash,GD,1D,True,0.0,True,0.0
+GD,1D,low,327.0,327.0,gemini-3.6-flash,GD,1D,True,0.0,True,0.0
+GD,1D,close,331.27,331.27,gemini-3.6-flash,GD,1D,True,0.0,True,0.0
+GD,1H,open,331.52,331.52,gemini-3.6-flash,GD,1h,True,0.0,True,0.0
+GD,1H,high,331.85,331.85,gemini-3.6-flash,GD,1h,True,0.0,True,0.0
+GD,1H,low,331.14,331.14,gemini-3.6-flash,GD,1h,True,0.0,True,0.0
+GD,1H,close,331.3,331.3,gemini-3.6-flash,GD,1h,True,0.0,True,0.0
+NVDA,1W,open,236.09,236.09,gemini-3.6-flash,NVDA,1W,True,0.0,True,0.0
+NVDA,1W,high,243.37,243.37,gemini-3.6-flash,NVDA,1W,True,0.0,True,0.0
+NVDA,1W,low,229.11,229.11,gemini-3.6-flash,NVDA,1W,True,0.0,True,0.0
+NVDA,1W,close,229.28,229.28,gemini-3.6-flash,NVDA,1W,True,0.0,True,0.0
+NVDA,1D,open,233.84,233.84,gemini-3.6-flash,NVDA,1D,True,0.0,True,0.0
+NVDA,1D,high,233.92,233.92,gemini-3.6-flash,NVDA,1D,True,0.0,True,0.0
+NVDA,1D,low,229.11,229.11,gemini-3.6-flash,NVDA,1D,True,0.0,True,0.0
+NVDA,1D,close,229.28,229.28,gemini-3.6-flash,NVDA,1D,True,0.0,True,0.0
+NVDA,1H,open,229.76,229.76,gemini-3.6-flash,NVDA,1h,True,0.0,True,0.0
+NVDA,1H,high,229.95,229.95,gemini-3.6-flash,NVDA,1h,True,0.0,True,0.0
+NVDA,1H,low,229.24,229.24,gemini-3.6-flash,NVDA,1h,True,0.0,True,0.0
+NVDA,1H,close,229.35,229.35,gemini-3.6-flash,NVDA,1h,True,0.0,True,0.0
+PEP,1W,open,125.85,125.85,gemini-3.6-flash,PEP,1W,True,0.0,True,0.0
+PEP,1W,high,129.5,129.5,gemini-3.6-flash,PEP,1W,True,0.0,True,0.0
+PEP,1W,low,123.47,123.47,gemini-3.6-flash,PEP,1W,True,0.0,True,0.0
+PEP,1W,close,125.97,125.97,gemini-3.6-flash,PEP,1W,True,0.0,True,0.0
+PEP,1D,open,126.7,126.7,gemini-3.6-flash,PEP,1D,True,0.0,True,0.0
+PEP,1D,high,127.1,127.1,gemini-3.6-flash,PEP,1D,True,0.0,True,0.0
+PEP,1D,low,125.29,125.29,gemini-3.6-flash,PEP,1D,True,0.0,True,0.0
+PEP,1D,close,125.97,125.97,gemini-3.6-flash,PEP,1D,True,0.0,True,0.0
+PEP,1H,open,126.63,126.63,gemini-3.6-flash,PEP,1h,True,0.0,True,0.0
+PEP,1H,high,126.69,126.69,gemini-3.6-flash,PEP,1h,True,0.0,True,0.0
+PEP,1H,low,124.59,124.59,gemini-3.6-flash,PEP,1h,True,0.0,True,0.0
+PEP,1H,close,124.89,124.89,gemini-3.6-flash,PEP,1h,True,0.0,True,0.0
+PII,1W,open,53.31,53.31,gemini-3.6-flash,Polaris Inc.,1W,True,0.0,True,0.0
+PII,1W,high,53.62,53.62,gemini-3.6-flash,Polaris Inc.,1W,True,0.0,True,0.0
+PII,1W,low,51.59,51.59,gemini-3.6-flash,Polaris Inc.,1W,True,0.0,True,0.0
+PII,1W,close,51.6,51.6,gemini-3.6-flash,Polaris Inc.,1W,True,0.0,True,0.0
+PII,1D,open,52.81,52.81,gemini-3.6-flash,Polaris Inc.,1D,True,0.0,True,0.0
+PII,1D,high,52.96,52.96,gemini-3.6-flash,Polaris Inc.,1D,True,0.0,True,0.0
+PII,1D,low,51.59,51.59,gemini-3.6-flash,Polaris Inc.,1D,True,0.0,True,0.0
+PII,1D,close,51.6,51.6,gemini-3.6-flash,Polaris Inc.,1D,True,0.0,True,0.0
+PII,1H,open,51.91,51.91,gemini-3.6-flash,Polaris Inc.,1h,True,0.0,True,0.0
+PII,1H,high,51.95,51.95,gemini-3.6-flash,Polaris Inc.,1h,True,0.0,True,0.0
+PII,1H,low,51.61,51.61,gemini-3.6-flash,Polaris Inc.,1h,True,0.0,True,0.0
+PII,1H,close,51.61,51.61,gemini-3.6-flash,Polaris Inc.,1h,True,0.0,True,0.0
+PNC,1W,open,222.58,222.58,gemini-3.6-flash,PNC,1W,True,0.0,True,0.0
+PNC,1W,high,222.8,222.8,gemini-3.6-flash,PNC,1W,True,0.0,True,0.0
+PNC,1W,low,214.82,214.82,gemini-3.6-flash,PNC,1W,True,0.0,True,0.0
+PNC,1W,close,219.21,219.21,gemini-3.6-flash,PNC,1W,True,0.0,True,0.0
+PNC,1D,open,218.62,218.62,gemini-3.6-flash,PNC,1D,True,0.0,True,0.0
+PNC,1D,high,219.97,219.97,gemini-3.6-flash,PNC,1D,True,0.0,True,0.0
+PNC,1D,low,217.83,217.83,gemini-3.6-flash,PNC,1D,True,0.0,True,0.0
+PNC,1D,close,219.21,219.21,gemini-3.6-flash,PNC,1D,True,0.0,True,0.0
+PNC,1H,open,219.74,219.74,gemini-3.6-flash,PNC,1h,True,0.0,True,0.0
+PNC,1H,high,219.82,219.82,gemini-3.6-flash,PNC,1h,True,0.0,True,0.0
+PNC,1H,low,219.03,219.03,gemini-3.6-flash,PNC,1h,True,0.0,True,0.0
+PNC,1H,close,219.2,219.2,gemini-3.6-flash,PNC,1h,True,0.0,True,0.0
+SNN,1W,open,26.47,26.47,gemini-3.6-flash,SNN,1W,True,0.0,True,0.0
+SNN,1W,high,27.35,27.35,gemini-3.6-flash,SNN,1W,True,0.0,True,0.0
+SNN,1W,low,26.45,26.45,gemini-3.6-flash,SNN,1W,True,0.0,True,0.0
+SNN,1W,close,27.24,27.24,gemini-3.6-flash,SNN,1W,True,0.0,True,0.0
+SNN,1D,open,27.2,27.2,gemini-3.6-flash,SNN,1D,True,0.0,True,0.0
+SNN,1D,high,27.35,27.35,gemini-3.6-flash,SNN,1D,True,0.0,True,0.0
+SNN,1D,low,26.99,26.99,gemini-3.6-flash,SNN,1D,True,0.0,True,0.0
+SNN,1D,close,27.24,27.24,gemini-3.6-flash,SNN,1D,True,0.0,True,0.0
+SNN,1H,open,27.23,27.23,gemini-3.6-flash,SNN,1h,True,0.0,True,0.0
+SNN,1H,high,27.24,27.24,gemini-3.6-flash,SNN,1h,True,0.0,True,0.0
+SNN,1H,low,27.19,27.19,gemini-3.6-flash,SNN,1h,True,0.0,True,0.0
+SNN,1H,close,27.24,27.24,gemini-3.6-flash,SNN,1h,True,0.0,True,0.0

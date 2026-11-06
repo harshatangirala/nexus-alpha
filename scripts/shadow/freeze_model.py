@@ -16,7 +16,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import numpy as np
 import pyarrow.parquet as pq
 
 sys.dont_write_bytecode = True

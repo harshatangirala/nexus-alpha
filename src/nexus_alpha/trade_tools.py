@@ -10,7 +10,7 @@ import math
 import os
 import urllib.request
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
 
 import pandas as pd
@@ -33,9 +33,10 @@ class BreakerRules:
 
 
 def circuit_breaker(journal: pd.DataFrame, account: float, now: pd.Timestamp | None = None,
-                    rules: BreakerRules = BreakerRules()) -> dict:
+                    rules: BreakerRules | None = None) -> dict:
     """journal: closed paper trades with exit_utc (timestamp) and pnl (currency). Returns the recommendation
     TRADING_ALLOWED / COOLDOWN / HALTED with the rule that fired and when it releases."""
+    rules = rules or BreakerRules()           # no shared mutable default (audit 3, ruff B008)
     now = pd.Timestamp(now or pd.Timestamp.now(tz="UTC"))
     now = now.tz_localize("UTC") if now.tz is None else now
     if journal is None or journal.empty:

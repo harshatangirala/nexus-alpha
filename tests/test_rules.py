@@ -1,8 +1,6 @@
-import json
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from nexus_alpha.rag.sources import RULEBOOKS
 from nexus_alpha.rules import detectors as D

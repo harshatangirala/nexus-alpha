@@ -24,7 +24,7 @@ from .. import ARCHITECTURE_VERSION, paths
 from ..cv import backbones as BB
 from ..cv import render as R
 from ..data import bars as B
-from ..data.calendar import calendar, decision_time_utc, offset_session
+from ..data.calendar import calendar, decision_time_utc
 from ..indicators import triframe_visible as FV
 from ..indicators.core import ewma_sigma, indicators, structured_features
 from ..multimodal.fusion import FusionConfig, FusionModel
@@ -33,7 +33,7 @@ from ..seal import SEAL_DATE
 from ..splits import assign_blocks
 from ..targets import HORIZONS
 from ..trading.plan import RiskConfig, plan_trade
-from .schema import HorizonForecast, InferenceResult, Instrument, ModelInfo, TradePlan
+from .schema import HorizonForecast, InferenceResult, Instrument, ModelInfo
 
 BUNDLES = paths.ARTIFACTS / "bundles"
 

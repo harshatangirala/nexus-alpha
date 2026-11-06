@@ -100,7 +100,6 @@ if go:
                                     explain=True, occlusion=occl)
             st.session_state["res"] = res
             from nexus_alpha.cv import render as R
-            from nexus_alpha.data import bars as B
             if mode == "historical":
                 sb = R.stock_bars_for_render(tick)
                 st.session_state["trip"] = R.triplet_at(sb, sb.k_of(pd.Timestamp(asof)))

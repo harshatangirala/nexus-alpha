@@ -40,7 +40,6 @@ def main() -> None:
     cm = pd.read_parquet(paths.ARTIFACTS / "fundamentals" / "cik_map.parquet").set_index("ticker").cik
     spl = BF.splits_table()
     # 1. point in time
-    rng = np.random.default_rng(3)
     cells = P.dropna(subset=["earnings_yield"]).sample(40, random_state=3)
     bad = []
     for r in cells.itertuples():

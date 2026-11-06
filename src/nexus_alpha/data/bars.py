@@ -8,7 +8,6 @@ Every reader pushes the seal into the parquet scan (`filters=`), so rows on or a
 """
 from __future__ import annotations
 
-from functools import lru_cache
 from pathlib import Path
 
 import numpy as np

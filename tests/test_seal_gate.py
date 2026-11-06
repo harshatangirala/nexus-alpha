@@ -1,5 +1,4 @@
 """The evaluation gate: closed by default, opened only by open_for_evaluation() after the owner's unlock."""
-import os
 
 import pandas as pd
 import pytest

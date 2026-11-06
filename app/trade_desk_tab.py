@@ -58,10 +58,14 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     c = st.columns(4)
     c[0].metric(f"v2 {h}: lean", "UP" if f["p_up"] > f["p_down"] else "DOWN", f"{f['p_up'] - f['p_down']:+.3f} (up - down)")
     c[1].metric("P(up / sideways / down)", f"{f['p_up']:.2f} / {f['p_side']:.2f} / {f['p_down']:.2f}")
-    c[2].metric("Direction skill (validation)", "validated" if f["direction_skill_validated"] else "NOT validated")
+    td = v2.meta.get("test_diagnostic", {}).get(h, {})
+    c[2].metric("Direction skill", "validated on 2017-18" if f["direction_skill_validated"] else "NOT validated",
+                f"2020-22 AUROC {td['auroc_ud']:.2f}" if td.get("auroc_ud") is not None else None, delta_color="off")
     c[3].metric("Return range q10..q90", "-" if f["ret_q10"] is None else f"{f['ret_q10']:+.1%} .. {f['ret_q90']:+.1%}")
     st.caption(f"Bundle {r['bundle_id']} ({status}); as-of {r['asof_session']}; share of model inputs missing "
-               f"{r['features_missing_share']:.0%}.")
+               f"{r['features_missing_share']:.0%}. On 2020-2022 (a reused diagnostic) v2's probabilities beat the base "
+               "rate at 1D-20D but its up-vs-down ranking was close to chance (AUROC 0.42-0.52): it estimates how much a "
+               "stock is likely to move better than which way.")
     ev = res.evidence.get("rules", {})
     ind = res.evidence.get("indicators", {})
     if ind.get("atr14") and ev:

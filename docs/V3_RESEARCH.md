@@ -164,6 +164,9 @@ before E22 was run; the sets, endpoints, placebo and keep rule are unchanged.
 * Price-based ratios are missing for 20-F/40-F filers, for tickers whose CIK has another listed class, and where the
   cover-page count and the diluted-share reference disagree by more than 1.5x.
 * Companies that report mostly in another currency keep no money facts.
+* Share counts below 1 million, or breaking continuity (> 1.25x from the past year's accepted counts on one split
+  basis, unless confirmed by a filing at least 75 days later), are missing: spin-offs recorded as splits, filings
+  restated for a split before its effective date, and counts tagged in thousands.
 
 ## E23 industry-neutral fundamentals (pre-registered 2026-11-06, before any E22 result and before any E23 code)
 
@@ -173,7 +176,9 @@ literature's industry-adjusted versions of these signals are the standard remedy
 
 **Design.** The same as E22 except for one feature set.
 * B_FUND_IND: each of the 31 ratios and days since filing, ranked within the stock's **SIC major group** (first two
-  digits, SEC study S02 `universe.parquet`) on each session. When fewer than 8 stocks in the group have the ratio that
+  digits, SEC study S02 `universe.parquet`; S02 lacks 236 tickers, which take the code from SEC's submissions
+  endpoint for the same CIK, 235 found; added before any E22 or E23 result) on each session. SIC is the filer's
+  current code, so industry membership is not point in time (a small, disclosed look-ahead: codes rarely change). When fewer than 8 stocks in the group have the ratio that
   day, the rank is taken within the SIC division (A-J) instead, and failing that within the universe. Present flag as
   in E22.
 * Placebo: the B_FUND_IND ranks permuted across tickers within each as-of date.

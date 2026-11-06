@@ -73,9 +73,9 @@ def test_development_loader_never_returns_post_seal_facts():
 
 
 def _snap_row(**kw):
-    base = {"snap_date": T("2021-11-01"), "shares_outstanding": 100.0, "shares_date": T("2021-10-20"),
-            "q_diluted_shares": 102.0, "q_diluted_shares_prev": 101.0, "q_eps_diluted": 1.0, "q_eps_diluted_prev": 1.0,
-            "ttm_net_income": 400.0, "ttm_eps_diluted": 4.0, "filed_form": "10-Q"}
+    base = {"snap_date": T("2021-11-01"), "shares_outstanding": 100e6, "shares_date": T("2021-10-20"),
+            "q_diluted_shares": 102e6, "q_diluted_shares_prev": 101e6, "q_eps_diluted": 1.0, "q_eps_diluted_prev": 1.0,
+            "ttm_net_income": 400e6, "ttm_eps_diluted": 4.0, "filed_form": "10-Q"}
     for c in ST.INSTANTS:
         base.setdefault(c, np.nan)
         base.setdefault(f"{c}_prev", np.nan)
@@ -94,7 +94,7 @@ def test_splits_after_vendor_basis_are_not_applied_to_price():
     # audit 3 (KLAC): a 10:1 split after the vendor's adjustment date is not in the vendor's prices
     late = pd.Series([10.0], index=pd.DatetimeIndex([RT.VENDOR_SPLIT_BASIS + pd.Timedelta(days=100)]))
     d = RT.daily(_snap_row(), _bars(), late)
-    assert d.price_as_traded.iloc[0] == 10.0 and np.isclose(d.market_cap.iloc[0], 1000.0)
+    assert d.price_as_traded.iloc[0] == 10.0 and np.isclose(d.market_cap.iloc[0], 1000e6)
     early = pd.Series([4.0], index=pd.DatetimeIndex([T("2024-06-10")]))           # applied by the vendor: undo it
     assert RT.daily(_snap_row(), _bars(2.5), early).price_as_traded.iloc[0] == 10.0
 
@@ -103,11 +103,13 @@ def test_share_basis_guards():
     assert np.isnan(RT.daily(_snap_row(filed_form="20-F"), _bars(), None).market_cap.iloc[0])          # ADS vs ordinary
     assert RT.daily(_snap_row(filed_form="20-F"), _bars(), None).foreign_filer.iloc[0] == 1.0
     assert np.isnan(RT.daily(_snap_row(), _bars(), None, share_class_ambiguous=True).market_cap.iloc[0])  # BRK.A / BRK.B
-    assert np.isnan(RT.daily(_snap_row(shares_outstanding=1000.0), _bars(), None).market_cap.iloc[0])   # 10x disagreement
+    assert np.isnan(RT.daily(_snap_row(shares_outstanding=1000e6), _bars(), None).market_cap.iloc[0])   # 10x disagreement
     fb = RT.daily(_snap_row(shares_outstanding=np.nan), _bars(), None)                                   # cover missing
-    assert np.isclose(fb.market_cap.iloc[0], 1020.0)
+    assert np.isclose(fb.market_cap.iloc[0], 1020e6)
     ni_eps = RT.daily(_snap_row(shares_outstanding=np.nan, q_diluted_shares=np.nan), _bars(), None)      # NI / EPS
-    assert np.isclose(ni_eps.market_cap.iloc[0], 1000.0)
+    assert np.isclose(ni_eps.market_cap.iloc[0], 1000e6)
+    assert np.isnan(RT.daily(_snap_row(shares_outstanding=100.0, q_diluted_shares=np.nan, ttm_net_income=np.nan), _bars(),
+                             None).market_cap.iloc[0])                                    # below the 1M floor (ETN shell)
 
 
 def test_weighted_shares_are_not_differenced():
@@ -154,3 +156,16 @@ def test_vendor_split_basis_contract():
         close = float(b[b.date == "2021-12-31"].close.iloc[0])
         f = RT.split_factor_after(pd.DatetimeIndex(["2021-12-31"]), SP.for_ticker(t)[lambda x: x.index <= RT.VENDOR_SPLIT_BASIS])
         assert abs(close * f[0] / want - 1) < 0.005, (t, close * f[0], want)
+
+
+def test_share_continuity_guard():
+    d = pd.bdate_range("2012-01-02", periods=400)
+    v = np.full(400, 100e6)
+    v[100:130] = 208e6                      # spin-off recorded as a split: one transient level -> rejected
+    v[200:230] = 100e3                      # a filing tagged in thousands -> rejected
+    ok = RT.share_continuity(d, v)
+    assert ok[:100].all() and not ok[100:130].any() and ok[130:200].all() and not ok[200:230].any() and ok[230:].all()
+    w = np.full(400, 100e6)
+    w[150:] = np.where(np.arange(150, 400) >= 230, 160.5e6, 160e6)   # next quarter's filing repeats the new level
+    ok = RT.share_continuity(d, w)
+    assert not ok[150:230].any() and ok[230:].all()

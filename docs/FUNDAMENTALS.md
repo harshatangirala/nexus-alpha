@@ -55,9 +55,33 @@ Market cap, EV and every price-based ratio are missing when:
   2-10x too large before this guard. All fundamentals are missing for these rows (`foreign_filer` = 1);
 * the ticker **shares its CIK with another listed class** (BRK.A / BRK.B): one company-wide count cannot be matched to
   one class's price;
-* the cover-page count and the diluted-share reference **disagree by more than 1.5x**.
+* the cover-page count and the diluted-share reference **disagree by more than 1.5x**;
+* the count is **below 1 million** (ETN's 2012 shell entity reported 100 shares);
+* the count **breaks continuity**: on one split basis it is more than 1.25x away from the median of the counts accepted
+  over the previous year, unless a filing at least 75 days later confirms the new level (a real merger or offering).
+  This catches spin-offs that Yahoo records as splits (ABT 2013, x2.08; PENN 2013), filings restated for a split before
+  its effective date (AOS 2013, NEOG 2018) and counts tagged in thousands (AKR, AAP, ETR, FCEL: x1000). It uses only
+  earlier sessions.
 
 `shares_basis_ok` records whether a share count was usable.
+
+**Audit 3 result** (`scripts/verify/audit_fundamentals.py`, `reports/verification/fundamentals_audit.json`): every
+hard check passes.
+
+| Check | Result |
+|---|---|
+| Point in time: 40 random cells recomputed from facts filed on or before that date | 0 mismatches |
+| Every split of 2009-2022 (324): market-cap jump matching the split factor | 0 |
+| One-day market-cap moves > 50% | 193, all matched by the price move; 0 share-basis jumps (144 before the continuity guard) |
+| Ten megacaps at 2021-12-31 vs public values (+-15%) | all pass (AAPL 2,914, MSFT 2,525, GOOG 1,969, AMZN 1,691, TSLA 1,062, META 962, NVDA 735, UNH 473, JPM 468, JNJ 450; $bn) |
+| Market cap / NI vs price / EPS within 1.5x | 98.3% of 320,362 rows (the rest: TTM EPS mixing bases around splits) |
+| Non-USD reporters with any ratio | 0 rows |
+| Seal | panel ends 2022-12-30, evaluation closed |
+
+Remaining known issue: `interest_coverage` has 4.4% of values beyond +-50 (tiny interest expense); harmless for the
+rank features, shown as-is in the dashboard.
+
+Coverage (share of universe rows with the ratio): earnings yield 36% in 2010, 80% in 2012, 85-91% from 2013 on.
 
 ## The 31 ratios (model features as within-session universe percentiles)
 

@@ -10,7 +10,9 @@ Share basis guards (audit 3): market cap and every price-based field are missing
 * the snapshot comes from a foreign private issuer (20-F / 40-F: ordinary shares vs ADS, local-currency statements);
 * the ticker shares its CIK with another listed class (BRK.A / BRK.B: the price of one class cannot be matched to a
   company-wide share count);
-* the cover-page count disagrees with the latest quarter's weighted diluted shares by more than a factor of 1.5.
+* the cover-page count disagrees with the latest quarter's weighted diluted shares by more than a factor of 1.5;
+* the count is below 1 million, or breaks continuity (`share_continuity`: > 1.25x from the past year's accepted counts
+  on one split basis, unless a later filing confirms the new level).
 When the cover page has no count (multi-class issuers report it per class, e.g. GOOG, META), the latest quarter's
 weighted diluted shares are used instead, and failing those TTM net income / TTM diluted EPS (the same for every class).
 The 31 pre-registered ratios (docs/V3_RESEARCH.md, E22) are in RATIOS; the multiples in MULTIPLES are display only.
@@ -24,6 +26,8 @@ TAX = 0.21
 VENDOR_SPLIT_BASIS = pd.Timestamp("2026-02-27")   # us_stocks_ohlcv: Yahoo split history as of the 1-minute feed end
 FOREIGN_FORMS = ("20-F", "40-F")
 SHARE_TOL = 1.5
+MIN_SHARES = 1e6           # no listed company in the universe has fewer (ETN's 2012 shell entity reported 100)
+CONT_TOL, CONT_DAYS, CONFIRM_DAYS = 1.25, 365, 75
 DCF = {"years": 5, "g_lo": -0.05, "g_hi": 0.15, "g_term": 0.025, "r": 0.09}
 RATIOS = ["earnings_yield", "sales_yield", "book_to_price", "ebitda_to_ev", "fcf_yield", "dividend_yield",
           "shareholder_yield", "dcf_to_price",
@@ -52,6 +56,43 @@ def split_factor_after(dates: pd.DatetimeIndex, splits: pd.Series) -> np.ndarray
     cum_after = np.r_[np.cumprod(s.values[::-1])[::-1], 1.0]          # product of splits from position i onward
     pos = np.searchsorted(s.index.values, dates.values, side="right")   # first split strictly after the date
     return cum_after[pos]
+
+
+def share_continuity(dates: pd.DatetimeIndex, final_basis: np.ndarray) -> np.ndarray:
+    """Point-in-time continuity guard on a share-count series expressed on one split basis (audit 3).
+
+    A count more than CONT_TOL away from the median of the counts accepted over the previous CONT_DAYS is rejected,
+    unless the new level is confirmed by a later count at least CONFIRM_DAYS after it (a real merger or offering shows
+    up again in the next quarter's filing). Catches spin-offs recorded as splits (ABT 2013: shares x2.08), filings
+    restated for a split before its effective date (AOS 2013), and counts tagged in thousands (AKR, AAP: x1000).
+    Uses only earlier sessions. Returns a boolean mask of accepted sessions."""
+    v = np.asarray(final_basis, float)
+    ok = np.isfinite(v)
+    if not ok.any():
+        return ok
+    change = np.r_[True, ~np.isclose(v[1:], v[:-1], rtol=1e-9, equal_nan=True)]
+    starts = np.flatnonzero(change)
+    ends = np.r_[starts[1:], len(v)]
+    acc_d, acc_v = [], []
+    pending = None                      # (date, value) of the first rejected count of a new level
+    for i, j in zip(starts, ends):
+        x, d = v[i], dates[i]
+        if not np.isfinite(x):
+            continue
+        hist = [a for dd, a in zip(acc_d, acc_v) if (d - dd).days <= CONT_DAYS]
+        good = not hist or (1 / CONT_TOL <= x / np.median(hist) <= CONT_TOL)
+        if not good and pending is not None and 1 / CONT_TOL <= x / pending[1] <= CONT_TOL                 and (d - pending[0]).days >= CONFIRM_DAYS:
+            good = True                 # the new level persisted into a later filing: accept it from here on
+            acc_d, acc_v = [], []
+        if good:
+            acc_d.append(d)
+            acc_v.append(x)
+            pending = None
+        else:
+            ok[i:j] = False
+            if pending is None or not (1 / CONT_TOL <= x / pending[1] <= CONT_TOL):
+                pending = (d, x)
+    return ok
 
 
 def dcf_equity(fcf, growth, debt, cash):
@@ -115,6 +156,8 @@ def daily(snap: pd.DataFrame, bars: pd.DataFrame, splits: pd.Series, sue: pd.Dat
     agree = _div(shares, ref, True)
     shares = np.where(np.isfinite(ref) & ~((agree >= 1 / SHARE_TOL) & (agree <= SHARE_TOL)), np.nan, shares)
     foreign = m.filed_form.astype(str).str.startswith(FOREIGN_FORMS).to_numpy()
+    shares = np.where(shares >= MIN_SHARES, shares, np.nan)
+    shares = np.where(share_continuity(dates, shares * f_t), shares, np.nan)     # f_t: one basis for all sessions
     if share_class_ambiguous:
         shares = np.full(len(m), np.nan)
     mcap = shares * price

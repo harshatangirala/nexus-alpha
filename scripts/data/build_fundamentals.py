@@ -6,7 +6,8 @@
    snapshots/CIK<cik>.parquet (cached);
 2. per ticker: daily ratios for 2009-01-02 .. 2022-12-30 at the as-traded close (split history: fundamentals/splits.py),
    SUE from the SEC study's S06 at its public time (acceptance per S07, or the time its history became public);
-3. within-session cross-sectional percentile ranks of every ratio among universe stocks that have it;
+3. within-session cross-sectional percentile ranks of every ratio among universe stocks that have it (fr_*), and the
+   E23 industry-neutral ranks within the SIC major group / division (fi_*);
 4. artifacts/fundamentals/panel.parquet and reports/data/fundamentals_coverage.csv.
 """
 from __future__ import annotations
@@ -41,6 +42,35 @@ def splits_table() -> pd.DataFrame:
     """The combined split history (vendor Yahoo files, yfinance, S03; nexus_alpha.fundamentals.splits)."""
     from nexus_alpha.fundamentals import splits as SP
     return SP.table()[["ticker", "date", "value"]]
+
+
+SIC_DIVISIONS = ([-1, 999, 1499, 1999, 3999, 4999, 5199, 5999, 6799, 8999, 9999], list("ABCDEFGHIJ"))
+MIN_GROUP = 8      # E23: rank within the SIC major group only when at least 8 stocks have the ratio that day
+
+
+def industry_table() -> pd.DataFrame:
+    """ticker -> SIC major group (first two digits) and SIC division (A-J), from the SEC study's S02 universe (E23)."""
+    u = pd.read_parquet(_stage("S02", "universe.parquet"))[["ticker", "sic"]]
+    sic = pd.to_numeric(u.sic, errors="coerce")
+    extra = paths.ARTIFACTS / "fundamentals" / "sic_sec.parquet"          # scripts/data/fetch_sic.py: S02 gaps
+    if extra.exists():
+        e = pd.read_parquet(extra).set_index("ticker").sic
+        sic = sic.fillna(pd.to_numeric(u.ticker.map(e), errors="coerce"))
+    edges, labels = SIC_DIVISIONS
+    return pd.DataFrame({"ticker": u.ticker, "sic2": (sic // 100).astype("Int64").astype(str).replace("<NA>", None),
+                         "sic_div": pd.cut(sic, bins=edges, labels=labels).astype(str).replace("nan", None)})
+
+
+def industry_ranks(P: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    """E23 (pre-registered): within-session percentile within the SIC major group when >= MIN_GROUP stocks have the
+    ratio, else within the SIC division when >= MIN_GROUP, else the universe rank."""
+    g2, gd = P.groupby(["date", "sic2"]), P.groupby(["date", "sic_div"])
+    out = {}
+    for c in cols:
+        n2, nd = g2[c].transform("count"), gd[c].transform("count")
+        r2, rd = g2[c].rank(pct=True), gd[c].rank(pct=True)
+        out[f"fi_{c}"] = np.where(n2 >= MIN_GROUP, r2, np.where(nd >= MIN_GROUP, rd, P[f"fr_{c}"])).astype(np.float32)
+    return pd.DataFrame(out, index=P.index)
 
 
 def sue_table() -> pd.DataFrame:
@@ -120,6 +150,10 @@ def main() -> None:
     for c in rank_cols:
         P[f"fr_{c}"] = g[c].rank(pct=True).astype(np.float32)
     P["fund_present"] = P[RATIOS].notna().any(axis=1).astype(np.float32)
+    P = P.merge(industry_table(), on="ticker", how="left")
+    P = pd.concat([P, industry_ranks(P, rank_cols)], axis=1)
+    print(f"industry ranks: SIC group used for {np.mean(P.groupby(['date', 'sic2']).earnings_yield.transform('count') >= MIN_GROUP):.1%} "
+          f"of rows (earnings yield)", flush=True)
     for c in P.columns:
         if P[c].dtype == np.float64:
             P[c] = P[c].astype(np.float32)

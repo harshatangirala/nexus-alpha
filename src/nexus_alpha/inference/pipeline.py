@@ -39,9 +39,11 @@ BUNDLES = paths.ARTIFACTS / "bundles"
 
 
 def _is_v1_stock_bundle(p: Path) -> bool:
-    """v1 stock bundles (E03/E08). v2 (E14) and market (E19) bundles have their own loaders."""
+    """v1 stock bundles (E03/E08). v2 (E14), market (E19) and fundamentals (v3_fund) bundles have their own loaders.
+    Audit 4: the v3_fund bundle (no "kind" field, frozen) was taken for the latest v1 bundle; a v1 bundle must hold
+    its preprocessor."""
     m = p / "bundle_meta.json"
-    if not m.exists() or "_e14_" in p.name or "_e19_" in p.name:
+    if not m.exists() or not (p / "preprocessor.pkl").exists() or "_e14_" in p.name or "_e19_" in p.name:
         return False
     return json.loads(m.read_text(encoding="utf-8")).get("kind", "v1") == "v1"
 

@@ -46,7 +46,10 @@ def main() -> None:
     cols, fcols = meta["cols"], meta["fund_cols"]
     if a.features:
         a.dry_run = True
-    feats = [Path(a.features)] if a.features else sorted((paths.ARTIFACTS / "live_features").glob("*/v2_x.parquet"))
+    import re
+    feats = [Path(a.features)] if a.features else sorted(
+        f for f in (paths.ARTIFACTS / "live_features").glob("*/v2_x.parquet")
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", f.parent.name))           # session folders only (audit 4)
     if not feats:
         sys.exit("no v2 feature rows logged tonight (run shadow_forecast.py --version v2 first)")
     X = pd.read_parquet(feats[-1])

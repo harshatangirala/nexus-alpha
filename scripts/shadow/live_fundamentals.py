@@ -20,7 +20,6 @@ import time
 import warnings
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 sys.dont_write_bytecode = True

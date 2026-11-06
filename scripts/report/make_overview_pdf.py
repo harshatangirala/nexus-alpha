@@ -129,10 +129,11 @@ def main() -> None:
     bl = lambda t: Paragraph(t, B, bulletText="-")
     story = [
         Paragraph("NEXUS Alpha: the project in plain words", H1),
-        Paragraph("Overview for the owner, 6 November 2026. Code and full details: github.com/harshatangirala/nexus-alpha", sub),
+        Paragraph("Overview for the owner, 7 November 2026. Code and full details: github.com/harshatangirala/nexus-alpha", sub),
         Paragraph("What it is", H2),
         Paragraph("NEXUS Alpha is a research system that looks at a US stock the way a trader does: three charts (weekly, "
-                  "daily, hourly), technical indicators, news, company filings and the wider market. It then estimates "
+                  "daily, hourly), technical indicators, news, company filings, the company's financial statements and "
+                  "the wider market. It then estimates "
                   "the chances that the stock goes up, sideways or down over a chosen period, from 1 day to 1 year, and "
                   "turns that into a careful, rules-based trade plan. It is built to be honest: every result is checked "
                   "against data the model never saw, and nothing is ever sent to a broker.", P),
@@ -154,8 +155,9 @@ def main() -> None:
             ["Chart images (computer vision)", "Small extra value"],
             ["News and filings (NLP)", "Weak; news exists for 46% of samples"],
             ["Macro and S&P 500 data", "No gain per stock; a useful SPY 20-day lean (AUROC 0.72 / 0.68)"],
+            ["Fundamentals (31 ratios, SEC)", "Help ranking once compared within each industry (E23 kept); now in the forward test"],
             ["Up / sideways / down", "Better than the base rate at 1-20 days; direction itself is near a coin flip"],
-            ["Ranking stocks against each other", "Real but small skill (rank IC 0.02-0.03); not yet enough to beat costs"]]
+            ["Ranking stocks against each other", "Real but small skill (rank IC 0.02-0.05); not yet shown to beat costs"]]
     t = Table(rows, colWidths=[W * 0.36, W * 0.64])
     t.setStyle(TableStyle([("FONT", (0, 0), (-1, -1), "Helvetica", 8.6), ("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 8.6),
                            ("BACKGROUND", (0, 0), (-1, 0), BLUE), ("GRID", (0, 0), (-1, -1), 0.4, EDGE),
@@ -166,11 +168,26 @@ def main() -> None:
                         "telling which stocks will do better than others, and not yet able to say which way a single "
                         "stock will go. That is normal for markets, and it is why the project measures everything "
                         "instead of trusting backtests.", P),
+              Paragraph("Fundamental analysis", H2),
+              Paragraph("Every company's financial statements come from the SEC's free XBRL data (from 2009), exactly "
+                        "as they were known on each day: a restated number only counts once it was filed. From them the "
+                        "system computes 31 ratios (valuation such as earnings and free-cash-flow yield, margins, returns "
+                        "on capital, growth, debt and liquidity, efficiency, and quality scores: Piotroski, Altman Z and "
+                        "the earnings surprise), plus P/E, EV/EBITDA, P/S, P/B, P/FCF and a discounted cash flow you can "
+                        "adjust. The Trade Desk shows the three statements, every ratio with the stock's rank in the "
+                        "whole market and within its industry, and the DCF.", P),
+              Paragraph("A strict data audit came first. It caught market values that were wrong by a split factor, by "
+                        "the ADR ratio of foreign companies, by share class, and by filings typed in thousands. All are "
+                        "now guarded, and the ten largest companies match their public values. Two pre-registered tests "
+                        "followed. Ratios ranked across the whole market did not pass the rule. Ranked within each "
+                        "industry, they did: they improved the ranking of stocks, mostly over months. That model "
+                        "(v3_fund) is frozen and joins the nightly forward test. It becomes a shown signal only if it "
+                        "beats the current ranker there.", P),
               Paragraph("How we keep it honest", H2), ladder(),
-              Paragraph("Every evening the frozen v1.1 and v2 models forecast about 500 stocks, and the frozen SPY "
-                        "market read forecasts the market. The forecasts are hash-chained and pushed to the public repository before the market "
-                        "opens, so nobody can change them after the fact. A one-time sealed test of 2023 onward is ready; "
-                        "only you can open it.", P),
+              Paragraph("Every evening the frozen v1.1, v2 and v3_fund models forecast about 500 stocks, and the frozen "
+                        "SPY market read forecasts the market. The forecasts are hash-chained and pushed to the public "
+                        "repository before the market opens, so nobody can change them after the fact. A one-time sealed "
+                        "test of 2023 onward is ready; only you can open it.", P),
               Paragraph("The audit (SWOT, fishbone, Six Sigma)", H2), fishbone(),
               Paragraph("Two audits were run back to back, following Six Sigma's Define-Measure-Analyze-Improve-Control "
                         "steps. Six problems were found and fixed:", P),
@@ -181,17 +198,21 @@ def main() -> None:
               bl("The calendar was extended to 2030."),
               bl("The backtest is now reported with its deflated Sharpe ratio (about 0, so no proven profit)."),
               Paragraph("A new test (E21) tried three dedicated stock rankers; none beat the existing model, which now has "
-                        "its rankings scored every night. Control charts and the full test suite (94 tests, all "
-                        "passing) also run every night.", P),
+                        "its rankings scored every night. A third and fourth audit (fundamentals and the whole project) "
+                        "found 15 more issues and fixed 12 (the other 3 are documented data limits), including a Yahoo "
+                        "outage guard for the nightly run and a test that checks the nightly script itself. Control charts and the full test suite (109 tests, all passing) run "
+                        "every night.", P),
               Paragraph("Is it complete without paid subscriptions?", H2),
               Paragraph("Yes. Everything runs on free data and a normal CPU. Gemini, QVeris and a GPU are optional extras.", P),
               Paragraph("What is left", H2),
               bl("<b>You:</b> sign in to QVeris (/mcp) if you want its data."),
               bl("<b>You:</b> open the sealed 2023+ test once, when ready (commands in docs/SEALED_EVALUATION_PLAN.md, 7b; "
                  "about 3-5 hours on CPU)."),
-              bl("<b>Optional:</b> set SEC_USER_AGENT to enable live 8-K filings."),
+              bl("<b>Optional:</b> add two retry times to the nightly task (one command in "
+                 "docs/AUDIT_3_4_2026-11-07.md, section 5)."),
               bl("<b>Time:</b> let the nightly forward test run. About 20 sessions before the control charts mean "
-                 "anything, and about 3 months before ranking skill can be confirmed or rejected."),
+                 "anything, and about 6 months (120 sessions) before v3_fund's fundamentals ranking can be confirmed "
+                 "or rejected."),
               bl("<b>Next research (pre-registered):</b> a live news feed variant, a longer calibration window, an "
                  "earnings-drift test, and the stock setups from the trading-skill libraries."),
               bl("<b>Rule:</b> no real trading decisions until the forward test and the sealed test both show skill "

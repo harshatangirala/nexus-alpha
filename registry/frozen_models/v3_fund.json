@@ -1,0 +1,87 @@
+{
+  "version": "v3_fund",
+  "bundle_id": "20261107T003327_v3_fund_refit_053064",
+  "files": {
+    "bundle_meta.json": "9834a1badab55a7af34fa1ab0d81f2222d8dfec512267ae76f37d4cfbd1bb45b",
+    "lgbm_10D.txt": "eca453941dcb007d3c6caba50975386002ece5b454873c5e21e96d39b216f419",
+    "lgbm_15D.txt": "4168da1cbf1d4016e87c3fa578fd306f04b75da7460386c177adf42dd40d1b5d",
+    "lgbm_1D.txt": "6294b6d5f2443d9bddcb3e8d0e2431c485453ad36a75037621e44294b57a3fba",
+    "lgbm_1Y.txt": "61b515f7937f27d01e6b6d1830ec7b7f45eecbdae39fdfae29c20de6eef21f47",
+    "lgbm_20D.txt": "aac7e57c692095b9c1faf958bbe928a1228185b7a56d11fec65d7804e01f7e59",
+    "lgbm_2D.txt": "28d03487e5652ce221e9f966aaf8e994710bef2b0e8cbc3c0ad1b0e3cfe413ce",
+    "lgbm_3M.txt": "61c42a7fd51fd1444cf03430b69449ed1fe509c20dbc0fbdb7ae1738ee68a2d9",
+    "lgbm_5D.txt": "ae27008572f140d716c2941573dcafd5956e51433e2683795ed414bbf7c2000e",
+    "lgbm_6M.txt": "08ffb848b3c22d970d70be04572b0c1a9c6325aaac5259841ce1b83b53386a95"
+  },
+  "frozen_utc": "2026-11-06T19:12:01+00:00",
+  "code_commit_at_freeze": "14ef80f17c9767b85a959615a8710fe60440dc15",
+  "recipe": "LightGBM (E07 params), F0 + FUND_IND (fi_* industry-neutral ranks); E23 kept",
+  "trained_through_block": "valid (as-of 2009-01-02 .. 2018-12-31)",
+  "kind": "fund",
+  "label_version": "nexus-labels-v2",
+  "horizons": {
+    "1D": 1,
+    "2D": 2,
+    "5D": 5,
+    "10D": 10,
+    "15D": 15,
+    "20D": 20,
+    "3M": 63,
+    "6M": 126,
+    "1Y": 252
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid"
+  ],
+  "train_class_prior": {
+    "1D": [
+      0.2469193436154002,
+      0.4906325144674142,
+      0.26244814191718563
+    ],
+    "2D": [
+      0.2560710290581427,
+      0.45831534999251305,
+      0.2856136209493442
+    ],
+    "5D": [
+      0.2574979521011882,
+      0.43071936299336744,
+      0.3117826849054443
+    ],
+    "10D": [
+      0.2513410434154548,
+      0.42159410205142206,
+      0.3270648545331231
+    ],
+    "15D": [
+      0.2459680615867032,
+      0.41448591133699164,
+      0.33954602707630516
+    ],
+    "20D": [
+      0.24329037883925977,
+      0.4080471413094221,
+      0.34866247985131815
+    ],
+    "3M": [
+      0.21366066861951924,
+      0.39246756869856325,
+      0.39387176268191754
+    ],
+    "6M": [
+      0.18441054992338216,
+      0.38435778001035104,
+      0.43123167006626684
+    ],
+    "1Y": [
+      0.14135263906936452,
+      0.38347874512715796,
+      0.4751686158034775
+    ]
+  },
+  "note": "E23 kept (D-042): LightGBM F0 + industry-neutral fundamentals, refit 2009-2018; forward test only, no trading engine"
+}

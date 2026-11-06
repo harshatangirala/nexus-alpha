@@ -52,3 +52,23 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
 * **Keys.** The task reads the paths of the owner's key files from the git-ignored `scripts/shadow/local_env.cmd`. v2's FRED context needs it (audit A-27).
 * **Public timestamps.** After scoring, the task commits **only `shadow/`** and pushes it to the public repository. That fixes a public time for each forecast before its outcome is known.
 * **No news.** In live mode the news modality is always missing for both stock models: there is no live news feed, and texts reach the models only through the Trade Desk.
+
+## Changes on 2026-11-07 (audit 3 and 4)
+
+* **A fourth frozen model, `v3_fund`** (D-042; E23 kept). It is LightGBM on the v1.1 numeric features plus
+  industry-neutral fundamentals, refitted on 2009-2018.
+  * **Inputs:** v2's assembled feature row for each stock (the v2 forecasts are identical with and without this extra
+    output, A/B tested) and the same session's live fundamentals cross-section (`live_fundamentals.py`: SEC facts at
+    <= 5 requests/s with the owner's declared User-Agent).
+  * **Log:** `shadow/v3_fund/` with `rank_score`, scored by `shadow_score.py`. No trading engine uses it.
+  * **Promotion:** the forward criterion in `docs/V3_RESEARCH.md` (20D rank IC above 0 and above `ranker_v3` after 120
+    sessions).
+* **Preflight and circuit breaker (D-041).** Before forecasting, the task checks that Yahoo answers, waiting up to 90
+  minutes. A forecast run whose first 20 tickers all fail stops at once instead of running into the 3-hour task limit.
+  A done marker lets optional extra daily triggers re-run only an incomplete day.
+* **Runner tests.** `tests/test_shadow_runner.py` checks three things:
+  * `run_daily.cmd` is byte-clean CRLF;
+  * every script it references exists;
+  * every version it scores is frozen and monitored by SPC.
+
+  Audit 4 found a vertical-tab byte that a patch had written into a script path.

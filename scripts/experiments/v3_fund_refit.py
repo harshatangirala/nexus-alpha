@@ -76,7 +76,7 @@ def main() -> None:
         trees[h] = rounds
         print(f"{h}: {lab.sum()} rows, {rounds} trees ({time.time() - t0:.0f}s)", flush=True)
     (bdir / "bundle_meta.json").write_text(json.dumps({
-        "bundle_id": run.run_id, "recipe": "LightGBM (E07 params), F0 + FUND_IND (fi_* industry-neutral ranks); E23 kept",
+        "bundle_id": run.run_id, "kind": "fund", "recipe": "LightGBM (E07 params), F0 + FUND_IND (fi_* industry-neutral ranks); E23 kept",
         "trained_through_block": "valid (as-of 2009-01-02 .. 2018-12-31)", "cols": cols, "fund_cols": fcols,
         "trees": trees, "horizons": {h: HORIZONS_V2[h] for h in horizons}, "label_version": LABEL_VERSION_V2,
         "refit_class_prior": prior, "selection_run": e23.name, "decision": "D-042"}, indent=1), encoding="utf-8")

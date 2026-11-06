@@ -72,6 +72,20 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 * **Market-regime rules and trading-process tools** from two MIT skill repositories (D-034):
   * O'Neil/IBD rules were tested in E20: they add nothing to the market read, so they are shown as context only.
   * The Trade Desk gained live headlines and 8-Ks, a drawdown circuit breaker, a pre-trade discipline gate and sizing.
+* **Fundamental analysis** ([`docs/FUNDAMENTALS.md`](docs/FUNDAMENTALS.md)): SEC XBRL for all 979 tickers, point in
+  time from 2009, with 31 pre-registered ratios across valuation, profitability, growth, leverage, efficiency and
+  quality (Piotroski F, Altman Z, SUE), a fixed-assumption DCF, P/E, EV/EBITDA, P/S, P/B and P/FCF.
+  * **Data audit:** split basis, ADS/foreign filers, share classes, weighted-share and stale-count bugs, and XBRL scale
+    errors are all guarded. Every hard check passes, including megacaps within 15% of public values.
+  * **Experiments:**
+    * E22 (universe ranks) was **not kept**: its placebo also passed.
+    * E23 (industry-neutral ranks) was **kept**. Ranking improved at swing and long horizons on 2017-18, but only the
+      swing gain replicated on 2020-22.
+  * **Forward test:** `v3_fund` (LightGBM on the v1.1 features plus industry-neutral fundamentals) is frozen and
+    logged nightly. A pre-registered rank-IC criterion decides whether it is ever shown as a signal.
+  * **Trade Desk:** the three statements, all ratios with universe and industry percentiles (live from a nightly
+    cross-section), Piotroski and Altman zones, and an adjustable DCF.
+  * **Audit:** [`docs/AUDIT_3_4_2026-11-07.md`](docs/AUDIT_3_4_2026-11-07.md).
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.
 * **Keys the owner sets** (environment variables, never committed):
@@ -87,7 +101,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `scripts/` | audits, data builds, experiments E01-E10, RAG build and evaluation, verification (parity, quantile coverage), report compilers (`make_results.py`, `audit_report.py`), pipeline orchestrator |
 | `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 70 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app |
+| `tests/` | 109 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 

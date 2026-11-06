@@ -168,6 +168,52 @@ before E22 was run; the sets, endpoints, placebo and keep rule are unchanged.
   basis, unless confirmed by a filing at least 75 days later), are missing: spin-offs recorded as splits, filings
   restated for a split before its effective date, and counts tagged in thousands.
 
+## E22 results (2026-11-07; run `experiments/20261107T001413_e22_fundamentals_a9900a`)
+
+Rows: 149,485 (as-of 2009-2022). Fundamentals present: train 67%, inner 86%, valid 86%, test 87%.
+
+**Decision under the pre-registered rule: FUND is not kept** (all four family x endpoint cells drop). So no `v3_fund`
+model is frozen.
+
+| Family, endpoint | B + FUND passes | Placebo passes | Kept |
+|---|---|---|---|
+| LightGBM, log loss | no | no | no |
+| LightGBM, rank IC | no | no | no |
+| Logistic, log loss | no | no | no |
+| Logistic, rank IC | **yes** | yes (barely) | no |
+
+Validation gains of B + FUND over B (95% block-bootstrap intervals):
+
+| Family | Endpoint | Intraday (1D) | Swing (2-20D) | Long (3M-1Y) |
+|---|---|---|---|---|
+| LightGBM | log loss | -0.0009 [-0.0018, -0.0001] | +0.0004 [-0.0005, +0.0014] | -0.0058 [-0.0078, -0.0037] |
+| Logistic | log loss | -0.0006 [-0.0011, -0.0000] | +0.0008 [+0.0000, +0.0017] | +0.0024 [-0.0023, +0.0078] |
+| LightGBM | rank IC | -0.0000 [-0.0107, +0.0119] | +0.0052 [-0.0068, +0.0165] | -0.0122 [-0.0576, +0.0309] |
+| Logistic | rank IC | +0.0066 [-0.0062, +0.0186] | **+0.0159 [+0.0058, +0.0255]** | **+0.0531 [+0.0044, +0.1081]** |
+| Logistic placebo | rank IC | +0.0029 [-0.0031, +0.0089] | +0.0037 [+0.0002, +0.0072] | +0.0050 [-0.0053, +0.0139] |
+
+**What this means.**
+* **Probabilities.** Fundamentals do not improve calibrated up/sideways/down probabilities. LightGBM gets worse at
+  long horizons (overfitting 33 more features on 6 training years).
+* **Ranking.** The logistic model's cross-sectional ranking improves a lot. Mean daily rank IC on 2017-18, B vs
+  B + FUND (placebo):
+
+  | Horizon | B | B + FUND | Placebo |
+  |---|---|---|---|
+  | 10D | 0.011 | 0.031 | 0.010 |
+  | 20D | 0.020 | 0.044 | 0.024 |
+  | 3M | -0.006 | 0.047 | -0.001 |
+  | 6M | 0.004 | 0.066 | 0.005 |
+  | 1Y | 0.035 | 0.118 | 0.030 |
+
+  The gain repeats on the 2020-22 diagnostic: swing +0.0079 [+0.0020, +0.0141], long +0.0267 [+0.0041, +0.0546],
+  where the placebo shows none (swing +0.0010 [-0.0019, +0.0037]).
+* **Why it is still dropped.** The placebo passed the same "lower bound above zero in any group" test, by +0.00015 on
+  swing. The rule says drop, and it is applied as written.
+* **The rule's weakness (lesson for future pre-registrations).** Testing the placebo with the same any-of-three-groups
+  criterion gives it its own false-positive rate. Comparing the candidate with its placebo directly would have been
+  sharper. This is recorded rather than used: the rule cannot change after the result.
+
 ## E23 industry-neutral fundamentals (pre-registered 2026-11-06, before any E22 result and before any E23 code)
 
 **Why.** Valuation and quality ratios differ structurally by industry: a bank's book-to-price, a utility's leverage and
@@ -190,3 +236,62 @@ candidate. If both pass, the one with the larger validation log-loss gain is use
 count (E22 + E23) are disclosed.
 
 **Trial budget.** 2 sets (B_FUND_IND and its placebo) x 2 models x 9 horizons x 2 endpoints, on top of E22's.
+
+## E23 results (2026-11-07; run `experiments/20261107T002423_e23_industry_fundamentals_2d062c`)
+
+**Decision under the pre-registered rule: FUND_IND is kept.** No placebo passes on any endpoint.
+
+| Family, endpoint | B + FUND_IND passes | Placebo passes | Kept |
+|---|---|---|---|
+| LightGBM, log loss | yes | no | **yes** |
+| LightGBM, rank IC | yes | no | **yes** |
+| Logistic, log loss | no | no | no |
+| Logistic, rank IC | yes | no | **yes** |
+
+Validation gains over B (95% block-bootstrap intervals; 2020-22 diagnostic in the last column):
+
+| Family | Endpoint | Group | 2017-18 | 2020-22 |
+|---|---|---|---|---|
+| LightGBM | log loss | long | +0.0037 [+0.0020, +0.0059] | -0.0007 [-0.0054, +0.0062] |
+| LightGBM | rank IC | long | +0.054 [+0.022, +0.089] | +0.003 [-0.072, +0.061] |
+| LightGBM | rank IC | swing | +0.005 [-0.002, +0.012] | +0.007 [+0.002, +0.012] |
+| Logistic | rank IC | swing | +0.010 [+0.001, +0.018] | +0.007 [+0.002, +0.011] |
+
+Mean daily rank IC of LightGBM on 2017-18:
+
+| Horizon | B | B + FUND_IND | Placebo |
+|---|---|---|---|
+| 10D | 0.013 | 0.020 | 0.015 |
+| 20D | 0.020 | 0.029 | 0.018 |
+| 3M | -0.015 | 0.039 | 0.003 |
+| 6M | -0.020 | 0.047 | -0.033 |
+| 1Y | 0.073 | 0.080 | 0.005 |
+
+Against E22's universe ranks (descriptive), the industry-neutral set lowers LightGBM's validation log loss by 0.0096
+(3M), 0.0072 (6M) and 0.0018 (1Y). Industry adjustment is what made fundamentals useful to the tree model.
+
+**Honest reading.**
+* **What validation shows:** a real ranking gain at swing and long horizons, with placebos clean.
+* **What replicated on 2020-22:** the swing ranking gains of both families, not LightGBM's long-horizon gain. The
+  intervals there are wide (2020-22 holds only a few independent 3M-1Y windows).
+* **Trials:** E22 + E23 together are 5 sets x 2 families x 9 horizons x 2 endpoints. The keep came from the second of
+  two related experiments, so the forward test, not this table, is the evidence that matters.
+
+## v3_fund in the forward test (D-042)
+
+By E22's and E23's use clauses, with no choice left open:
+* **Model:** LightGBM (E07 parameters) on F0 + FUND_IND, refitted on as-of 2009-2018 for the 9 horizons. Tree counts
+  follow E08's convention: E23's early-stopping counts scaled by rows.
+* **Freeze:** frozen as `v3_fund` (`registry/frozen_models/v3_fund.json`).
+* **Nightly inputs:** v2's assembled F0 row for each stock (forecasts identical with and without this output, A/B
+  tested) and the live fundamentals cross-section of the same session.
+* **Logging:** hash-chained in `shadow/v3_fund/`, with `rank_score` = p_up - p_down. **No trading engine uses it.**
+
+**Forward criterion (pre-registered 2026-11-07, before any v3_fund forecast exists).** v3_fund becomes a shown signal
+in the Trade Desk (still not traded) only if, on on-time rows after at least 120 scored sessions at 20D:
+1. its mean daily rank IC at 20D has a date-block bootstrap 95% lower bound above 0; and
+2. the paired daily rank-IC difference against `ranker_v3` (v2's F0 LightGBM `rank_score`) on the same dates and
+   stocks has a lower bound above 0.
+
+1D-15D results and the log loss against the class prior are reported, but they are not part of the criterion. 3M-1Y
+are reported once they mature.

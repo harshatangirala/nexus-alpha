@@ -25,7 +25,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from nexus_alpha import shadow as SH  # noqa: E402
 
-UNIVERSE = {"v1.1": 500, "v2": 500, "market_e19": 1}
+UNIVERSE = {"v1.1": 500, "v2": 500, "market_e19": 1, "v3_fund": 500}
 
 
 def p_chart(counts: pd.DataFrame, n: int) -> dict:

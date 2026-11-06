@@ -1,0 +1,2 @@
+ticker,error
+BZH,ValueError('only 66 usable daily bars from Yahoo for BZH: insufficient history')

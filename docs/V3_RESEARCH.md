@@ -337,8 +337,14 @@ rules follow:
   * the path quantiles.
 
 **E24 contaminated diagnostic (necessary condition).**
-* **Rows:** the v2 frame's validation block (2017-18), all rows on every 5th as-of session that has rows (sessions
-  numbered in date order; the rule is deterministic). Rows without 400 prior bars are skipped and counted.
+* **Rows:** the v2 frame's validation block (2017-18), all rows whose as-of session falls in January, March, May,
+  July, September or November. Rows without 400 prior bars are skipped and counted.
+  * **Amendment before any Kronos run.** The rule first registered ("every 5th as-of session") would have kept only
+    110 of 489 stocks, because the frame samples each stock every 10th bar in a fixed phase.
+  * The alternate-month rule keeps every stock, and full daily cross-sections of about 48 stocks: 244 sessions,
+    11,675 rows.
+  * Estimated 9.5 CPU hours (Kronos-small at 2.9 s per stock), inside the 12-hour CPU rule. It runs at below-normal
+    priority, so the nightly forward test keeps precedence.
 * **Endpoints** (the project's existing metrics and block bootstrap, D-032 blocks):
   1. the log-loss gain over the training class prior, swing group (2D-20D) and 1D;
   2. the mean daily rank IC of `rank_score` against the realised R_h, swing group.

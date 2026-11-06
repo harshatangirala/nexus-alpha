@@ -6,7 +6,7 @@ if not exist artifacts\logs mkdir artifacts\logs
 rem Owner-held key file paths (FRED for v2 context) from a git-ignored local file, if present
 if exist scripts\shadow\local_env.cmd call scripts\shadow\local_env.cmd
 echo ==== %DATE% %TIME% ==== >> artifacts\logs\shadow_daily.log
-for %%V in (v1.1) do (
+for %%V in (v1.1 v2) do (
   .venv\Scripts\python.exe -B scripts\shadow\shadow_forecast.py --version %%V >> artifacts\logs\shadow_daily.log 2>&1
   .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version %%V >> artifacts\logs\shadow_daily.log 2>&1
 )

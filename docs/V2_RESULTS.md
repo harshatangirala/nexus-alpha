@@ -1,4 +1,4 @@
-# NEXUS Alpha v2: results (interim, 2026-11-06)
+# NEXUS Alpha v2: results (2026-11-06)
 
 Pre-registration: `docs/V2_ARCHITECTURE.md` section 4. Decisions and disclosures: `docs/DECISION_LOG.md` (D-026 to D-032).
 
@@ -9,7 +9,7 @@ Pre-registration: `docs/V2_ARCHITECTURE.md` section 4. Decisions and disclosures
 * "Test" is 2020-2022, a **reused diagnostic** that never drives a choice.
 * Intervals are 95% month-block bootstrap intervals.
 
-Status: E11, E12, E13, E16, E17 (19 of 22 stocks) and E19 are complete. E18, then E14 (blend and freeze) and E15 (backtest) run in sequence.
+Status: complete. v2 frozen 2026-11-06. E17 has 3 of 22 stocks pending the next Gemini free-tier reset.
 
 ## E11: market and macro blocks in the stock model (tabular)
 
@@ -135,6 +135,66 @@ The other three stocks (TTEC, URI, WERN) are scheduled for 2026-11-07 13:45 IST,
 This validates D-019's screenshot check: legend values typed in, or read by Gemini, are compared with real bars.
 
 The free tier allows 20 requests per model per day, and on this key only `gemini-3.6-flash` answered. E17 used that day's quota, so the Trade Desk's Gemini read was unavailable until the next reset.
+
+## E14: v2 blend, refit on 2003-2018, calibration on 2019 (frozen as `registry/frozen_models/v2.json`)
+
+| Group | LightGBM (F0) | Logistic (F0) | Fusion | TCN | GRU | Validation log loss |
+|---|---|---|---|---|---|---|
+| 1D | 0.3 | 0.5 | 0 | 0 | 0.2 | 1.03306 |
+| 2D-20D | 0.2 | 0.3 | 0.2 | 0 | 0.3 | 1.06311 |
+| 3M-1Y | 0 | 0.1 | 0.7 | 0 | 0.2 | 1.05888 |
+
+* **Validation direction gate (D-015, blend AUROC 95% CI above 0.5):** passed at 1D (lower bound 0.5005), 5D, 10D, 15D, 20D, 3M, 6M and 1Y; failed at 2D.
+* **2020-2022 diagnostic:**
+
+  | Horizon | 1D | 5D | 20D | 3M | 6M | 1Y |
+  |---|---|---|---|---|---|---|
+  | Log loss | 1.0276 | 1.0625 | 1.0758 | 1.0882 | 1.0668 | 1.0767 |
+  | Training prior | 1.0487 | 1.0753 | 1.0836 | 1.0842 | 1.0783 | 1.0634 |
+  | Up-vs-down AUROC | 0.510 | 0.509 | 0.488 | 0.479 | 0.517 | 0.418 |
+
+* **Reading:** v2's probabilities beat the base rate at 1D-20D, but its direction ranking is at chance. The validation gate did not carry over to 2020-2022, and the Trade Desk shows this AUROC beside the flag.
+* **10-90% band coverage on 2020-2022:** 0.74-0.84.
+
+**v2 vs v1.1 on identical 2020-2022 rows** (log-loss gain of v2; month-block 95% intervals):
+
+| Horizon | Gain of v2 | 95% interval | AUROC v1.1 / v2 |
+|---|---|---|---|
+| 1D | +0.0012 | [+0.0004, +0.0020] | 0.511 / 0.510 |
+| 2D | -0.0005 | [-0.0017, +0.0006] | 0.514 / 0.515 |
+| 5D | +0.0014 | [-0.0001, +0.0027] | 0.508 / 0.509 |
+| 10D | +0.0013 | [-0.0008, +0.0036] | 0.497 / 0.502 |
+| 20D | -0.0016 | [-0.0047, +0.0016] | 0.495 / 0.488 |
+
+v2 is essentially v1.1 on the shared horizons. What it adds is every swing length plus 3M, 6M and 1Y.
+
+**Train/serve parity** (`reports/verification/v2_inference_parity.csv`, 24 rows x 23 horizons through the dashboard / forward-test path):
+* rows whose training sample had no corpus news reproduce to <= 0.00024;
+* rows with corpus news differ by up to 0.019, because inference takes news only from user texts.
+
+So in the forward test (no live news feed), v1.1 and v2 both run with the news modality missing.
+
+## E15: v2 backtest (E04 engine; thresholds frozen on 2019 with 50 trials; 2020-2022 reused diagnostic)
+
+| Horizon | Model + ATR stops: total return (base / severe costs) | Sharpe (base / severe) | Trades (long / short) |
+|---|---|---|---|
+| 5D | +38.2% / +19.1% | 0.62 / 0.38 | 1870 / 277 |
+| 10D | +60.3% / +46.0% | 0.82 / 0.68 | 1348 / 81 |
+| 20D | +39.5% / +25.1% | 0.63 / 0.46 | 880 / 22 |
+| 3M | +60.8% / +53.0% | 0.73 / 0.67 | 790 / 0 |
+
+* Benchmarks: equal-weight survivors +39.7% (Sharpe 0.53, max drawdown -41%); SPY total return +24.6% (Sharpe 0.42, max drawdown -34%).
+* The model + ATR-stop policy is almost entirely long on a survivor universe. The fair comparison is equal-weight survivors, which it beats on Sharpe at 10D and 3M, before deflating for 50 trials and for the reuse of 2020-2022.
+* The full rules engine (`nexus`, `nexus_gated`) is flat to slightly negative with few trades.
+* The rules alone lose at every horizon.
+
+## Forward test and sealed period
+
+* **Logged every evening before the next open** (hash-chained), all three starting with session 2026-11-05:
+  * v1.1 (`shadow/v1.1/`);
+  * v2 (`shadow/v2/`);
+  * the E19 SPY 20D read (`shadow/market_e19/`).
+* **Sealed 2023+ period:** opened once, by the owner, under `docs/SEALED_EVALUATION_PLAN.md`. That plan is final for the models; the scorer and the embedding route are still to be fixed before opening.
 
 ## Operational notes from this run
 

@@ -1,8 +1,8 @@
 # Sealed evaluation plan (2023-01-03 onward): v1.1 and v2, opened once
 
-Status: **DRAFT, written 2026-11-06 before v2 is frozen and before any sealed row has been read.** It becomes final when
-v2 is frozen. At that point the bundle hashes, code commit and scorer hash are filled in (section 8), and this file's
-SHA-256 goes into the frozen config that the owner's unlock checks. Changes after finalisation are logged in
+Status: **final for the models (v2 frozen 2026-11-06); no sealed row has been read.** Two items are still open: the
+scorer's SHA-256 and the embedding route. Both are filled in, and committed, before the owner opens the seal. This
+file's SHA-256 then goes into the frozen config that the owner's unlock checks. Changes after finalisation are logged in
 `docs/DECISION_LOG.md` and void the "pre-specified" label for whatever they touch.
 
 Owner decision D-018: the seal is opened **once**, after v2 is frozen, scoring v1.1 and v2 together.
@@ -24,7 +24,11 @@ Owner decision D-018: the seal is opened **once**, after v2 is frozen, scoring v
 | Model | Bundle | Horizons |
 |---|---|---|
 | v1.1 | `registry/frozen_models/v1.1.json` (frozen 2026-11-06) | 1D, 2D, 5D, 10D, 20D, 1M (21 sessions) |
-| v2 | `registry/frozen_models/v2.json` (frozen at E14) | 1D-20D, 3M (63), 6M (126), 1Y (252) |
+| v2 | `registry/frozen_models/v2.json` (frozen 2026-11-06, bundle `20261106T142918_e14_blend_freeze_v2_3298d4`) | 1D-20D, 3M (63), 6M (126), 1Y (252) |
+| market read (E19) | `registry/frozen_models/market_e19.json` (frozen 2026-11-06) | SPY 20D (one instrument) |
+
+The market read was added on 2026-11-06, after D-018 (which named v1.1 and v2). It costs no extra opening and is a
+secondary endpoint only. The owner may strike it before opening.
 
 Both bundles are used exactly as frozen, with their file hashes verified before scoring. There is **no** refitting,
 recalibration, re-thresholding, feature re-selection or skill-gate change. The frozen backtest policies (E04 for v1.1,
@@ -64,6 +68,8 @@ across the three groups per model.
 * v2 minus v1.1 log loss on the shared horizons (1D, 2D, 5D, 10D, 20D) on identical rows.
 * Calibration: expected calibration error and a reliability table per horizon.
 * 10-90% quantile coverage per horizon (target 0.80).
+* E19 market read: SPY 20D up-vs-down AUROC, with a moving-block bootstrap of 1-month blocks, and log loss against the
+  refit class prior, on every session of the sealed period.
 * Frozen backtests (E04 v1.1, E15 v2) under base, stressed and severe costs. Benchmarks: SPY total return and the
   equal-weight universe. Reported: return, volatility, Sharpe with a deflated Sharpe ratio using the logged trial
   count, maximum drawdown, turnover and trade count.
@@ -103,8 +109,10 @@ across the three groups per model.
 
 | Item | Value |
 |---|---|
-| v2 bundle id and record SHA-256 | (E14 run) |
-| Code commit | |
-| Scorer SHA-256 | |
-| Trial count for the deflated Sharpe ratio | (from `experiments/`) |
-| Embedding route (CPU / Colab) | owner |
+| v1.1 record SHA-256 | `cbba5f79b93410e0e0b9815939f4c47aeb5f1ee4f9c830b88496260eaaa58a39` |
+| v2 bundle id and record SHA-256 | `20261106T142918_e14_blend_freeze_v2_3298d4`; `c7924d7481329e84f07f3136060dd7c5352cd25e998cd46d73f50f5141a86679` |
+| market_e19 record SHA-256 | `663b22581855c91e8d64cb79853033f87f7762103b212f82eae2589c908c5136` |
+| Code commit at the v2 freeze | recorded in `registry/frozen_models/v2.json` (`code_commit_at_freeze`) |
+| Scorer SHA-256 | open: written and committed before opening |
+| Trial count for the deflated Sharpe ratio | policy trials as recorded by each frozen backtest (E15: 50 on 2019), plus the 26 completed experiment runs listed in `experiments/` at freeze |
+| Embedding route (CPU / Colab) | open: owner's choice |

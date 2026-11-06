@@ -1,0 +1,193 @@
+{
+  "version": "v2",
+  "bundle_id": "20261106T142918_e14_blend_freeze_v2_3298d4",
+  "files": {
+    "bundle_meta.json": "a0ae37963d24fa74742cbb2f412898eed9d75b9a4b705ea28d55246ee6620c17",
+    "calibrators.pkl": "d8ad96ebf6c6259f5eee286f5c20d406eb1c59867c5b529b96044ada2db66bef",
+    "fusion_preprocessor.pkl": "799f19b6ad9c610d688855b5a3ca255514f1be48d8bcd0131f7fc24ab06b13e6",
+    "fusion_seed101.pt": "2cd5f2c756a9c3eaccf28a634d203960394bd0caafe6eaac762074d325a980f5",
+    "fusion_seed11.pt": "2b4c95b68aee0ea62b636fb0c2d64a76d237c8c385a1a8a3b9e4f1d6e64bc19c",
+    "fusion_seed23.pt": "5b3cab478402ca7bda4df5443602ab34e2ece81b2a2817b20bfae1000daf61d3",
+    "fusion_seed42.pt": "124d4998e65d7f2e174b451ecca12484293e6e334bdb0286951dc22fe0e548c0",
+    "fusion_seed7.pt": "32f3b6ec11842ca44f13b4a4e72560ad0740f9d1fd4c6e1bd066a42194b65b2a",
+    "gru_seed11.pt": "e081621045c2a8c8e1b97a5c1379aca9b8aebae128e742d11dc7174ca0aac045",
+    "gru_seed23.pt": "75ac8c15a501ba308b92934e2e3f48d64ab4ddebb5871a1b6924308b20164b9d",
+    "gru_seed7.pt": "b7a29f422e11fafd69305b9a703ba76f23105b9a3a106f39df3136089a19f864",
+    "lgbm_10D.txt": "c3b7d02cd4fe729ceb4b2f9e791951cee65bf17ec29cd7cd87dc3d0ebc048db6",
+    "lgbm_11D.txt": "ac3ecd29b846f3b5e3b0e038c0f1a151db45835f3f206a33a91933ce195e288f",
+    "lgbm_12D.txt": "3a46c588126b6d64855974f1dd61bad232f4b96278c8e46c034ece6ba0a245cd",
+    "lgbm_13D.txt": "6fa3d95976716348aca38d564ec2ee1aba745b73968bcb3d7bd51ab90c389ad3",
+    "lgbm_14D.txt": "0ac19ff692911b3dc316407f562bc6caa78d2dec24e5eca4bfd1c79bc0ce8936",
+    "lgbm_15D.txt": "37cb7b364630c4c70bed5194e9c048f61bad1d7a3009e3342146ea02d3379b42",
+    "lgbm_16D.txt": "b8e1447fbd2cd291e3860c92e5f9bec18ed0bef3be3c88d5f8f7766f6672dd45",
+    "lgbm_17D.txt": "8ef2c38b3e6157b54dbbfd0c4c605b75ad3b7216ac99d47791aecf14aaa05bdf",
+    "lgbm_18D.txt": "9aacd454d1963e607814a2e853241c742da132b51ee1a454c4cb266ac67a5750",
+    "lgbm_19D.txt": "2dcd6bdb09a77012b7247740bd89865a33efec44c0701627e51845f62fa318d3",
+    "lgbm_1D.txt": "474bc9d1bdc8d356d095ee28595c4432b0debfac4fe4238f8ade264b712b7b30",
+    "lgbm_20D.txt": "847e958e8ed025f509c6095ba93a561ba50eb8404f5bfc3dde95e19c8ae4c04d",
+    "lgbm_2D.txt": "20473a92ea7633e7e998b15ff221c8ac448238233431ba72b38cd18d373d5974",
+    "lgbm_3D.txt": "5a294787138a3aa6fc48a2c83f4c91a95031c2a3bb813cdc8b8a6f325231b999",
+    "lgbm_4D.txt": "a0f908fb432fe33a716f60f9df31f2647e4670174acd31f91acb0a0186df198e",
+    "lgbm_5D.txt": "db0b7c120d87c0803b8b8ceda77eba85be9ede3c01c12738e756ee8e17167e64",
+    "lgbm_6D.txt": "efddce34e7b75348a59fe63a1d8e25b56d1e7306d4eba839193d04307e6175cd",
+    "lgbm_7D.txt": "ee607492ea8c0e1d281a2bc4706ef0374ce4801acb95da4c74fc035847fc7da9",
+    "lgbm_8D.txt": "7ee9ca5031c488d3ff92febb40dde56b33f151d90b075c92669bb635551f5227",
+    "lgbm_9D.txt": "c3023ca4b82b562c36ebf9f6ede89e06c9ba85f01ca94d760f95ad87a48563aa",
+    "logistic.pkl": "83cf2841c30526d1ce095f326091f0eca7c8833e9f1a26818853822627d831c4"
+  },
+  "frozen_utc": "2026-11-06T09:47:23+00:00",
+  "code_commit_at_freeze": "efcf18d39221b4dfa6ee093ae55ea229ce674082",
+  "recipe": null,
+  "trained_through_block": "refit 2003-2018",
+  "kind": "v2",
+  "label_version": "nexus-labels-v2",
+  "horizons": {
+    "1D": 1,
+    "2D": 2,
+    "3D": 3,
+    "4D": 4,
+    "5D": 5,
+    "6D": 6,
+    "7D": 7,
+    "8D": 8,
+    "9D": 9,
+    "10D": 10,
+    "11D": 11,
+    "12D": 12,
+    "13D": 13,
+    "14D": 14,
+    "15D": 15,
+    "16D": 16,
+    "17D": 17,
+    "18D": 18,
+    "19D": 19,
+    "20D": 20,
+    "3M": 63,
+    "6M": 126,
+    "1Y": 252
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid"
+  ],
+  "train_class_prior": {
+    "1D": [
+      0.25449762629199146,
+      0.4802397981360324,
+      0.26526257557197613
+    ],
+    "2D": [
+      0.26166673252459793,
+      0.4524835025882167,
+      0.2858497648871854
+    ],
+    "3D": [
+      0.2634561865999808,
+      0.4392234785406635,
+      0.29732033485935566
+    ],
+    "4D": [
+      0.26378359460115497,
+      0.43062619602707325,
+      0.3055902093717718
+    ],
+    "5D": [
+      0.26244573776877095,
+      0.4283794997431541,
+      0.309174762488075
+    ],
+    "6D": [
+      0.261249005074824,
+      0.42584491021682314,
+      0.31290608470835285
+    ],
+    "7D": [
+      0.25972486437970294,
+      0.4249530056619004,
+      0.3153221299583966
+    ],
+    "8D": [
+      0.2581386290636696,
+      0.4232595160006548,
+      0.3186018549356756
+    ],
+    "9D": [
+      0.2574386533370214,
+      0.421656345788009,
+      0.32090500087496965
+    ],
+    "10D": [
+      0.25505083291466507,
+      0.42170715047784635,
+      0.32324201660748864
+    ],
+    "11D": [
+      0.2547177799479534,
+      0.4188112831571163,
+      0.32647093689493023
+    ],
+    "12D": [
+      0.252177545456085,
+      0.4182806563965927,
+      0.3295417981473223
+    ],
+    "13D": [
+      0.2522452850425348,
+      0.41577429169794916,
+      0.331980423259516
+    ],
+    "14D": [
+      0.2527194621476836,
+      0.4135445303106425,
+      0.333736007541674
+    ],
+    "15D": [
+      0.25203077635211035,
+      0.41244376203083283,
+      0.3355254616170568
+    ],
+    "16D": [
+      0.2508340436581635,
+      0.41133734878548567,
+      0.33782860755635086
+    ],
+    "17D": [
+      0.25103726241751295,
+      0.40940677057166563,
+      0.3395559670108214
+    ],
+    "18D": [
+      0.24995907399985323,
+      0.4090511377428041,
+      0.34098978825734266
+    ],
+    "19D": [
+      0.25015100282812774,
+      0.40688911594194715,
+      0.3429598812299251
+    ],
+    "20D": [
+      0.24968247068851646,
+      0.40715442932220897,
+      0.3431630999892746
+    ],
+    "3M": [
+      0.22821685860019983,
+      0.3896981063726607,
+      0.3820850350271395
+    ],
+    "6M": [
+      0.20904174298065478,
+      0.3795842352259202,
+      0.41137402179342497
+    ],
+    "1Y": [
+      0.19361182083186196,
+      0.36625052796299756,
+      0.4401376512051405
+    ]
+  },
+  "note": "E14 v2 blend (tabular F0 per D-033; fusion with GMD+FRED context; GRU). 2020-22 diagnostic: probabilities beat the prior at 1D-20D, direction AUROC ~0.5; long horizons worse than the prior. Frozen per protocol for the forward test and the joint sealed evaluation (D-018)."
+}

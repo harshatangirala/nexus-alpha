@@ -1,8 +1,8 @@
 """Fundamentals for one ticker, for the Trade Desk: statements, ratios, multiples, universe percentiles and a DCF.
 
 historical(ticker, asof): the development store (facts filed before the seal) and the stored panel's percentiles.
-live(ticker): current SEC facts (`sec_facts.load_live`) priced at the latest Yahoo close; percentiles are not shown
-live (there is no live cross-section yet).
+live(ticker): current SEC facts (`sec_facts.load_live`) priced at the latest Yahoo close; universe and industry
+percentiles from the nightly live cross-section (`scripts/shadow/live_fundamentals.py`) when it is at most 4 days old.
 """
 from __future__ import annotations
 
@@ -68,8 +68,17 @@ def live(ticker: str) -> dict | None:
     s["snap_date"] = bars.date.iloc[-1]
     d = RT.daily(s, bars.tail(1), _splits(ticker), price_basis=None,             # Yahoo closes are as traded
                  share_class_ambiguous=share_class_ambiguous(ticker))
-    return {"snapshot": s.iloc[-1], "ratios": d.iloc[-1] if len(d) else None,
-            "source": f"SEC XBRL live (latest filing {f.filed.max().date()}), Yahoo close {bars.date.iloc[-1].date()}"}
+    row = d.iloc[-1].copy() if len(d) else None
+    src = f"SEC XBRL live (latest filing {f.filed.max().date()}), Yahoo close {bars.date.iloc[-1].date()}"
+    lp = paths.ARTIFACTS / "fundamentals" / "live_panel.parquet"
+    if row is not None and lp.exists():
+        L = pd.read_parquet(lp)
+        x = L[L.ticker == ticker]
+        if len(x) and (pd.Timestamp.now().normalize() - pd.Timestamp(x.date.iloc[0])).days <= 4:
+            for c in [c for c in L.columns if c.startswith(("fr_", "fi_"))]:
+                row[c] = x[c].iloc[0]
+            src += f"; percentiles from the live cross-section of {pd.Timestamp(x.date.iloc[0]).date()}"
+    return {"snapshot": s.iloc[-1], "ratios": row, "source": src}
 
 
 def dcf_per_share(fcf: float, growth: float, r: float, g_term: float, years: int, debt: float, cash: float,

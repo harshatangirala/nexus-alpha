@@ -19,6 +19,8 @@ for %%V in (v1.1 v2) do (
 rem E19 market-direction read (SPY 20D, D-031): logged the same way and scored by the same scorer
 .venv\Scripts\python.exe -B scripts\shadow\market_read.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1 || set FOK=0
 .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version market_e19 >> artifacts\logs\shadow_daily.log 2>&1
+rem Live fundamentals cross-section for the Trade Desk (live inference only; SEC at <= 5 requests/s; non-fatal)
+.venv\Scripts\python.exe -B scripts\shadow\live_fundamentals.py >> artifacts\logs\shadow_daily.log 2>&1
 rem Statistical process control of the forward test (alerts in the log and shadow/spc_report.json)
 .venv\Scripts\python.exe -B scripts\shadow\spc_monitor.py >> artifacts\logs\shadow_daily.log 2>&1
 rem Regression alarm: the full test suite every night (summary in the log)

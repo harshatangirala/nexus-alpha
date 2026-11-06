@@ -457,8 +457,11 @@ def _fundamentals_section(tick, mode, asof) -> None:
             p_ = r.get(f"fr_{k}")
             rr.append({"group": grp, "ratio": k.replace("_", " "),
                        "value": "-" if v is None or pd.isna(v) else (f"{v:+.1%}" if k in pct_like else f"{v:,.2f}"),
-                       "universe percentile": "-" if p_ is None or pd.isna(p_) else f"{100 * p_:.0f}"})
-    with st.expander("All 31 ratios (with the stock's percentile in the universe that day)", expanded=False):
+                       "universe percentile": "-" if p_ is None or pd.isna(p_) else f"{100 * p_:.0f}",
+                       "industry percentile": "-" if r.get(f"fi_{k}") is None or pd.isna(r.get(f"fi_{k}"))
+                       else f"{100 * r.get(f'fi_{k}'):.0f}"})
+    with st.expander("All 31 ratios (the stock's percentile in the universe and within its SIC industry that day)",
+                     expanded=False):
         st.dataframe(pd.DataFrame(rr), width="stretch", hide_index=True)
     pf, az = r.get("piotroski_f"), r.get("altman_z")
     zone = "-" if az is None or pd.isna(az) else ("safe (> 2.99)" if az > 2.99 else "grey (1.81-2.99)" if az >= 1.81 else "distress (< 1.81)")

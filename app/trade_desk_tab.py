@@ -252,6 +252,9 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         st.info("No screenshots supplied.")
 
     st.subheader("6. Gemini read (live LLM, unvalidated, logged for forward scoring)")
+    if GM.available():
+        st.caption(f"Gemini free tier: 20 requests per model per day (one request per analysis); used today: "
+                   f"{GM.usage_today() or 'none'}")
     if llm:
         o = llm.get("overall", {})
         st.write(f"Model used: `{llm.get('_model')}`. Overall lean: **{o.get('direction_lean')}** "

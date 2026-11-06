@@ -28,12 +28,26 @@ SLOT = {"1W": "W", "1D": "D", "1H": "H"}
 def main() -> None:
     ref = pd.read_csv(SHOTS / "legend_readings.csv")
     rows, model = [], None
+    cache = paths.artifact("llm_reads", "e17_cache", "x").parent       # one JSON per stock: resumable, no re-spend
+    failed = []
     for t in sorted(ref.ticker.unique()):
         imgs = [(SLOT[tf], (SHOTS / "images" / f"{t}_{tf}.png").read_bytes(), "image/png")
                 for tf in ("1W", "1D", "1H") if (SHOTS / "images" / f"{t}_{tf}.png").exists()]
         if not imgs:
             continue
-        out = G.read_legends(imgs)
+        cf = cache / f"{t}.json"
+        if cf.exists():
+            out = json.loads(cf.read_text(encoding="utf-8"))
+        else:
+            try:
+                out = G.read_legends(imgs)
+            except Exception as e:
+                failed.append({"ticker": t, "error": str(e)[:160]})
+                print(t, "FAILED", str(e)[:120], flush=True)
+                time.sleep(30)
+                continue
+            cf.write_text(json.dumps(out), encoding="utf-8")
+            time.sleep(12)                                # free-tier requests-per-minute
         model = out.get("_model")
         got = {c.get("slot"): c for c in out.get("charts", [])}
         for _, r in ref[ref.ticker == t].iterrows():
@@ -41,10 +55,9 @@ def main() -> None:
             for f in ("open", "high", "low", "close"):
                 v = g.get(f"legend_{f}")
                 rows.append({"ticker": t, "tf": r.tf, "field": f, "reference": float(r[f]),
-                             "gemini": None if v is None else float(v),
+                             "gemini": None if v is None else float(v), "model": out.get("_model"),
                              "ticker_read": g.get("ticker_shown"), "tf_read": g.get("timeframe_shown")})
         print(t, "done", flush=True)
-        time.sleep(7)                                     # stay well inside free-tier requests-per-minute
     d = pd.DataFrame(rows)
     d["read"] = d.gemini.notna()
     d["abs_err"] = (d.gemini - d.reference).abs()
@@ -52,7 +65,7 @@ def main() -> None:
     d["rel_err_pct"] = d.abs_err / d.reference * 100
     by_tf = d.groupby("tf").agg(values=("field", "size"), read_share=("read", "mean"), exact_share=("exact_cent", "mean"),
                                 max_rel_err_pct=("rel_err_pct", "max"), median_rel_err_pct=("rel_err_pct", "median"))
-    out = {"model": model, "screenshots": int(d.groupby(["ticker", "tf"]).ngroups), "values": int(len(d)),
+    out = {"model": model, "models_used": d.model.value_counts().to_dict(), "failed_stocks": failed, "screenshots": int(d.groupby(["ticker", "tf"]).ngroups), "values": int(len(d)),
            "read_share": float(d.read.mean()), "exact_share_of_all": float(d.exact_cent.mean()),
            "within_0p3pct_share_of_all": float((d.rel_err_pct <= 0.3).mean()),
            "ticker_correct_share": float((d.ticker_read.fillna("").str.upper().str.contains(d.ticker)).mean()),

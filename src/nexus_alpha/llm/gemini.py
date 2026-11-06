@@ -106,15 +106,43 @@ def pick_model(client=None) -> str:
 
 TRANSIENT = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "500", "INTERNAL", "504", "DEADLINE")
 SKIP = ("404", "NOT_FOUND")                  # listed but retired for this key: move on at once
+DAILY = "PerDay"                             # free tier: 20 requests per model per day (quotaId ...PerDay...)
 _STICKY: dict[str, str] = {}                 # the model that last answered, tried first next time (per process)
+_EXHAUSTED: dict[str, float] = {}            # model -> epoch seconds when its daily quota resets
+_RETIRED: set[str] = set()                   # models that answered 404 (retired for this key)
+
+
+class QuotaExhausted(RuntimeError):
+    """Every candidate model has used its daily free-tier quota."""
+
+
+def _usage_path():
+    return paths.artifact("llm_reads", "usage.json")
+
+
+def usage_today() -> dict:
+    """Successful calls per model today (UTC), from artifacts/llm_reads/usage.json."""
+    p = _usage_path()
+    d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    return d.get(dt.datetime.now(dt.timezone.utc).date().isoformat(), {})
+
+
+def _count(model: str) -> None:
+    p = _usage_path()
+    d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    day = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    d.setdefault(day, {})[model] = d.get(day, {}).get(model, 0) + 1
+    p.write_text(json.dumps(d, indent=1), encoding="utf-8")
 
 
 def generate(parts, cfg, client=None, tries_per_model: int = 2, max_models: int = 5):
-    """generate_content with fallback across candidate models. Transient errors (rate limit, overload, timeout) get one
-    short retry, then the next model; retired models are skipped. Returns (response, model_name)."""
+    """generate_content with fallback across candidate models. A model that reports its daily quota is skipped until
+    the reset; transient errors (rate limit, overload, timeout) get one short retry, then the next model; retired
+    models are skipped. Returns (response, model_name). Raises QuotaExhausted when every model is out of quota."""
     import time
     client = client or _client()
-    cands = candidate_models(client)[:max_models]
+    now = time.time()
+    cands = [m for m in candidate_models(client)[:max_models] if _EXHAUSTED.get(m, 0) <= now and m not in _RETIRED]
     if _STICKY.get("model") in cands:
         cands = [_STICKY["model"]] + [c for c in cands if c != _STICKY["model"]]
     last = None
@@ -123,16 +151,27 @@ def generate(parts, cfg, client=None, tries_per_model: int = 2, max_models: int 
             try:
                 r = client.models.generate_content(model=model, contents=parts, config=cfg)
                 _STICKY["model"] = model
+                _count(model)
                 return r, model
             except Exception as e:
                 last = e
                 msg = str(e)
                 if any(t in msg for t in SKIP):
+                    _RETIRED.add(model)
+                    break
+                if DAILY in msg:
+                    delay = re.findall(r"'retryDelay': '(\d+)s'", msg)
+                    _EXHAUSTED[model] = now + (float(delay[0]) if delay else 3600)
                     break
                 if not any(t in msg for t in TRANSIENT):
                     raise
                 if k + 1 < tries_per_model:
                     time.sleep(8)
+    allc = [m for m in candidate_models(client)[:max_models] if m not in _RETIRED]
+    if all(_EXHAUSTED.get(m, 0) > time.time() for m in allc):
+        wait = min(_EXHAUSTED[m] for m in allc) - time.time()
+        raise QuotaExhausted(f"Gemini free-tier daily quota used up on every model (20 requests per model per day); "
+                             f"next reset in about {wait / 3600:.1f} h")
     raise RuntimeError(f"all Gemini candidates failed; last error: {str(last)[:200]}")
 
 

@@ -98,8 +98,25 @@ experiments) and never drives a choice.
   penalty / scaled tree count and shown in the Trade Desk as a separate market-direction read with its validation
   skill. It is not blended into the stock forecast (stock-level stacking would be a new experiment). If nothing passes,
   the Trade Desk shows the market and macro readings as context with "no validated predictive skill (E19)".
+* **E20 classic market-regime rules** (added 2026-11-06 at the owner's request to integrate the rule sets of
+  `tradermonty/claude-trading-skills` (MIT); written before any E20 code or result). Date-level rule features from SPY and
+  QQQ daily bars, each evaluated causally on history up to the as-of session:
+  (a) IBD distribution days (close at least 0.2% below the previous close on higher volume; a day expires after 25 sessions
+  or once the index has risen 5% from its close using the post-day high): active counts over 5, 15 and 25 sessions and
+  the risk class NORMAL/CAUTION/HIGH/SEVERE (the skill's thresholds; SEVERE also when the index is below its 21-day EMA or
+  50-day average with 5+ days);
+  (b) O'Neil follow-through-day state (the skill's `rally_tracker.py`, vendored unchanged: correction of 3%+ with 3+ down
+  days, rally day 1 rule, follow-through on day 4-10 with a gain of at least 1.25% on higher volume, invalidation below
+  the swing low or the follow-through day's low), combined over SPY and QQQ as the skill does;
+  (c) power trend (21-day EMA above a rising 50-day average and price above the 21-day EMA).
+  Test on E19's design (one row per session, SPY's own label, same models, penalty selection, bootstrap, eligibility and
+  keep rule): R = rule block; comparisons M2 + R vs M2 (does it add to the deployed market read?) and R vs P (any skill on
+  its own?); placebo = R with whole rows permuted across dates (seed 11) must not pass vs P. Use: if M2 + R passes for the
+  logistic family (the deployed family) with its placebo passing, a new market read is refitted and frozen exactly as
+  D-031 (gate and evidence shown) and added to the forward test; otherwise the rule states are shown in the Trade Desk
+  as descriptive context labelled "no validated predictive skill (E20)". The rules are never traded on their own.
 * **Trial budget:** E11 <= 10 feature-set x model fits per horizon; E12 1 configuration x 5 seeds; E13 2 architectures;
-  E14 one blend search; E16 3 sets x 2 models per horizon; E19 6 sets x 2 models x 9 horizons (logistic: 5 penalties each). Every trial is counted for the deflated Sharpe ratio and PBO.
+  E14 one blend search; E16 3 sets x 2 models per horizon; E19 6 sets x 2 models x 9 horizons (logistic: 5 penalties each); E20 3 sets x 2 models x 9 horizons. Every trial is counted for the deflated Sharpe ratio and PBO.
 
 ## 5. Joint sealed evaluation (owner decision 2026-11-06)
 

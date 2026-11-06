@@ -44,6 +44,7 @@ class NexusPredictorV2:
         import lightgbm as lgb
         self.dir = Path(bundle_dir or latest_v2_bundle())
         self.meta = json.loads((self.dir / "bundle_meta.json").read_text(encoding="utf-8"))
+        self._ctx_cache: dict = {}
         self.weights = {h: self.meta["weights"][g] for g, hs in self.meta["groups"].items() for h in hs}
         comp = self.meta["components"]
         self.cols = comp["tabular_cols"]
@@ -132,7 +133,10 @@ class NexusPredictorV2:
         v1 = self._v1pred()
         daily, hourly, k = self._bars(ticker, mode, asof)
         asof_date = daily.date.iloc[k]
-        etf, spy, mk, gm, fr = self._context(mode, asof_date)
+        key = (mode, pd.Timestamp(asof_date))
+        if key not in self._ctx_cache:       # one context per session: identical for every ticker (500 per night)
+            self._ctx_cache[key] = self._context(mode, asof_date)
+        etf, spy, mk, gm, fr = self._ctx_cache[key]
         dec = decision_utc(asof_date)
         # v1 inputs (images, numeric, news, SEC off in live, rules) with the v2 fusion preprocessor's statistics
         row = {}

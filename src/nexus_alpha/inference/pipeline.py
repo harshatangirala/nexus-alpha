@@ -131,6 +131,24 @@ def yahoo_symbol(ticker: str) -> str:
 
 
 def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Live Yahoo bars. If NEXUS_LIVE_CACHE names a directory (set by the shadow forecaster for one New York evening),
+    the bars are cached there, so v1.1 and v2 forecast from identical bars with half the Yahoo requests. Errors are
+    never cached."""
+    import os
+    cache = os.environ.get("NEXUS_LIVE_CACHE")
+    if cache:
+        fd, fh = Path(cache) / f"{ticker}_daily.pkl", Path(cache) / f"{ticker}_hourly.pkl"   # exact round trip
+        if fd.exists() and fh.exists():
+            return pd.read_pickle(fd), pd.read_pickle(fh)
+    daily, hourly = _fetch_live_uncached(ticker)
+    if cache:
+        Path(cache).mkdir(parents=True, exist_ok=True)
+        daily.to_pickle(fd)
+        hourly.to_pickle(fh)
+    return daily, hourly
+
+
+def _fetch_live_uncached(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     import yfinance as yf
     ysym = yahoo_symbol(ticker)
     # Explicit start date: "3y" is not a valid Yahoo range and returns no rows (audit finding A-22).

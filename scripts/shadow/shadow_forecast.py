@@ -68,6 +68,16 @@ def main() -> None:
     a = ap.parse_args()
 
     bdir, rec = SH.verify_frozen(a.version)
+    # one bar cache per New York evening, shared by every version run that evening; older caches are removed
+    import shutil
+    from nexus_alpha import paths
+    croot = paths.ARTIFACTS / "live_cache"
+    tonight = pd.Timestamp.now(tz="America/New_York").date().isoformat()
+    for old in (croot.glob("*") if croot.exists() else []):
+        if old.is_dir() and old.name < (pd.Timestamp(tonight) - pd.Timedelta(days=3)).date().isoformat():
+            shutil.rmtree(old, ignore_errors=True)
+    if not a.dry_run:
+        os.environ["NEXUS_LIVE_CACHE"] = str(croot / tonight)
     out_dir = SH.SHADOW_ROOT / a.version / "forecasts"
     out_dir.mkdir(parents=True, exist_ok=True)
     tickers = a.tickers or sorted(ST.sample_index().ticker.unique())

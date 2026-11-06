@@ -78,7 +78,7 @@ def tabular_choice(final: bool = True):
         return e16["sets"][name], paths.ARTIFACTS / "predictions" / "e16", name, e16_id, e16["by_horizon"]
     # no E16: use E11's top carried rung predictions
     order = [s for s in e11["sets"] if not s.endswith("placebo")]
-    top = [s for s in order if set(e11["sets"][s]) == set(base)]
+    top = [s for s in order if set(e11["sets"][s]) - L.NEVER_CARRY == set(base)]
     return base, paths.ARTIFACTS / "predictions" / "e11", (top[0] if top else order[0]), e11_id, e11["by_horizon"]
 
 

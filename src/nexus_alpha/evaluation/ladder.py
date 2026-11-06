@@ -23,6 +23,8 @@ LGB_BASE = {"objective": "multiclass", "num_class": 3, "metric": "multi_logloss"
 GROUPS = {"intraday": ["1D"], "swing": [f"{h}D" for h in range(2, 21)], "long": ["3M", "6M", "1Y"]}
 # selection experiments (E11, E16) use these 9 horizons for compute (decision 2026-11-06 before any keep result);
 # the chosen tabular set is then fitted on all 23 horizons (E18)
+# calendar indices, not information (audit A-24, D-030): never carried forward even if their block is kept
+NEVER_CARRY = {"mkt_n", "gmd_data_year"}
 REP_HORIZONS = ["1D", "2D", "5D", "10D", "15D", "20D", "3M", "6M", "1Y"]
 
 
@@ -153,5 +155,6 @@ def carried_feature_set(experiments_dir) -> tuple[list[str], str]:
         for i in range(1, len(order)):
             if any(keep.get(f"{f}|{order[i]}") and plac.get(f) for f in ("lgbm", "logistic")):
                 cols += [c for c in sets[order[i]] if c not in sets[order[i - 1]]]
+        cols = [c for c in cols if c not in NEVER_CARRY]
         return cols, r.name
     raise FileNotFoundError("no completed E11 run")

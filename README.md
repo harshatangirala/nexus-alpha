@@ -109,7 +109,7 @@ Not in the repository, by licence: price data, chart caches, embeddings, article
 
 ## Run it
 
-See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md). In short: create the environment from `requirements-colab.txt`, `pip install -e .`, run `pytest`, then `streamlit run app/streamlit_app.py`. The data stages need the TriFrame data store, the SEC study outputs and a Hugging Face login with access to the private TriFrame repositories and the gated news corpus.
+See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md); for Google Colab see [`docs/COLAB.md`](docs/COLAB.md) (fundamentals and the E22/E23 reproduction run on a CPU runtime; the nightly forward test stays on the owner's PC). In short: create the environment from `requirements-colab.txt`, `pip install -e .`, run `pytest`, then `streamlit run app/streamlit_app.py`. The data stages need the TriFrame data store, the SEC study outputs and a Hugging Face login with access to the private TriFrame repositories and the gated news corpus.
 
 ## Governance
 

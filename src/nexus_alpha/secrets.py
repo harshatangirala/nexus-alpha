@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-NAMES = ("FRED_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY")
+NAMES = ("FRED_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY", "SEC_USER_AGENT")
 
 
 def load(files: str | None = None) -> list[str]:

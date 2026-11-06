@@ -98,3 +98,58 @@ sample sizes we have. A short-horizon (1D) long-short would lose money.
 **Deployed for measurement only (D-038).** `rank_score` (v2's frozen F0 LightGBM component, 1D-20D) is logged every
 night for all ~500 stocks. The forward scorer reports daily rank IC across the whole universe, roughly ten times more
 stocks per date than the development samples, which gives a far more precise IC estimate within weeks.
+
+## E22 fundamentals (pre-registered 2026-11-06, before any fundamentals data was downloaded or built)
+
+**Data.**
+* Source: SEC XBRL `companyfacts` (us-gaap and dei) for the 979-ticker source universe, using the owner's declared
+  User-Agent.
+* Seal: only facts **filed before 2023-01-03** are kept.
+* Point in time: a fact filed on date F is used for as-of sessions t >= F (the decision is at 09:00 New York on t+1,
+  after any filing dated F). For each concept and period, the value used is the latest one filed on or before t, so a
+  restatement counts only once it is public.
+* Quarterly values: 3-month facts directly; Q4 = fiscal year minus the 9-month year-to-date.
+* TTM: the sum of the last four consecutive quarters. Balance-sheet items: the latest instant on or before t.
+* Price: as-traded close, meaning the vendor's split-adjusted close times every later split factor (SEC study S03
+  corporate actions). Split factors carry no return information; they only undo the vendor's scaling.
+* Earnings surprise: SUE from the SEC study's S06 (seasonal random walk), by its public time.
+
+**31 ratios.** Yields rather than multiples, so negative earnings stay ordered.
+
+| Group | Ratios |
+|---|---|
+| Valuation (8) | earnings yield (TTM net income / market cap); sales yield; book-to-price; EBITDA/EV; FCF yield (CFO - capex); dividend yield; shareholder yield ((dividends + buybacks) / market cap); DCF value / price (fixed assumptions: FCF growth = TTM revenue growth clipped to [-5%, 15%] for 5 years, then 2.5%; discount 9%) |
+| Profitability (7) | gross, operating, net and EBITDA margins; ROE; ROA; ROIC (EBIT x (1 - 21%) / (debt + equity - cash)) |
+| Growth (5) | revenue, operating income and diluted EPS (TTM vs TTM four quarters earlier); asset growth; share issuance (diluted shares year on year) |
+| Leverage and liquidity (5) | debt/equity; net debt/EBITDA; interest coverage (EBIT / interest); current ratio; cash/assets |
+| Efficiency (2) | asset turnover; receivables / sales |
+| Quality and events (4) | accruals ((net income - CFO) / assets); Piotroski F-score (9 signals); Altman Z (original public formula); SUE |
+
+Also: days since the latest 10-Q/10-K, and a fundamentals-present flag.
+
+**Features.** Each ratio becomes its **within-session cross-sectional percentile** among the universe stocks that have
+it. Ranks are unit-free, robust to outliers and stable across regimes. Raw values are for the dashboard only. P/E,
+EV/EBITDA and the other multiples are also shown there.
+
+**Experiment.**
+* Rows: as-of 2009-2022. Blocks: train 2009-2015, inner 2016, valid 2017-18, test 2020-22 as a reused diagnostic.
+* Sets: B = F0 (80 v1.1 numeric features); B + FUND (the ranked ratios, days since filing, present flag).
+* Placebo: the FUND ranks permuted **across tickers within each as-of date**, which keeps the date mix and breaks the
+  stock link.
+* Models: LightGBM (E07 parameters, early stopping on inner) and multinomial logistic, through the E11 engine, on the
+  9 representative horizons.
+
+**Endpoints.**
+1. The log-loss keep rule (D-032 bootstrap and eligibility) for B + FUND vs B.
+2. The daily rank-IC keep rule (E21 metric and bootstrap) for B + FUND vs B.
+
+FUND is kept if either endpoint passes for a family whose placebo shows no gain on that endpoint. Both endpoints are
+reported, with the two-endpoint multiplicity disclosed.
+
+**Use.**
+* If kept, a v3 stock-model candidate (LightGBM, F0 + FUND) is refitted on 2009-2018, frozen as `v3_fund`, and added to
+  the forward test with nightly point-in-time fundamentals.
+* Whatever the result, the Trade Desk gains a fundamentals panel as a tool: all ratios and multiples with universe
+  percentiles, the three statements, an adjustable DCF, Piotroski and Altman.
+
+**Trial budget.** 3 sets x 2 models x 9 horizons x 2 endpoints.

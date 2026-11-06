@@ -34,7 +34,7 @@ def main() -> None:
     ap.add_argument("--rebuild-mkt", action="store_true")
     a = ap.parse_args()
     fr = pq.read_table(paths.ARTIFACTS / "samples" / "s500_frame.parquet").to_pandas()
-    fr = fr[[c for c in fr.columns if not c.startswith(("y_", "z_", "end_"))]]   # v1 labels replaced by v2 labels
+    fr = fr[[c for c in fr.columns if not c.startswith(("y_", "z_", "end_", "ret_"))]]   # v1 labels replaced by v2 labels (A-29: incl. ret_)
     fr["asof_date"] = pd.to_datetime(fr.asof_date)
     etf = EB.closes([t for t in CX.ETF_LIST if t in EB.available()])
     parts = []

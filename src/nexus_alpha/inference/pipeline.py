@@ -339,8 +339,11 @@ class NexusPredictor:
         else:
             raise ValueError("mode must be 'historical' or 'live'")
         asof_date = daily.date.iloc[k]
-        decision_utc = decision_time_utc(pd.DatetimeIndex([asof_date]))[0] if asof_date <= calendar().date.max() - pd.Timedelta(days=3) \
-            else (asof_date + pd.Timedelta(days=1, hours=14)).tz_localize("UTC")
+        if asof_date <= calendar().date.max() - pd.Timedelta(days=3):
+            decision_utc = decision_time_utc(pd.DatetimeIndex([asof_date]))[0]
+        else:   # beyond the market calendar: next business day, 09:00 New York, time-zone aware (audit A-30)
+            from .. import shadow as _SH
+            decision_utc = _SH.decision_utc_for(pd.Timestamp(asof_date))
         data_reasons = []
         if k < 252:
             data_reasons.append("fewer than 252 daily bars: indicators and structure are not warm")

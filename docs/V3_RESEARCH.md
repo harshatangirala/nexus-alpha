@@ -1,0 +1,60 @@
+# NEXUS Alpha v3 research (candidates beyond the frozen v1.1 / v2)
+
+v1.1, v2 and `market_e19` stay frozen and in the forward test. Anything here is a new candidate: pre-registered, selected
+on validation (2017-2018) only, with 2020-2022 as a reused diagnostic and the sealed period untouched.
+
+## Why v3 is about ranking (audit 2026-11-06, Six Sigma "Analyze")
+
+The pooled up-vs-down AUROC of v1.1 and v2 is about 0.50: they cannot say which way a stock goes. The same models do
+rank stocks against each other on the same date. Mean daily Spearman rank IC on validation (moving-block bootstrap 95%
+interval) for the selection-stage F0 LightGBM (E18):
+* 5D 0.019 [0.0005, 0.039];
+* 10D 0.020 [0.002, 0.038];
+* 20D 0.032 [0.003, 0.062].
+
+Frozen v2 on 2020-2022 is 0.014-0.028 (intervals touch 0). A cross-sectional rank IC is market-neutral by construction (a
+common market move changes no ranks), so this is skill at relative performance, the quantity a market-neutral book
+trades. The models were trained for 3-class direction, not for ranking.
+
+## E21 cross-sectional ranker (pre-registered 2026-11-06, before any E21 code or result)
+
+**Disclosure.** Written after the rank-IC diagnostic above, which measured existing models only.
+
+**Target.** For each as-of date, the cross-sectional rank of the stock's h-session return (close[t+h] / open[t+1] - 1)
+among that date's samples, mapped to a normal score (rank-Gaussianised); dates with fewer than 10 labelled samples are
+dropped.
+
+**Candidates.** Each objective is fitted on 2003-2015 with early stopping on inner 2016 and E07's LightGBM parameters:
+* R1: LightGBM regression on the rank-Gaussianised target, features F0 (the 80 v1.1 numeric features);
+* R2: R1 with F0 + `rel_*` (stock-vs-market beta, correlation, idiosyncratic volatility, relative strength, inferred
+  sector);
+* R3: LightGBM `lambdarank`, query = as-of date, relevance = within-date quintile (0-4), features F0 + `rel_*`.
+
+**Baseline.** B0: the existing selection-stage F0 LightGBM classifier score p_up - p_down (E18).
+
+**Horizons.** 1D, 5D, 10D, 20D, 3M. Groups: 1D | 5D-20D | 3M.
+
+**Metric.** Mean daily Spearman rank IC on validation. The interval is a moving-block bootstrap over months, with blocks
+of max(1, ceil(h/21)) months, 1000 draws, seed 11.
+
+**Keep rule.** A candidate beats B0 if the paired daily IC difference (candidate minus B0), averaged within each group,
+has a 95% lower bound above 0 in at least one group and an upper bound of at least 0 in every group. Among candidates
+that pass, the one with the highest validation mean IC over the five horizons is chosen. If none passes, B0 stays the
+ranking signal.
+
+**Economic diagnostic** (reported, not a selection criterion):
+* the within-date top-minus-bottom quintile spread of h-session returns (equal weight; 10 bps per leg round trip
+  deducted), mean and 95% interval;
+* on validation, and on 2020-2022 as a reused diagnostic.
+
+This is a signal spread, not a tradable backtest: positions overlap, and borrow and capacity are not modelled.
+
+**Use.** If a ranker is chosen (or B0 stays):
+* it is refitted on 2003-2018 with its selected tree count scaled by rows;
+* it is frozen as `ranker_v3`;
+* it is logged nightly in the forward test as daily cross-sectional ranks of the universe. The scorer reports daily
+  rank IC and quintile spread.
+
+No trading engine uses it until the forward test shows a positive IC.
+
+**Trial budget.** 3 candidates x 5 horizons, counted with the other experiments for deflation.

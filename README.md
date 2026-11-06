@@ -61,9 +61,19 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     2017-18 and 0.68 on 2020-22. It is frozen as `market_e19`, logged every evening in the forward test, and shown in the
     Trade Desk as a lean, because its 2020-22 probabilities were no better than the base rate.
   * **Screenshots (E17).** Gemini read every legend value of 57 real TradingView screenshots exactly to the cent.
-* **Sealed 2023+ evaluation:** it will be opened once, after v2 is frozen, scoring v1.1 and v2 together (owner decision
-  D-018). The plan is in [`docs/SEALED_EVALUATION_PLAN.md`](docs/SEALED_EVALUATION_PLAN.md) and is finalised at the v2
-  freeze.
+* **Sealed 2023+ evaluation: ready, not opened.** The scorer (`scripts/sealed/run_sealed_eval.py`, CPU, about 3-5
+  hours) passed its rehearsal on 2022:
+  * features exact;
+  * fresh chart embeddings at cosine >= 0.99997 against TriFrame's stored ones;
+  * v1.1 and v2 reproduce their stored predictions to 0.0006.
+
+  It scores v1.1, v2 and the E19 market read once. The owner opens it with the commands in
+  [`docs/SEALED_EVALUATION_PLAN.md`](docs/SEALED_EVALUATION_PLAN.md) section 7b.
+* **Market-regime rules and trading-process tools** from two MIT skill repositories (D-034):
+  * O'Neil/IBD rules were tested in E20: they add nothing to the market read, so they are shown as context only.
+  * The Trade Desk gained live headlines and 8-Ks, a drawdown circuit breaker, a pre-trade discipline gate and sizing.
+* **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
+  owner's one-time `/mcp` sign-in.
 * **Keys the owner sets** (environment variables, never committed):
   * `FRED_API_KEY` for ALFRED vintages;
   * `GEMINI_API_KEY` for the Trade Desk's LLM read.

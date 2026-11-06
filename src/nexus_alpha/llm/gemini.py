@@ -73,11 +73,11 @@ def _client():
     return genai.Client(api_key=api_key())
 
 
-def pick_model(client=None) -> str:
-    if os.environ.get("NEXUS_GEMINI_MODEL"):
-        return os.environ["NEXUS_GEMINI_MODEL"]
+def candidate_models(client=None) -> list[str]:
+    """Flash models this key can call, best first: stable before preview, newer before older. NEXUS_GEMINI_MODEL, if
+    set, goes first. Aliases without a version (e.g. gemini-flash-latest) are skipped because they move silently."""
     client = client or _client()
-    best, best_key = None, (-1, -1.0)
+    ranked = []
     for m in client.models.list():
         name = (getattr(m, "name", "") or "").split("/")[-1]
         acts = getattr(m, "supported_actions", None) or []
@@ -86,15 +86,40 @@ def pick_model(client=None) -> str:
         if "flash" not in name or any(x in name for x in ("lite", "tts", "image", "embed", "live", "audio", "exp")):
             continue
         v = re.search(r"gemini-(\d+(?:\.\d+)?)", name)
-        if not v:                                   # aliases such as gemini-flash-latest move silently: skip
+        if not v:
             continue
-        stable = 0 if "preview" in name else 1      # prefer stable releases; previews change and have tighter quotas
-        key = (stable, float(v.group(1)))
-        if key > best_key:
-            best, best_key = name, key
-    if not best:
+        ranked.append(((0 if "preview" in name else 1), float(v.group(1)), name))
+    out = [n for _, _, n in sorted(ranked, reverse=True)]
+    if os.environ.get("NEXUS_GEMINI_MODEL"):
+        out = [os.environ["NEXUS_GEMINI_MODEL"]] + [n for n in out if n != os.environ["NEXUS_GEMINI_MODEL"]]
+    if not out:
         raise RuntimeError("no Gemini flash model available to this key; set NEXUS_GEMINI_MODEL")
-    return best
+    return out
+
+
+def pick_model(client=None) -> str:
+    return candidate_models(client)[0]
+
+
+TRANSIENT = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "500", "INTERNAL", "DEADLINE")
+
+
+def generate(parts, cfg, client=None, tries_per_model: int = 2, max_models: int = 4):
+    """generate_content with fallback: brief backoff retries on transient errors, then the next candidate model.
+    Returns (response, model_name)."""
+    import time
+    client = client or _client()
+    last = None
+    for model in candidate_models(client)[:max_models]:
+        for k in range(tries_per_model):
+            try:
+                return client.models.generate_content(model=model, contents=parts, config=cfg), model
+            except Exception as e:
+                last = e
+                if not any(t in str(e) for t in TRANSIENT):
+                    raise
+                time.sleep(5 * (k + 1))
+    raise RuntimeError(f"all Gemini candidates failed with transient errors; last: {str(last)[:200]}")
 
 
 def analyze(ticker: str, trade: str, decision_utc: str, texts: list[dict], images: list[tuple[str, bytes, str]],
@@ -102,7 +127,6 @@ def analyze(ticker: str, trade: str, decision_utc: str, texts: list[dict], image
     """texts: [{headline/text, published_utc, source}]; images: [(slot 'W'/'D'/'H', bytes, mime)]."""
     from google.genai import types
     client = _client()
-    model = pick_model(client)
     body = "\n".join(f"[TEXT {i}] published {t.get('published_utc', 'unknown')} source {t.get('source', 'user')}:\n"
                      f"{(t.get('headline') or '')}\n{(t.get('text') or '')[:6000]}" for i, t in enumerate(texts))
     parts = [PROMPT.format(ticker=ticker, trade=trade, decision=decision_utc, texts=body or "(no texts provided)")]
@@ -110,7 +134,7 @@ def analyze(ticker: str, trade: str, decision_utc: str, texts: list[dict], image
         parts.append(f"[CHART slot={slot}]")
         parts.append(types.Part.from_bytes(data=data, mime_type=mime))
     cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=SCHEMA, temperature=0.2)
-    resp = client.models.generate_content(model=model, contents=parts, config=cfg)
+    resp, model = generate(parts, cfg, client)
     out = json.loads(resp.text)
     out["_model"] = model
     if log:
@@ -123,4 +147,27 @@ def analyze(ticker: str, trade: str, decision_utc: str, texts: list[dict], image
         p = paths.artifact("llm_reads", f"{dt.date.today().isoformat()}.jsonl")
         with open(p, "a", encoding="utf-8") as f:
             f.write(json.dumps(rec) + "\n")
+    return out
+
+
+LEGEND_SCHEMA = {"type": "object", "properties": {"charts": {"type": "array", "items": {"type": "object", "properties": {
+    "slot": {"type": "string"}, "ticker_shown": {"type": "string"}, "timeframe_shown": {"type": "string"},
+    "legend_open": {"type": "number"}, "legend_high": {"type": "number"}, "legend_low": {"type": "number"},
+    "legend_close": {"type": "number"}}, "required": ["slot"]}}}, "required": ["charts"]}
+LEGEND_PROMPT = ("Each image is a stock chart screenshot, labelled by the [CHART slot=...] line before it. For each chart, "
+                 "read the ticker, the timeframe and the OPEN, HIGH, LOW and CLOSE printed in the chart's legend (the "
+                 "O/H/L/C values at the top). Copy the numbers exactly as printed. Omit any value you cannot read; never "
+                 "estimate from the candles.")
+
+
+def read_legends(images: list[tuple[str, bytes, str]]) -> dict:
+    """Legend-only read (small prompt, few tokens), with model fallback on transient errors (free-tier quotas)."""
+    from google.genai import types
+    parts = [LEGEND_PROMPT]
+    for slot, data, mime in images:
+        parts += [f"[CHART slot={slot}]", types.Part.from_bytes(data=data, mime_type=mime)]
+    cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=LEGEND_SCHEMA, temperature=0)
+    r, model = generate(parts, cfg)
+    out = json.loads(r.text)
+    out["_model"] = model
     return out

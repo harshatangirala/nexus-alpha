@@ -8,7 +8,6 @@ Also reported on the subset of rows that have news.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import warnings
 from pathlib import Path
@@ -27,19 +26,7 @@ from nexus_alpha.targets_v2 import HORIZONS_V2  # noqa: E402
 
 
 def carried_set() -> tuple[list[str], str]:
-    runs = sorted((REPO / "experiments").glob("*_e11_macro_ladder_*"))
-    for r in reversed(runs):
-        man = json.loads((r / "manifest.json").read_text(encoding="utf-8"))
-        if man.get("status") == "COMPLETED":
-            m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
-            sets, keep, plac = m["sets"], m["keep_rule_decisions"], m["placebo_shows_no_gain"]
-            order = [k for k in sets if not k.endswith("placebo")]
-            cols = list(sets["F0"])
-            for i in range(1, len(order)):
-                if any(keep.get(f"{f}|{order[i]}") and plac.get(f) for f in ("lgbm", "logistic")):
-                    cols += [c for c in sets[order[i]] if c not in sets[order[i - 1]]]
-            return cols, r.name
-    raise SystemExit("no completed E11 run: run scripts/experiments/e11_macro_ladder.py first")
+    return L.carried_feature_set(REPO / "experiments")
 
 
 def main() -> None:

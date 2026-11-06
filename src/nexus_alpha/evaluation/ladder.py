@@ -119,3 +119,23 @@ def keep_decision(gains: dict, mdl: str, new: str, old: str) -> bool:
     g = [gains.get(f"{mdl}|{new}_vs_{old}|valid|{gg}") for gg in GROUPS]
     g = [x for x in g if x]
     return bool(g) and any(x["ci95"][0] > 0 for x in g) and all(x["ci95"][1] >= 0 for x in g)
+
+
+def carried_feature_set(experiments_dir) -> tuple[list[str], str]:
+    """Feature columns carried forward by the latest completed E11 run: F0 plus every block that passed the keep rule
+    for a model family whose date-permutation placebo also passed (docs/V2_ARCHITECTURE.md, E11 clarification)."""
+    import json
+    from pathlib import Path
+    for r in sorted(Path(experiments_dir).glob("*_e11_macro_ladder_*"), reverse=True):
+        man = json.loads((r / "manifest.json").read_text(encoding="utf-8"))
+        if man.get("status") != "COMPLETED":
+            continue
+        m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
+        sets, keep, plac = m["sets"], m["keep_rule_decisions"], m["placebo_shows_no_gain"]
+        order = [k for k in sets if not k.endswith("placebo")]
+        cols = list(sets["F0"])
+        for i in range(1, len(order)):
+            if any(keep.get(f"{f}|{order[i]}") and plac.get(f) for f in ("lgbm", "logistic")):
+                cols += [c for c in sets[order[i]] if c not in sets[order[i - 1]]]
+        return cols, r.name
+    raise FileNotFoundError("no completed E11 run")

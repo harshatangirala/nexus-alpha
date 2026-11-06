@@ -29,6 +29,16 @@ def latest_v2_bundle() -> Path | None:
     return c[-1] if c else None
 
 
+def decision_utc(asof_date: pd.Timestamp) -> pd.Timestamp:
+    """09:00 New York on the next session (D-003), as in v1 and in training: the market calendar inside its range,
+    otherwise the shadow test's rule (next business day, time-zone aware)."""
+    from .. import shadow as SH
+    from ..data.calendar import calendar, decision_time_utc
+    if asof_date <= calendar().date.max() - pd.Timedelta(days=3):
+        return decision_time_utc(pd.DatetimeIndex([asof_date]))[0]
+    return SH.decision_utc_for(pd.Timestamp(asof_date))
+
+
 class NexusPredictorV2:
     def __init__(self, bundle_dir: Path | None = None):
         import lightgbm as lgb
@@ -123,7 +133,7 @@ class NexusPredictorV2:
         daily, hourly, k = self._bars(ticker, mode, asof)
         asof_date = daily.date.iloc[k]
         etf, spy, mk, gm, fr = self._context(mode, asof_date)
-        dec = (asof_date + pd.Timedelta(days=1, hours=14)).tz_localize("UTC")
+        dec = decision_utc(asof_date)
         # v1 inputs (images, numeric, news, SEC off in live, rules) with the v2 fusion preprocessor's statistics
         row = {}
         v1.b.raw_num = None

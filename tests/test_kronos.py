@@ -95,3 +95,31 @@ def test_sampler_parity_cache_seeding_with_vendored_predictor():
     pair = KE.sample_paths(model, tok, [c, c], [99, 7], 4, H, mc)
     assert np.allclose(pair[1:2], b, rtol=1e-5)                               # independent of the batch
     assert not np.allclose(pair[0], pair[1])                                  # different seeds, different paths
+
+
+@pytest.mark.skipif(not _weights_present(), reason="Kronos weights not downloaded (scripts/kronos/fetch_weights.py)")
+def test_flat_bundle_loader_equals_from_pretrained():
+    # the frozen kronos_zs bundle loads from top-level files (all hashed by its record): same weights, same outputs
+    import torch
+    from nexus_alpha.kronos import weights as W
+    torch.set_num_threads(2)
+    m1, t1, mc = W.load("Kronos-mini")
+    r = W.root()
+    m2, t2 = W.load_files(r / "Kronos-mini" / "config.json", r / "Kronos-mini" / "model.safetensors",
+                          r / "Kronos-Tokenizer-2k" / "config.json", r / "Kronos-Tokenizer-2k" / "model.safetensors")
+    c = KE.context(_bars(n=200, seed=5), 150, 64, 5)
+    a = KE.sample_paths(m1, t1, [c], [3], 4, 5, mc)
+    b = KE.sample_paths(m2, t2, [c], [3], 4, 5, mc)
+    assert np.array_equal(a, b)
+
+
+def test_one_configuration_everywhere():
+    # E24 pre-registered a single configuration: the dashboard service, E24 and the freeze script must agree
+    import sys
+    from pathlib import Path
+    from nexus_alpha.kronos import service as KS
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "experiments"))
+    import e24_kronos_zero_shot as E24
+    assert KS.CONFIG == {"model": E24.MODEL, "lookback": E24.LOOKBACK, "paths": E24.N_PATHS, "T": E24.T,
+                         "top_p": E24.TOP_P, "horizon_sessions": E24.HMAX}
+    assert KS.HORIZONS == E24.HORIZONS

@@ -42,7 +42,7 @@ def stock_prior(frame: str, horizons: dict, blocks: list[str]) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--kind", choices=["v1", "v2", "market", "fund"], default="v1")
+    ap.add_argument("--kind", choices=["v1", "v2", "market", "fund", "kronos"], default="v1")
     ap.add_argument("--version", required=True)
     ap.add_argument("--bundle", required=True)
     ap.add_argument("--train-blocks", nargs="+", default=["train", "inner", "valid"])
@@ -59,7 +59,7 @@ def main() -> None:
     elif a.kind == "v2":
         horizons, label_version = HORIZONS_V2, LABEL_VERSION_V2
         prior = stock_prior("v2_frame.parquet", horizons, a.train_blocks)
-    elif a.kind == "fund":   # fundamentals ranker (D-042): its own horizons; prior over its 2009-2018 refit rows
+    elif a.kind in ("fund", "kronos"):   # v3_fund (D-042) / kronos_zs (D-043): horizons and prior from the bundle
         horizons, label_version = meta["horizons"], meta["label_version"]
         prior = meta["refit_class_prior"]
         a.train_blocks = ["train", "inner", "valid"]

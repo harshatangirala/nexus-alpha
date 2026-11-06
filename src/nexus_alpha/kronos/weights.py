@@ -70,6 +70,19 @@ def verify(name: str, expected: dict | None = None) -> Path:
     return d
 
 
+def load_files(model_cfg: Path, model_st: Path, tok_cfg: Path, tok_st: Path, device: str = "cpu"):
+    """Build Kronos and its tokenizer from explicit files (a frozen bundle keeps them as top-level files, so every file
+    is covered by the frozen record's hashes). Same result as from_pretrained: config kwargs, then a strict state-dict
+    load of the safetensors weights."""
+    from safetensors.torch import load_file
+    from .vendor import Kronos, KronosTokenizer
+    model = Kronos(**json.loads(Path(model_cfg).read_text(encoding="utf-8")))
+    model.load_state_dict(load_file(str(model_st)), strict=True)
+    tok = KronosTokenizer(**json.loads(Path(tok_cfg).read_text(encoding="utf-8")))
+    tok.load_state_dict(load_file(str(tok_st)), strict=True)
+    return model.to(device).eval(), tok.to(device).eval()
+
+
 def load(name: str, device: str = "cpu", expected: dict | None = None):
     """(model, tokenizer, max_context) in eval mode, hash-checked."""
     from .vendor import Kronos, KronosTokenizer

@@ -489,6 +489,85 @@ def _fundamentals_section(tick, mode, asof) -> None:
     st.caption(_e22_note())
 
 
+@st.cache_resource(show_spinner="Loading Kronos-small (about 25M parameters, CPU)...")
+def _kronos_model():
+    from nexus_alpha.kronos import service as KS
+    return KS.model()
+
+
+@st.cache_data(ttl=6 * 3600, show_spinner="Sampling 32 Kronos paths...")
+def _kronos_run(ticker: str, mode: str, asof: str):
+    from nexus_alpha.kronos import service as KS
+    try:
+        if mode == "historical":
+            from nexus_alpha.data import bars as B
+            d = B.read_daily(ticker)
+            d = d[d.date <= pd.Timestamp(asof)]
+        else:
+            from nexus_alpha.inference.pipeline import fetch_live
+            d = fetch_live(ticker)[0]
+        _kronos_model()
+        return KS.forecast(ticker, d)
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}"}
+
+
+def _kronos_status() -> str:
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    runs = sorted(root.joinpath("experiments").glob("*_e24_kronos_zero_shot_*"))
+    if not runs:
+        return "E24 (the contaminated 2017-18 check) has not been scored yet."
+    m = json.loads((runs[0] / "metrics.json").read_text(encoding="utf-8"))
+    frozen = root.joinpath("registry", "frozen_models", "kronos_zs.json").exists()
+    return ("E24: the necessary condition was " + ("met" if m.get("necessary_condition_met") else "NOT met") +
+            " on 2017-18 (inside Kronos's training data, so this is not evidence of skill). " +
+            ("Kronos is in the nightly forward test as kronos_zs; it is shown as a signal only if it passes the "
+             "pre-registered forward criterion." if frozen else "Kronos is not in the forward test."))
+
+
+def _kronos_section(tick, mode, asof) -> None:
+    import numpy as np
+    st.subheader("4d. Kronos foundation-model paths (zero-shot, analysis only)")
+    st.caption("Kronos (MIT, AAAI 2026) samples future daily candles from the last 400 bars. Its pre-training data "
+               "includes US daily stock bars from 2000 to June 2024, so before July 2024 any output can reflect memory "
+               "of what happened. It is never an input of the NEXUS models. " + _kronos_status())
+    key = f"kronos_{tick}_{mode}_{asof}"
+    if not st.button("Run Kronos for this stock", key="kronos_go"):
+        if key not in st.session_state:
+            return
+    k = st.session_state.get(key) or _kronos_run(tick, mode, str(pd.Timestamp(asof).date()) if mode == "historical"
+                                                 else str(pd.Timestamp.now().date()))
+    st.session_state[key] = k
+    if not k or k.get("error"):
+        st.info(f"Kronos unavailable for {tick}: {(k or {}).get('error', 'fewer than 400 daily bars')}")
+        return
+    if k["in_pretraining"]:
+        st.warning(f"As-of {k['asof'].date()} is inside Kronos's pre-training period (to June 2024): treat this as "
+                   "an in-sample illustration, not a forecast.")
+    import plotly.graph_objects as go
+    closes = k["paths"][:, :, 3]
+    q10, q50, q90 = (np.quantile(closes, q, axis=0) for q in (0.1, 0.5, 0.9))
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=k["history"].date, y=k["history"].close, name="close", line=dict(color="#334155")))
+    for j in range(min(8, closes.shape[0])):
+        fig.add_trace(go.Scatter(x=k["dates"], y=closes[j], line=dict(width=0.6, color="rgba(37,99,235,0.25)"),
+                                 showlegend=False, hoverinfo="skip"))
+    fig.add_trace(go.Scatter(x=k["dates"], y=q90, line=dict(width=0), showlegend=False, hoverinfo="skip"))
+    fig.add_trace(go.Scatter(x=k["dates"], y=q10, fill="tonexty", fillcolor="rgba(37,99,235,0.15)", line=dict(width=0),
+                             name="10-90% of 32 paths"))
+    fig.add_trace(go.Scatter(x=k["dates"], y=q50, name="median path", line=dict(color="#2563eb")))
+    fig.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10), legend=dict(orientation="h"))
+    st.plotly_chart(fig, width="stretch")
+    rows = [{"horizon": h, "P(down)": f"{o['p'][0]:.0%}", "P(sideways)": f"{o['p'][1]:.0%}", "P(up)": f"{o['p'][2]:.0%}",
+             "mean return": f"{o['ret_mean']:+.2%}", "10%-90% return": f"{o['ret_q10']:+.1%} .. {o['ret_q90']:+.1%}"}
+            for h, o in k["probs"].items()]
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+    st.caption("Classes by the NEXUS label rule on each path (entry at the next open; sideways within 0.5 sigma sqrt(h), "
+               "at least 10 bp). 32 paths give probabilities in steps of about 3%; they are smoothed by 0.5 per class.")
+
+
 def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     st.header("Trade Desk")
     st.caption("Pick the trade, add up to three chart screenshots (weekly, daily, hourly) and 1-10 texts. The model uses "
@@ -607,6 +686,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     _market_read_section(mode, asof)
     _regime_section(mode, asof)
     _fundamentals_section(tick, mode, asof)
+    _kronos_section(tick, mode, asof)
 
     st.subheader("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]

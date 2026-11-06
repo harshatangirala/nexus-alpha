@@ -45,6 +45,16 @@ def main() -> None:
     ap.add_argument("--end", default="2022-12")
     ap.add_argument("--include-sealed", action="store_true")
     a = ap.parse_args()
+    run(a.start, a.end, a.include_sealed)
+
+
+def run(start: str, end: str, include_sealed: bool = False) -> None:
+    """Months on/after the seal only inside the opened sealed evaluation (the gate is process-local, so a separate
+    command-line process can never fetch them)."""
+    if include_sealed:
+        from nexus_alpha import seal
+        seal.require_open("ETF minute bars on/after the seal")
+    a = argparse.Namespace(start=start, end=end, include_sealed=include_sealed)
     last_dev = (SEAL_DATE - pd.offsets.MonthBegin(1)).strftime("%Y-%m")
     end = a.end if a.include_sealed else min(a.end, last_dev)
     out_dir = paths.ARTIFACTS / "raw" / "etf_1m"

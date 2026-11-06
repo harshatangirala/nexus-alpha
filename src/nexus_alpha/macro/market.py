@@ -51,6 +51,30 @@ def build_dev_store(start: str = "2000-01-01") -> pd.DataFrame:
     return out
 
 
+STORE_FULL = "macro/yahoo_market_daily_with_sealed.parquet"
+
+
+def build_full_store(start: str = "2000-01-01") -> pd.DataFrame:
+    """Every series to today, including the sealed period: only inside the opened sealed evaluation."""
+    from .. import seal
+    seal.require_open("Yahoo market series on/after the seal")
+    frames = []
+    for sym, name in YAHOO_SERIES.items():
+        d = _download(sym, start, None)
+        d.insert(0, "series", name)
+        frames.append(d)
+    out = pd.concat(frames, ignore_index=True)
+    out.to_parquet(paths.artifact(STORE_FULL), index=False)
+    return out
+
+
+def load_full() -> pd.DataFrame:
+    from .. import seal
+    seal.require_open("Yahoo market series on/after the seal")
+    d = pd.read_parquet(paths.ARTIFACTS / STORE_FULL)
+    return d.pivot_table(index="date", columns="series", values="close").sort_index()
+
+
 def load_dev() -> pd.DataFrame:
     d = pd.read_parquet(paths.ARTIFACTS / STORE)
     d = d[d.date < SEAL_DATE]

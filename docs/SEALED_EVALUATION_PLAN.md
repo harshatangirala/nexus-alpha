@@ -17,6 +17,9 @@ Owner decision D-018: the seal is opened **once**, after v2 is frozen, scoring v
   * No NEXUS model, feature choice or threshold has been fitted, tuned or selected on any 2023+ row; the read-time seal
     enforced this (`src/nexus_alpha/seal.py`).
 * Only the forward shadow test (`docs/FORWARD_SHADOW_TEST.md`) is fully clean.
+* Data fetched at opening (inside the opened process only): ETF minute bars from 2023-01 (same Hugging Face source,
+  built into `artifacts/etf_sealed/`), Yahoo market series to date, and ALFRED vintages released after the seal (owner's
+  FRED key). Article text for post-seal articles is streamed from the same news corpus.
 * A null result here is informative. A positive result is encouraging but must still be confirmed forward.
 
 ## 2. What is scored
@@ -39,8 +42,11 @@ E15 for v2) are used unchanged.
 * As-of sessions run from 2023-01-03 to the last session whose label window for that horizon ends on or before the last
   bar in the source files. The end date is read once, at opening, and is reported.
 * Universe: the same 500 survivor stocks as development. This is survivorship-biased, as in development, and is stated.
-* Sample design: TriFrame's s500 rule, about one as-of date every 10 sessions per stock with staggered offsets, continued
-  from each stock's last development offset. A second, denser read (every session) is reported for the backtest only.
+* Sample design: every 10th daily bar of each stock's own series after its last development as-of date
+  (`nexus_alpha.sealed.frame.continue_schedule`). This is TriFrame's s500 stepping: 98.3% of development gaps are exactly
+  10 own bars, and the rule reproduces 97.2% of the actual 2022 development samples (11,016 of 11,334) when continued
+  from 2021. The backtests use these same rows, as the development backtests did (no denser read).
+* The E19 market read is scored on every session of the period, with labels from SPY's own bars.
 * Labels: the training label rule unchanged (`targets.py` for v1.1, `targets_v2.py` for v2).
 
 ## 4. Inputs, built once after the unlock, by code frozen before it
@@ -60,8 +66,9 @@ Every builder runs from the frozen commit. The number of sealed rows returned is
 
 **Primary** (one per horizon group, for each model):
 mean log-loss gain against the training class prior, averaged over the group's horizons (v1.1: 1D; 2D-20D; 1M. v2: 1D;
-2D-20D; 3M-1Y). The 95% CI comes from a month-block bootstrap (1000 resamples, seed 11). Holm correction is applied
-across the three groups per model.
+2D-20D; 3M-1Y). The 95% CI comes from a moving-block bootstrap over calendar months with blocks of max(1, ceil(h/21))
+months (a group uses its longest horizon's length; the D-032 rule), 1000 draws, seed 11. Holm correction is applied to
+the one-sided bootstrap p-values across the three groups per model. Implemented in `nexus_alpha.sealed.metrics`.
 
 **Key secondary:**
 * Up-vs-down AUROC per horizon, with month-block bootstrap CI. This is the direction-skill question.
@@ -91,9 +98,16 @@ across the three groups per model.
 
 ## 7. Execution protocol
 
-1. At v2 freeze, finalise this file (section 8), commit it, and commit the scorer `scripts/sealed/run_sealed_eval.py`.
-2. Write the frozen config `governance/sealed_eval_config.json`. It holds the commit, this plan's SHA-256, both bundle
-   record hashes, the scorer's SHA-256 and the planned outputs.
+1. The scorer is `scripts/sealed/run_sealed_eval.py` with `src/nexus_alpha/sealed/` and `scripts/sealed/*.py`. Before
+   opening it must pass its rehearsal on development year 2022 (`--rehearsal 2022` and `scripts/sealed/rehearse.py`):
+   * rebuilt features must equal the development frame;
+   * chart embeddings must match TriFrame's stored ones (cosine);
+   * v1.1 and v2 probabilities must reproduce the stored E08/E14 predictions.
+
+   Results are in `reports/verification/sealed_rehearsal_2022.json`.
+2. `--write-config` writes the frozen config `governance/sealed_eval_config.json`. It holds the commit, this plan's
+   SHA-256, the three frozen-record hashes and the scorer's SHA-256 (over every scorer file), and prints the config's
+   SHA-256.
 3. **The owner**, in their own terminal, sets:
    * `NEXUS_HOLDOUT_CONFIG` to that file;
    * `NEXUS_HOLDOUT_UNLOCK` to its SHA-256.
@@ -113,6 +127,6 @@ across the three groups per model.
 | v2 bundle id and record SHA-256 | `20261106T142918_e14_blend_freeze_v2_3298d4`; `c7924d7481329e84f07f3136060dd7c5352cd25e998cd46d73f50f5141a86679` |
 | market_e19 record SHA-256 | `663b22581855c91e8d64cb79853033f87f7762103b212f82eae2589c908c5136` |
 | Code commit at the v2 freeze | recorded in `registry/frozen_models/v2.json` (`code_commit_at_freeze`) |
-| Scorer SHA-256 | open: written and committed before opening |
+| Scorer SHA-256 | recorded by `--write-config` in `governance/sealed_eval_config.json` (after the rehearsal passes) |
 | Trial count for the deflated Sharpe ratio | policy trials as recorded by each frozen backtest (E15: 50 on 2019), plus the 26 completed experiment runs listed in `experiments/` at freeze |
-| Embedding route (CPU / Colab) | open: owner's choice |
+| Embedding route (CPU / Colab) | **CPU** (owner rule: CPU if it fits in 12 hours; measured 16.5 images/s, about 2.4 h for about 142,500 images; D-035) |

@@ -34,6 +34,25 @@ def dev_date_features(rebuild: bool = False) -> pd.DataFrame:
     return f
 
 
+def period_date_features(beyond_seal: bool) -> pd.DataFrame:
+    """dev_date_features' computation from the sources the current gate allows: development (cached) or, inside the
+    opened sealed evaluation, the sealed-inclusive ETF bars and Yahoo series (never cached)."""
+    if not beyond_seal:
+        return dev_date_features()
+    from .. import seal
+    from ..data import etf_bars as EB
+    from ..data.calendar import calendar
+    seal.require_open("market context on/after the seal")
+    cal = calendar()
+    early = set(cal.date[cal.early_close.astype(bool)])
+    etf = EB.closes([t for t in ETF_LIST if t in EB.available()])
+    spy_d = EB.read_daily("SPY")
+    spy_h = rth_hourly(EB.read_hourly("SPY"), early)
+    f = MF.date_features(etf, spy_d, spy_h, MK.load_full())
+    f.index.name = "date"
+    return f
+
+
 def _yahoo_daily(sym: str, start: str) -> pd.DataFrame:
     import yfinance as yf
     d = yf.Ticker(sym).history(start=start, auto_adjust=False, actions=False)

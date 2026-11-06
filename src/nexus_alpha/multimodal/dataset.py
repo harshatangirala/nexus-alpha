@@ -52,7 +52,10 @@ def load_tables() -> pd.DataFrame:
 
 
 def build(fr: pd.DataFrame, train_mask: np.ndarray, modalities=ALL_MODALITIES, backbone: str = "convnext_tiny",
-          pca_k: int = 64, pre: Preprocessor | None = None) -> tuple[ModalityData, Preprocessor]:
+          pca_k: int = 64, pre: Preprocessor | None = None,
+          embeddings: dict | None = None) -> tuple[ModalityData, Preprocessor]:
+    """embeddings: freshly computed {view: (n, dim)} for rows without stored chart embeddings (the sealed evaluation);
+    they pass through the same frozen view transform as stored ones. Only with a fitted `pre`."""
     fit = pre is None
     x33 = [c for c in fr.columns if c.startswith("x_")]
     if fit:
@@ -67,10 +70,14 @@ def build(fr: pd.DataFrame, train_mask: np.ndarray, modalities=ALL_MODALITIES, b
     if img_views:
         if fit:
             pre.vpca = ViewPCA(backbone, ("W", "D", "H"), pca_k).fit(fr.row.to_numpy()[rows_fit])
-        Z = pre.vpca.transform(fr.row.to_numpy())
+        if embeddings is not None:
+            assert not fit, "fresh embeddings need a fitted preprocessor"
+            Zv = pre.vpca.transform_embeddings({v: embeddings[v] for v in img_views})
+        else:
+            Z = pre.vpca.transform(fr.row.to_numpy())
+            Zv = {v: Z[[c for c in Z.columns if f"_{v}_" in c]].to_numpy(np.float32) for v in img_views}
         for v in img_views:
-            cols = [c for c in Z.columns if f"_{v}_" in c]
-            x[f"img_{v}"] = pre._std(f"img_{v}", Z[cols].to_numpy(np.float32), rows_fit)
+            x[f"img_{v}"] = pre._std(f"img_{v}", Zv[v], rows_fit)
             need = {"W": 42, "D": 51, "H": 56}[v]                      # same >= 40%-of-window rule as inference (A-03)
             present = (fr[f"n_valid_{v}"].to_numpy() >= need).astype(np.float32) if f"n_valid_{v}" in fr else np.ones(len(fr), np.float32)
             x[f"img_{v}"] *= present[:, None]

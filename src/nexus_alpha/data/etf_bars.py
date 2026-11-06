@@ -17,6 +17,8 @@ SECTORS = ["XLK", "XLF", "XLE", "XLV", "XLY", "XLP", "XLI", "XLB", "XLU"]   # th
 
 
 def _p(tf: str, t: str):
+    if _seal.is_open() and (paths.ARTIFACTS / "etf_sealed" / tf / f"{t}.parquet").exists():
+        return paths.ARTIFACTS / "etf_sealed" / tf / f"{t}.parquet"      # built inside the opened evaluation only
     return paths.ARTIFACTS / "etf" / tf / f"{t}.parquet"
 
 

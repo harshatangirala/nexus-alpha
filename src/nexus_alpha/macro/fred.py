@@ -32,6 +32,7 @@ SERIES = {
     "NFCI": ("nfci", "level_and_diff4"), "FEDFUNDS": ("fedfunds", "level_and_diff12"),
 }
 STORE = "macro/alfred_vintages.parquet"
+STORE_FULL = "macro/alfred_vintages_with_sealed.parquet"     # written only by the sealed evaluation (gate open)
 
 
 def have_key() -> bool:
@@ -83,6 +84,17 @@ def build_store() -> pd.DataFrame:
     d = d[d.realtime_start < SEAL_DATE]
     d.loc[d.realtime_end > SEAL_DATE, "realtime_end"] = pd.Timestamp("2262-04-11")
     d.to_parquet(paths.artifact(STORE), index=False)
+    return d
+
+
+def build_store_full() -> pd.DataFrame:
+    """All vintages including those released on/after the seal: only inside the opened sealed evaluation."""
+    from .. import seal
+    seal.require_open("ALFRED vintages released after the seal")
+    if not have_key():
+        raise RuntimeError("FRED_API_KEY is not set (owner-held key file via NEXUS_ENV_FILES)")
+    d = pd.concat([fetch_vintages(s) for s in SERIES], ignore_index=True)
+    d.to_parquet(paths.artifact(STORE_FULL), index=False)
     return d
 
 

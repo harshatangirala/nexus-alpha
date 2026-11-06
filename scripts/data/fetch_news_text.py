@@ -22,23 +22,23 @@ REPO = Path(__file__).resolve().parents[2]
 DATASET = "Brianferrell787/financial-news-multisource"
 
 
-def fetch_shard(args, attempts: int = 4):
+def fetch_shard(args, attempts: int = 4, out_dir=None):
     """Retry a shard on network errors; a shard that still fails is reported, not fatal (re-run to resume)."""
     last = None
     for i in range(attempts):
         try:
-            return _fetch_shard(args)
+            return _fetch_shard(args, out_dir)
         except Exception as e:                       # network timeouts are expected on a home connection
             last = e
             time.sleep(5 * (i + 1))
     return args[1], args[2], f"FAILED after {attempts} attempts: {type(last).__name__}", 0
 
 
-def _fetch_shard(args):
+def _fetch_shard(args, out_dir=None):
     rev, subset, shard, rows_by_rg = args
     from huggingface_hub import HfFileSystem
     from nexus_alpha.data import news as N
-    out_p = REPO / "artifacts" / "news" / "text" / f"{subset}__{shard:03d}.parquet"
+    out_p = Path(out_dir or REPO / "artifacts" / "news" / "text") / f"{subset}__{shard:03d}.parquet"
     if out_p.exists():
         return subset, shard, "cached", 0
     fs = HfFileSystem()

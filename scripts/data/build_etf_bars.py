@@ -30,7 +30,7 @@ from nexus_alpha.data.calendar import calendar  # noqa: E402
 from nexus_alpha.seal import SEAL_DATE, SEAL_UTC  # noqa: E402
 
 
-def yahoo(sym: str) -> tuple[pd.DataFrame, pd.Series, float, pd.Timestamp]:
+def yahoo(sym: str, include_sealed: bool = False) -> tuple[pd.DataFrame, pd.Series, float, pd.Timestamp]:
     """Yahoo daily bars before the seal, pre-seal splits, the product of post-seal splits (Yahoo's history is adjusted
     for them; our bars are not, so the comparison undoes it) and the fund's first Yahoo date (inception)."""
     import yfinance as yf
@@ -41,17 +41,29 @@ def yahoo(sym: str) -> tuple[pd.DataFrame, pd.Series, float, pd.Timestamp]:
                           "close": d["Close"].values, "volume": d["Volume"].values})
     splits = pd.Series(d["Stock Splits"].values, index=di)
     splits = splits[splits > 0]
-    post = float(np.prod(splits[splits.index >= SEAL_DATE].values)) if len(splits) else 1.0
     inception = daily.date.min()
+    if include_sealed:                      # one share basis across the whole series: every split, no post-seal factor
+        return daily, splits, 1.0, inception
+    post = float(np.prod(splits[splits.index >= SEAL_DATE].values)) if len(splits) else 1.0
     return daily[daily.date < SEAL_DATE], splits[splits.index < SEAL_DATE], post, inception
 
 
 def main() -> None:
+    build(include_sealed=False)
+
+
+def build(include_sealed: bool = False) -> None:
+    """Development bars (before the seal) into artifacts/etf; with include_sealed, the whole series into
+    artifacts/etf_sealed, which only the opened sealed evaluation reads (development artifacts are never modified)."""
+    if include_sealed:
+        from nexus_alpha import seal
+        seal.require_open("ETF bars on/after the seal")
     src = sorted((paths.ARTIFACTS / "raw" / "etf_1m").glob("*.parquet"))
     raw = pd.concat([pd.read_parquet(p) for p in src], ignore_index=True)
-    raw = raw[raw.timestamp < SEAL_UTC]
     cal = calendar()
-    cal = cal[cal.date < SEAL_DATE]
+    if not include_sealed:
+        raw = raw[raw.timestamp < SEAL_UTC]
+        cal = cal[cal.date < SEAL_DATE]
     early = set(cal.date[cal.early_close.astype(bool)])
     sessions = pd.DatetimeIndex(cal.date)
     et = raw.timestamp.dt.tz_convert("America/New_York")
@@ -59,11 +71,11 @@ def main() -> None:
     mins = et.dt.hour * 60 + et.dt.minute
     close_min = np.where(raw.day.isin(early), 13 * 60, 16 * 60)
     raw = raw[(mins >= 9 * 60 + 30) & (mins < close_min) & raw.day.isin(sessions)]
-    out_root = paths.ARTIFACTS / "etf"
+    out_root = paths.ARTIFACTS / ("etf_sealed" if include_sealed else "etf")
     ver = []
     for tk, g in raw.groupby("ticker"):
         g = g.sort_values("timestamp")
-        yd, splits, post_seal_split, inception = yahoo(tk)
+        yd, splits, post_seal_split, inception = yahoo(tk, include_sealed)
         # ticker reuse: the minute feed has rows under some ETF symbols before the fund existed (e.g. VOO, EEM)
         g = g[g.day >= inception]
         if g.empty:
@@ -119,7 +131,7 @@ def main() -> None:
                     "close_within_0p5pct": round(float((e.abs() <= 0.5).mean() * 100), 2),
                     "close_within_2pct": round(float((e.abs() <= 2).mean() * 100), 2), "ohlc_violations": viol})
         print(ver[-1], flush=True)
-    rep = REPO / "reports" / "data"
+    rep = REPO / "reports" / ("sealed" if include_sealed else "data")
     rep.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(ver).to_csv(rep / "etf_bar_verification.csv", index=False)
 

@@ -40,7 +40,7 @@ The numbers for Colab are estimates, not measurements: this session had no acces
 ## Rehearsal against the staged Drive copy (2026-11-07, on the owner's PC)
 
 The notebook's steps were run with `NEXUS_ARTIFACTS`, `NEXUS_OHLCV_ROOT` and `NEXUS_SEC_FULL500_RUN` pointing at the staged
-copy in `G:\My Driventigravity_workspace` (exactly what Colab sees under `/content/drive/MyDrive/antigravity_workspace`):
+copy in `G:\My Drive\antigravity_workspace` (exactly what Colab sees under `/content/drive/MyDrive/antigravity_workspace`):
 
 | Step | Result |
 |---|---|

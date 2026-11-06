@@ -83,4 +83,8 @@ See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md). In short: create the environment
 * The specification and hypotheses were committed before any fusion model was trained (`docs/PROJECT_SPECIFICATION.md`, commit `1b17168`). Every run, including failures, is in `docs/EXPERIMENT_LOG.md`.
 * Survivor-only universe from one vendor; see [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 
+Use: the code is published for reading and review; no licence is granted (all rights reserved), as for the TriFrame and
+SEC repositories. Data and weights are not included (see [`SECURITY.md`](SECURITY.md)). Work that uses the Global Macro
+Database features must cite Mueller, Xu, Lehbib and Chen (2025), NBER Working Paper 33714, and follow its Research Use Terms.
+
 Author: Krishna Harsha Tangirala. AI assistance: built with Claude Code (Anthropic); every number in the documents is generated from saved artifacts.

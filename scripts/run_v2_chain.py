@@ -44,6 +44,9 @@ def wait_for(cond, what: str, timeout_h: float) -> None:
 
 
 def main() -> None:
+    sys.path.insert(0, str(REPO / "src"))
+    from nexus_alpha import secrets
+    secrets.load()                      # keys from NEXUS_ENV_FILES (owner-held files) if not already in the environment
     ap = argparse.ArgumentParser()
     ap.add_argument("--wait-for-fetch")
     a = ap.parse_args()

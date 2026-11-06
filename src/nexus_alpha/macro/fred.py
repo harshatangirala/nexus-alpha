@@ -35,10 +35,13 @@ STORE = "macro/alfred_vintages.parquet"
 
 
 def have_key() -> bool:
+    from .. import secrets
+    secrets.load()
     return bool(os.environ.get("FRED_API_KEY"))
 
 
 def _get(params: dict) -> dict:
+    have_key()
     q = urllib.parse.urlencode({**params, "api_key": os.environ["FRED_API_KEY"], "file_type": "json"})
     req = urllib.request.Request(f"{API}?{q}", headers={"User-Agent": "nexus-alpha-research"})
     for attempt in range(5):

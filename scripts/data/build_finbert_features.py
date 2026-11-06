@@ -28,7 +28,9 @@ from nexus_alpha import paths  # noqa: E402
 MODEL = "ProsusAI/finbert"
 
 
-def encode(heads: list[str], batch: int = 256, threads: int = 10) -> tuple[np.ndarray, np.ndarray, dict]:
+def encode(heads: list[str], batch: int = 256, threads: int = 10, ckpt_dir=None) -> tuple[np.ndarray, np.ndarray, dict]:
+    import hashlib
+
     import torch
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
     torch.set_num_threads(threads)
@@ -38,15 +40,35 @@ def encode(heads: list[str], batch: int = 256, threads: int = 10) -> tuple[np.nd
     # length-sorted batches: far less padding; results are scattered back to the input order at the end
     order = np.argsort([len(h) for h in heads], kind="stable")
     sh = [heads[j] for j in order]
-    probs, embs, t0 = [], [], time.time()
+    probs, embs, t0, start = [], [], time.time(), 0
+    # checkpoints (every 40 batches) make the job resumable; they are keyed to the exact headline list
+    tag = hashlib.sha256("\n".join(heads).encode()).hexdigest()[:16]
+    if ckpt_dir is not None:
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        parts = sorted(ckpt_dir.glob(f"{tag}_*.npz"), key=lambda p: int(p.stem.split("_")[1]))
+        for p in parts:
+            z = np.load(p)
+            probs.append(z["P"])
+            embs.append(z["E"])
+        start = sum(len(x) for x in probs)
+        if start:
+            print(f"resuming at {start}/{len(sh)} from {len(parts)} checkpoints", flush=True)
+    pend_p, pend_e = [], []
     with torch.inference_mode():
-        for i in range(0, len(sh), batch):
+        for i in range(start, len(sh), batch):
             b = tok(sh[i:i + batch], padding=True, truncation=True, max_length=64, return_tensors="pt")
             o = mdl(**b, output_hidden_states=True)
-            probs.append(torch.softmax(o.logits, -1).numpy())
+            pend_p.append(torch.softmax(o.logits, -1).numpy())
             hs, m = o.hidden_states[-1], b["attention_mask"].unsqueeze(-1).float()
-            embs.append(((hs * m).sum(1) / m.sum(1)).numpy().astype(np.float16))
-            if (i // batch) % 40 == 0:
+            pend_e.append(((hs * m).sum(1) / m.sum(1)).numpy().astype(np.float16))
+            last = i + batch >= len(sh)
+            if ((i - start) // batch + 1) % 40 == 0 or last:
+                P_, E_ = np.concatenate(pend_p), np.concatenate(pend_e)
+                if ckpt_dir is not None:
+                    np.savez(ckpt_dir / f"{tag}_{i + len(sh[i:i + batch]):07d}.npz", P=P_, E=E_)
+                probs.append(P_)
+                embs.append(E_)
+                pend_p, pend_e = [], []
                 print(f"{i + len(sh[i:i + batch])}/{len(sh)} {time.time() - t0:.0f}s", flush=True)
     try:
         from huggingface_hub import model_info
@@ -65,7 +87,7 @@ def main() -> None:
     reps["headline"] = reps.headline.fillna("").str.strip()
     reps = reps[reps.headline != ""]
     uniq = reps.headline.drop_duplicates().tolist()
-    P, E, info = encode(uniq)
+    P, E, info = encode(uniq, ckpt_dir=paths.ARTIFACTS / "features" / "finbert_ckpt")
     lab = info["id2label"]
     ip, ineg = [k for k, v in lab.items() if v == "positive"][0], [k for k, v in lab.items() if v == "negative"][0]
     hid = {h: i for i, h in enumerate(uniq)}

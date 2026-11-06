@@ -26,3 +26,8 @@ governance/
 # OS
 Thumbs.db
 .DS_Store
+
+# Owner-held key files (never commit)
+*.env
+*.env.*
+!.env.example

@@ -59,6 +59,8 @@ Then give an overall lean. Say "unclear" when the material does not support a vi
 
 
 def api_key() -> str | None:
+    from .. import secrets
+    secrets.load()
     return os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
 
@@ -75,7 +77,7 @@ def pick_model(client=None) -> str:
     if os.environ.get("NEXUS_GEMINI_MODEL"):
         return os.environ["NEXUS_GEMINI_MODEL"]
     client = client or _client()
-    best, best_v = None, -1.0
+    best, best_key = None, (-1, -1.0)
     for m in client.models.list():
         name = (getattr(m, "name", "") or "").split("/")[-1]
         acts = getattr(m, "supported_actions", None) or []
@@ -84,9 +86,12 @@ def pick_model(client=None) -> str:
         if "flash" not in name or any(x in name for x in ("lite", "tts", "image", "embed", "live", "audio", "exp")):
             continue
         v = re.search(r"gemini-(\d+(?:\.\d+)?)", name)
-        ver = float(v.group(1)) if v else 0.0
-        if ver > best_v:
-            best, best_v = name, ver
+        if not v:                                   # aliases such as gemini-flash-latest move silently: skip
+            continue
+        stable = 0 if "preview" in name else 1      # prefer stable releases; previews change and have tighter quotas
+        key = (stable, float(v.group(1)))
+        if key > best_key:
+            best, best_key = name, key
     if not best:
         raise RuntimeError("no Gemini flash model available to this key; set NEXUS_GEMINI_MODEL")
     return best

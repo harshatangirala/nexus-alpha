@@ -1,0 +1,114 @@
+{
+ "run_id": "20261106T164722_e20_regime_rules_56944b",
+ "name": "e20_regime_rules",
+ "profile": "local-cpu",
+ "config": {
+  "sets": {
+   "M2": 45,
+   "M2R": 65,
+   "R": 20,
+   "R_placebo": 20
+  },
+  "rule_cols": [
+   "rr_spy_dd_d5",
+   "rr_spy_dd_d15",
+   "rr_spy_dd_d25",
+   "rr_spy_below_21ema_or_50sma",
+   "rr_spy_dd_risk",
+   "rr_qqq_dd_d5",
+   "rr_qqq_dd_d15",
+   "rr_qqq_dd_d25",
+   "rr_qqq_below_21ema_or_50sma",
+   "rr_qqq_dd_risk",
+   "rr_ftd_NO_SIGNAL",
+   "rr_ftd_CORRECTION",
+   "rr_ftd_RALLY_ATTEMPT",
+   "rr_ftd_FTD_WINDOW",
+   "rr_ftd_FTD_CONFIRMED",
+   "rr_ftd_RALLY_FAILED",
+   "rr_ftd_FTD_INVALIDATED",
+   "rr_ftd_dual",
+   "rr_spy_power_trend",
+   "rr_qqq_power_trend"
+  ],
+  "horizons": [
+   "1D",
+   "2D",
+   "5D",
+   "10D",
+   "15D",
+   "20D",
+   "3M",
+   "6M",
+   "1Y"
+  ],
+  "penalties": [
+   0.001,
+   0.01,
+   0.1,
+   1.0,
+   10.0
+  ],
+  "lgb": {
+   "objective": "multiclass",
+   "num_class": 3,
+   "metric": "multi_logloss",
+   "verbosity": -1,
+   "num_leaves": 4,
+   "min_data_in_leaf": 60,
+   "learning_rate": 0.03,
+   "feature_fraction": 0.7,
+   "bagging_fraction": 0.8,
+   "bagging_freq": 1,
+   "lambda_l2": 1.0,
+   "seed": 7,
+   "deterministic": true,
+   "force_row_wise": true,
+   "num_threads": 2
+  },
+  "min_windows": 4,
+  "source": "tradermonty/claude-trading-skills d8e71ce (MIT)",
+  "seed": 11
+ },
+ "config_hash": "56944be522443684",
+ "git_commit": "2437c7fb2e9adb98b72183f73db71816205a067e",
+ "git_dirty": true,
+ "git_dirty_files": [
+  "M scripts/data/build_etf_bars.py",
+  " M scripts/data/fetch_etf_minute.py",
+  " M scripts/data/fetch_news_text.py",
+  " M src/nexus_alpha/data/etf_bars.py",
+  " M src/nexus_alpha/macro/context.py",
+  " M src/nexus_alpha/macro/fred.py",
+  " M src/nexus_alpha/macro/market.py",
+  " M src/nexus_alpha/multimodal/dataset.py",
+  "?? scripts/sealed/",
+  "?? src/nexus_alpha/sealed/"
+ ],
+ "git_diff_sha256": "77fd3905472b18382fb01d3fdd843054a4dcf9c79645af5f0eb5f1ab3bac1371",
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {
+  "v2_frame": {
+   "path": "C:\\Users\\harsh\\nexus-alpha\\artifacts\\samples\\v2_frame.parquet",
+   "digest": "8d294c7526fe6756a3d6ddee+partial(327080007)"
+  }
+ },
+ "started_utc": "2026-11-06T11:18:40Z",
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-06T11:19:54Z",
+ "elapsed_s": 152.6,
+ "summary": "E20 regime rules. Keep rule (validation): lgbm|M2R_vs_M2: drop; lgbm|R_vs_P: drop; logistic|M2R_vs_M2: drop; logistic|R_vs_P: keep. Placebo shows no gain: {'lgbm': True, 'logistic': True}"
+}

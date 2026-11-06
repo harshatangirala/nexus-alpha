@@ -242,6 +242,130 @@ def _bars_for_check(ticker: str, mode: str, asof):
     return {"W": w, "D": d, "H": h}
 
 
+def _headline_fetcher(ticker: str) -> None:
+    """Recent headlines (Yahoo Finance RSS) and, if SEC_USER_AGENT is set, 8-K filings; ticked items join the texts."""
+    from nexus_alpha import trade_tools as TT
+    with st.expander("Fetch recent headlines and filings for the selected ticker (adds them as texts)"):
+        c = st.columns(2)
+        if c[0].button(f"Fetch Yahoo Finance headlines ({ticker})", key="desk_fetch_news"):
+            try:
+                items = [x | {"kind": "company news", "ticker": ticker} for x in TT.yahoo_headlines(ticker, 10)]
+            except Exception as e:
+                items = []
+                st.warning(f"Headline feed unavailable: {type(e).__name__}: {e}")
+            st.session_state["desk_fetched"] = items
+        if c[1].button(f"Fetch SEC 8-K filings ({ticker})", key="desk_fetch_sec"):
+            try:
+                items = [x | {"kind": "SEC filing (8-K, 10-K, 10-Q)", "ticker": ticker} for x in TT.sec_filings(ticker)]
+                st.session_state["desk_fetched"] = st.session_state.get("desk_fetched", []) + items
+            except Exception as e:
+                st.info(str(e))
+        for i, x in enumerate(st.session_state.get("desk_fetched", [])):
+            st.checkbox(f"[{x['published_utc']} UTC] {x['headline'][:140]} ({x['source']})", key=f"desk_pick_{i}")
+        st.caption("Only items published before the decision time count for the model; Gemini sees every ticked item.")
+
+
+@st.cache_data(ttl=3600, show_spinner="Computing market-regime rules...")
+def _regime_rows(mode: str, asof: str):
+    from nexus_alpha.rules.market_regime import regime_features
+    if mode == "historical":
+        from nexus_alpha.data import etf_bars as EB
+        spy, qqq = EB.read_daily("SPY"), EB.read_daily("QQQ")
+    else:
+        import yfinance as yf
+
+        def yd(sym):
+            d = yf.Ticker(sym).history(period="2y", auto_adjust=False, actions=False)
+            di = pd.DatetimeIndex(d.index).tz_localize(None).normalize()
+            return pd.DataFrame({"date": di, "open": d.Open.values, "high": d.High.values, "low": d.Low.values,
+                                 "close": d.Close.values, "volume": d.Volume.values}).dropna()
+        spy, qqq = yd("SPY"), yd("QQQ")
+        spy, qqq = spy.tail(400), qqq.tail(400)
+    R = regime_features(spy, qqq)
+    if mode == "historical":
+        R = R.loc[:pd.Timestamp(asof)]
+    return R.iloc[-1], str(R.index[-1].date())
+
+
+def _e20_note() -> str:
+    import json
+    from pathlib import Path
+    for r in sorted(Path(__file__).resolve().parents[1].joinpath("experiments").glob("*_e20_regime_rules_*"), reverse=True):
+        try:
+            m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        add = any(v for k, v in m["keep_rule_decisions"].items() if "M2R_vs_M2" in k)
+        return ("E20: these rules " + ("ADD" if add else "do NOT add") + " validated skill to the SPY market read; on "
+                "their own they showed a small 3-month gain on 2017-18 that did not replicate in 2020-22. Descriptive "
+                "context, not a signal.")
+    return "E20 has not been run: descriptive context only."
+
+
+def _regime_section(mode, asof) -> None:
+    st.markdown("**Market-regime rules (O'Neil/IBD, from tradermonty/claude-trading-skills; E20)**")
+    try:
+        r, day = _regime_rows(mode, str(pd.Timestamp(asof).date()) if mode == "historical" else str(pd.Timestamp.now().date()))
+    except Exception as e:
+        st.info(f"Regime rules unavailable: {type(e).__name__}: {e}")
+        return
+    risk = {0: "NORMAL", 1: "CAUTION", 2: "HIGH", 3: "SEVERE"}
+    state = next((c.replace("rr_ftd_", "") for c in r.index
+                  if c.startswith("rr_ftd_") and c != "rr_ftd_dual" and r[c] == 1), "?")
+    c = st.columns(4)
+    c[0].metric("SPY distribution days (25 sessions)", int(r.rr_spy_dd_d25), risk[int(r.rr_spy_dd_risk)], delta_color="off")
+    c[1].metric("QQQ distribution days (25 sessions)", int(r.rr_qqq_dd_d25), risk[int(r.rr_qqq_dd_risk)], delta_color="off")
+    c[2].metric("Follow-through state", state.replace("_", " ").capitalize().replace("Ftd", "FTD").replace("ftd", "FTD"))
+    c[3].metric("Power trend (SPY / QQQ)",
+                f"{'yes' if r.rr_spy_power_trend else 'no'} / {'yes' if r.rr_qqq_power_trend else 'no'}")
+    st.caption(f"Session {day}. " + _e20_note())
+
+
+JOURNAL = "journal/paper_trades.csv"
+
+
+def _discipline_section(plan, ticker: str) -> None:
+    """Pre-trade discipline gate + drawdown circuit breaker + sizing (tools adapted from MIT skills; D-034)."""
+    from nexus_alpha import paths, trade_tools as TT
+    st.subheader("7. Trade discipline (paper trading; nothing is ever sent to a broker)")
+    jp = paths.ARTIFACTS / JOURNAL
+    journal = pd.read_csv(jp) if jp.exists() else pd.DataFrame(columns=["exit_utc", "ticker", "pnl"])
+    acct = st.number_input("Paper account size ($)", 1_000.0, 1e9, 100_000.0, step=1_000.0, key="desk_acct")
+    br = TT.circuit_breaker(journal, acct)
+    st.write(f"Drawdown circuit breaker: **{br['recommendation']}** " + "; ".join(br.get("reasons", [])))
+    planned = float(plan.planned_loss_cash) if plan is not None and plan.planned_loss_cash else None
+    c = st.columns(3)
+    a1 = c[0].checkbox("Entry is in my written plan", key="desk_g1")
+    a2 = c[1].checkbox("Stop is predefined", value=bool(plan is not None and plan.stop), key="desk_g2")
+    a3 = c[2].checkbox("Size is within plan", key="desk_g3")
+    c = st.columns(2)
+    pr = c[0].number_input("Planned risk ($)", 0.0, 1e9, planned or 0.0, key="desk_pr")
+    ar = c[1].number_input("Actual risk of the order ($)", 0.0, 1e9, planned or 0.0, key="desk_ar")
+    pnl_col = pd.to_numeric(journal["pnl"], errors="coerce") if "pnl" in journal else pd.Series(dtype=float)
+    losses = journal[pnl_col < 0]
+    last_loss_h = None
+    if len(losses):
+        last_loss_h = (pd.Timestamp.now(tz="UTC") - pd.to_datetime(losses.exit_utc, utc=True).max()).total_seconds() / 3600
+    g = TT.discipline_gate(TT.Checklist(a1, a2, a3, pr, ar), br, recent_loss_hours=last_loss_h)
+    st.write(f"Pre-trade gate: **{g['decision']}**")
+    for x in g["blocked_by"] + g["review"]:
+        st.caption("- " + x)
+    if plan is not None and plan.entry_reference and plan.stop:
+        ps = TT.position_size(pr or 0.0, plan.entry_reference, plan.stop)
+        st.caption(f"Fixed-risk size at ${pr:,.0f}: {ps['shares']} shares "
+                   f"(risk per share {ps.get('risk_per_share', 0):.2f}).")
+    with st.expander("Record a closed paper trade (feeds the circuit breaker)"):
+        c = st.columns(3)
+        pnl = c[0].number_input("Realised P&L ($)", -1e9, 1e9, 0.0, key="desk_pnl")
+        when = c[1].text_input("Exit time (UTC, e.g. 2026-11-06 20:55)", key="desk_exit")
+        if c[2].button("Record", key="desk_rec"):
+            jp.parent.mkdir(parents=True, exist_ok=True)
+            row = pd.DataFrame([{"exit_utc": when or pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d %H:%M"),
+                                 "ticker": ticker, "pnl": pnl}])
+            pd.concat([journal, row], ignore_index=True).to_csv(jp, index=False)
+            st.success("Recorded (local, git-ignored journal).")
+
+
 def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     st.header("Trade Desk")
     st.caption("Pick the trade, add up to three chart screenshots (weekly, daily, hourly) and 1-10 texts. The model uses "
@@ -249,6 +373,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     if predictor is None:
         st.error("No inference bundle loaded.")
         return
+    _headline_fetcher(st.session_state.get("desk_tick", "AAPL"))
     n_txt = st.number_input("How many texts (news, macro, filings)?", 0, 10, 1, key="desk_ntxt")
     with st.form("desk"):
         c = st.columns(3)
@@ -289,6 +414,10 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     if not go:
         return
 
+    picked = [x for i, x in enumerate(st.session_state.get("desk_fetched", []))
+              if st.session_state.get(f"desk_pick_{i}") and x.get("ticker") == tick]
+    texts = (texts + [{"kind": x["kind"], "headline": x["headline"], "text": x["text"],
+                       "published_utc": x["published_utc"], "source": x["source"]} for x in picked])[:10]
     choice = TD.choose_horizon(trade, swing_days=swing, long_term=lt)
     st.subheader("1. What the model is asked")
     st.write(f"**{choice.label}**. Model horizon: **{choice.served_by or 'none'}** - {choice.note}.")
@@ -353,6 +482,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         st.dataframe(fz, width="stretch")
     st.caption(_e19_note())
     _market_read_section(mode, asof)
+    _regime_section(mode, asof)
 
     st.subheader("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]
@@ -403,3 +533,4 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     if news:
         st.caption("Company-news texts as used by the model (availability check and Loughran-McDonald tone):")
         st.dataframe(pd.DataFrame(news), width="stretch")
+    _discipline_section(res.trade_plans.get(h) if h is not None else None, tick)

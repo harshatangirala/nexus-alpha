@@ -15,12 +15,12 @@ FAMILY_TOPICS = {
     "TREND_PULLBACK_SHORT": ("tsam", r"pullback|retracement"),
     "BREAKOUT_LONG": ("ta_workbook", r"breakout"),
     "BREAKDOWN_SHORT": ("ta_workbook", r"breakdown|breaks? (below|through) support"),
-    "RANGE_SUPPORT_LONG": ("complete_guide_to_trading", r"support"),
-    "RANGE_RESISTANCE_SHORT": ("complete_guide_to_trading", r"resistance"),
+    "RANGE_SUPPORT_LONG": ("complete_guide_to_trading", r"\bsupport\b"),
+    "RANGE_RESISTANCE_SHORT": ("complete_guide_to_trading", r"\bresistance\b"),
 }
 TRIGGER_TOPICS = {("ENGULFING_CONFIRMATION", "LONG"): ("nison_candlesticks", r"bullish engulfing"),
                   ("ENGULFING_CONFIRMATION", "SHORT"): ("nison_candlesticks", r"bearish engulfing"),
-                  ("REJECTION_CANDLE", "LONG"): ("nison_candlesticks", r"hammer"),
+                  ("REJECTION_CANDLE", "LONG"): ("nison_candlesticks", r"\bhammer"),
                   ("REJECTION_CANDLE", "SHORT"): ("nison_candlesticks", r"shooting star"),
                   ("STRUCTURE_BREAK", "LONG"): ("tsam", r"swing high|breakout"),
                   ("STRUCTURE_BREAK", "SHORT"): ("tsam", r"swing low|breakdown")}

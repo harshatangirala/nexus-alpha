@@ -98,5 +98,8 @@
   }
  },
  "started_utc": "2026-11-06T00:53:59Z",
- "status": "RUNNING"
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-06T08:15:06Z",
+ "elapsed_s": 26494.7,
+ "summary": "E13 sequence models (tcn: mean valid LL 1.07205; gru: mean valid LL 1.06612)"
 }

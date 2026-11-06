@@ -26,6 +26,7 @@ import pandas as pd
 import torch
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+from threadpoolctl import threadpool_limits
 
 sys.dont_write_bytecode = True
 REPO = Path(__file__).resolve().parents[2]
@@ -172,9 +173,10 @@ def main() -> None:
                 f_ = Xl[m].fillna(med)
                 mu, sd = f_.mean(), f_.std().replace(0, 1)
                 Z = lambda r: ((Xl.iloc[r].fillna(med) - mu) / sd).clip(-8, 8).to_numpy(np.float64)
-                lr = LogisticRegression(C=1.0 / (1e-3 * m.sum()), max_iter=400, tol=1e-6).fit(Z(np.flatnonzero(m)), Y[m, j])
+                with threadpool_limits(limits=1, user_api="blas"):   # D-027 (BLAS oversubscription)
+                    lr = LogisticRegression(C=1.0 / (1e-3 * m.sum()), max_iter=400, tol=1e-6).fit(Z(np.flatnonzero(m)), Y[m, j])
+                    P_ref[:, j] += w["logistic"] * lr.predict_proba(Z(out_rows))
                 lr_models[h] = {"model": lr, "cols": lc, "median": med, "mu": mu, "sd": sd}
-                P_ref[:, j] += w["logistic"] * lr.predict_proba(Z(out_rows))
         with open(bdir / "logistic.pkl", "wb") as f:
             pickle.dump(lr_models, f)
         comp_meta["lgbm_rounds"] = lg_models

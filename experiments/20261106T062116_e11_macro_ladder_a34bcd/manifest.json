@@ -77,5 +77,7 @@
   }
  },
  "started_utc": "2026-11-06T00:52:33Z",
- "status": "RUNNING"
+ "status": "STOPPED",
+ "stop_reason": "stopped before any result to apply the 1Y inherited-trees rule (V2_ARCHITECTURE section 4)",
+ "counted_as_trial": "no (no keep decision was computed; same configuration re-run)"
 }

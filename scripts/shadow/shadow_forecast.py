@@ -5,11 +5,18 @@
 Verifies the frozen bundle's file hashes, forecasts every universe stock from live Yahoo bars as of the last completed
 session, writes shadow/<version>/forecasts/<asof>.csv once (never rewritten) and appends it to the hash chain.
 Rows whose run time is after their decision time (09:00 New York on t+1) are flagged late and are never scored.
+
+Robustness (2026-11-06, after a run hung for six hours on one Yahoo request): every ticker has a hard timeout; empty or
+timed-out Yahoo answers get up to three retry passes after growing pauses; forecasting stops 10 minutes before the
+decision time so the file is always written on time. Retries never change a forecast: each ticker is forecast at most
+once per run, from the bars Yahoo returns.
 """
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+import threading
 import time
 import warnings
 from pathlib import Path
@@ -24,6 +31,32 @@ warnings.filterwarnings("ignore")
 from nexus_alpha import shadow as SH  # noqa: E402
 from nexus_alpha.cv import store as ST  # noqa: E402
 from nexus_alpha.inference.pipeline import NexusPredictor  # noqa: E402
+
+TICKER_TIMEOUT_S = 180
+RETRY_PAUSES_S = (60, 600, 1800)
+RETRYABLE = ("no daily data", "TimeoutError", "Rate", "rate limit", "Too Many Requests")
+STOP_BEFORE_DECISION = pd.Timedelta(minutes=10)
+BLOCK_MIN_FAILS = 10       # long retry pauses only when this many tickers came back empty
+
+
+def with_timeout(fn, timeout_s: float):
+    """Run fn in a daemon thread; raise TimeoutError if it has not returned in time (the thread is abandoned)."""
+    box = {}
+
+    def run():
+        try:
+            box["r"] = fn()
+        except Exception as e:  # noqa: BLE001  (re-raised in the caller's thread)
+            box["e"] = e
+
+    th = threading.Thread(target=run, daemon=True)
+    th.start()
+    th.join(timeout_s)
+    if th.is_alive():
+        raise TimeoutError(f"no answer within {timeout_s}s")
+    if "e" in box:
+        raise box["e"]
+    return box["r"]
 
 
 def main() -> None:
@@ -47,11 +80,15 @@ def main() -> None:
     else:
         P = NexusPredictor(bdir)
     rows, failed, t0 = [], [], time.time()
+    deadline = {"utc": None}       # set from the first forecast's decision time
 
     def forecast(t: str) -> bool:
         try:
-            r = P.predict(t, mode="live") if is_v2 else P.predict(t, mode="live", explain=False)
-        except Exception as e:  # missing Yahoo data, rate limit, short history
+            if is_v2:
+                r = with_timeout(lambda: P.predict(t, mode="live"), TICKER_TIMEOUT_S)
+            else:
+                r = with_timeout(lambda: P.predict(t, mode="live", explain=False), TICKER_TIMEOUT_S)
+        except Exception as e:  # missing Yahoo data, rate limit, short history, timeout
             failed.append({"ticker": t, "error": repr(e)[:200]})
             return False
         run = SH.now_utc()
@@ -64,6 +101,8 @@ def main() -> None:
             fc = {h: (f.down_probability, f.sideways_probability, f.up_probability, f.return_q10, f.expected_return,
                       f.return_q90, f.direction_skill_validated) for h, f in r.forecasts.items()}
         dec = SH.decision_utc_for(pd.Timestamp(asof_s))
+        if deadline["utc"] is None or dec - STOP_BEFORE_DECISION < deadline["utc"]:
+            deadline["utc"] = dec - STOP_BEFORE_DECISION
         for h, (pd_, ps, pu, q10, q50, q90, sk) in fc.items():
             rows.append({"asof_session": asof_s, "ticker": t, "horizon": h, "p_down": pd_, "p_side": ps, "p_up": pu,
                          "ret_q10": q10, "ret_q50": q50, "ret_q90": q90, "direction_skill_validated": sk,
@@ -72,19 +111,34 @@ def main() -> None:
                          "late": bool(run > dec)})
         return True
 
+    def past_deadline(extra_s: float = 0.0) -> bool:
+        return deadline["utc"] is not None and SH.now_utc() + pd.Timedelta(seconds=extra_s) > deadline["utc"]
+
     for i, t in enumerate(tickers):
+        if past_deadline():
+            failed.extend({"ticker": x, "error": "not attempted: decision-time deadline"} for x in tickers[i:])
+            print(f"stopped at the decision-time deadline after {i} tickers", flush=True)
+            break
         forecast(t)
         if (i + 1) % 50 == 0:
-            print(f"{i + 1}/{len(tickers)} done, {time.time() - t0:.0f}s", flush=True)
-    # one retry pass for empty Yahoo responses (rate limiting), after a pause
-    retry = [f["ticker"] for f in failed if "no daily data" in f["error"]]
-    if retry:
-        time.sleep(60)
+            print(f"{i + 1}/{len(tickers)} done, {time.time() - t0:.0f}s, failed so far {len(failed)}", flush=True)
+    # retry passes for empty or timed-out Yahoo answers (rate limiting / blocking), after growing pauses
+    for k, pause in enumerate(RETRY_PAUSES_S, 1):
+        retry = [f["ticker"] for f in failed if any(x in f["error"] for x in RETRYABLE)]
+        if not retry or past_deadline(pause + 60):
+            break
+        if k > 1 and len(retry) < BLOCK_MIN_FAILS:   # a few missing tickers are not a Yahoo block: no long waits
+            break
+        print(f"retry pass {k}: {len(retry)} tickers after {pause}s", flush=True)
+        time.sleep(pause)
         failed[:] = [f for f in failed if f["ticker"] not in retry]
         for t in retry:
+            if past_deadline():
+                failed.append({"ticker": t, "error": "not attempted: decision-time deadline"})
+                continue
             forecast(t)
             time.sleep(1.0)
-        print(f"retry pass: {len(retry)} tickers, {len(retry) - sum(f['ticker'] in retry for f in failed)} recovered")
+        print(f"retry pass {k}: {len(retry) - sum(f['ticker'] in retry for f in failed)} recovered", flush=True)
     if not rows:
         print("no forecasts produced", failed[:5])
         sys.exit(1)
@@ -114,7 +168,9 @@ def main() -> None:
     if failed and not a.dry_run:
         pd.DataFrame(failed).to_csv(SH.SHADOW_ROOT / a.version / "last_run_failures.csv", index=False)
     probs = SH.verify_chain(a.version)
-    print("chain:", "intact" if not probs else probs)
+    print("chain:", "intact" if not probs else probs, flush=True)
+    sys.stdout.flush()
+    os._exit(0 if not probs else 1)   # do not wait for abandoned (timed-out) request threads
 
 
 if __name__ == "__main__":

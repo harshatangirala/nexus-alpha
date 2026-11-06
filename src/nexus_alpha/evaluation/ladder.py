@@ -13,6 +13,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from threadpoolctl import threadpool_limits
 
 E07_PARAMS = {"learning_rate": 0.07826968053857598, "num_leaves": 7, "min_data_in_leaf": 195,
               "feature_fraction": 0.7580871652599147, "bagging_fraction": 0.8317004666751824,
@@ -76,8 +77,11 @@ def fit_eval(fr: pd.DataFrame, sets: dict[str, list[str]], horizons: list[str], 
             mu, sd = filled.mean(), filled.std().replace(0, 1)
             Z = lambda m: ((Xl[m].fillna(med) - mu) / sd).clip(-8, 8).to_numpy(np.float64)
             lr = LogisticRegression(C=1.0 / (1e-3 * tr.sum()), max_iter=400, tol=1e-6)
-            lr.fit(Z(tr), ytr)
-            out["logistic"] = {"P": {"valid": lr.predict_proba(Z(va)), "test": lr.predict_proba(Z(te))}}
+            # one BLAS thread: with LightGBM/torch running, OpenBLAS's 12 spinning threads made each L-BFGS step ~80x
+            # slower (D-027); the thread count changes only floating-point summation order, not the model
+            with threadpool_limits(limits=1, user_api="blas"):
+                lr.fit(Z(tr), ytr)
+                out["logistic"] = {"P": {"valid": lr.predict_proba(Z(va)), "test": lr.predict_proba(Z(te))}}
             for mdl, o in out.items():
                 r = {}
                 for split, yy, mm in (("valid", yva, va), ("test", yte, te)):

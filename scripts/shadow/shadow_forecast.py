@@ -91,6 +91,7 @@ def main() -> None:
     else:
         P = NexusPredictor(bdir)
     rows, failed, t0 = [], [], time.time()
+    xrows = []                     # v2 only: tabular feature rows for the fundamentals ranker log (D-042)
     deadline = {"utc": None}       # set from the first forecast's decision time
 
     def forecast(t: str) -> bool:
@@ -109,6 +110,9 @@ def main() -> None:
                       f["direction_skill_validated"]) for h, f in r["forecasts"].items()}
             # cross-sectional ranker (D-038): the frozen F0 LightGBM component's p_up - p_down, logged for rank IC
             rank = {h: float(p[2] - p[0]) for h, p in r.get("components", {}).get("lgbm", {}).items()}
+            if r.get("x_row"):
+                xrows.append({"ticker": t, "asof_session": asof_s, "reference_close": ref,
+                              "decision_utc": SH.decision_utc_for(pd.Timestamp(asof_s)).isoformat(), **r["x_row"]})
         else:
             asof_s, ref, dq = r.instrument.asof_session, r.instrument.reference_price, r.instrument.data_quality
             fc = {h: (f.down_probability, f.sideways_probability, f.up_probability, f.return_q10, f.expected_return,
@@ -185,6 +189,14 @@ def main() -> None:
                                     "n_rows": len(g), "n_failed": len(failed), "late_rows": int(g.late.sum())})
         print(f"logged {f.name}: {g.ticker.nunique()} tickers x {g.horizon.nunique()} horizons, "
               f"late rows {int(g.late.sum())}, failed tickers {len(failed)}")
+    if xrows and not a.dry_run:     # git-ignored; features only, never a public log
+        X = pd.DataFrame(xrows)
+        for asof, g in X.groupby("asof_session"):
+            fx = paths.artifact("live_features", str(asof), "v2_x.parquet")
+            if fx.exists():
+                old = pd.read_parquet(fx)
+                g = pd.concat([old, g[~g.ticker.isin(old.ticker)]], ignore_index=True)
+            g.to_parquet(fx, index=False)
     if failed and not a.dry_run:
         pd.DataFrame(failed).to_csv(SH.SHADOW_ROOT / a.version / "last_run_failures.csv", index=False)
     elif failed:

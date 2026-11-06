@@ -3,6 +3,7 @@
     python scripts/shadow/freeze_model.py --version v1.1 --bundle 20261106T020411_e08_final_model_5c4327
     python scripts/shadow/freeze_model.py --kind v2 --version v2 --bundle <E14 run id>
     python scripts/shadow/freeze_model.py --kind market --version market_e19 --bundle <e19_refit run id>
+    python scripts/shadow/freeze_model.py --kind fund --version fund_rank_x --bundle <fund_ranker_refit run id>
 
 Writes registry/frozen_models/<version>.json: SHA-256 of every bundle file, the code commit, label rule, horizons and the
 class prior of the bundle's training blocks (the baseline the forward test scores against). Refuses to overwrite an
@@ -41,7 +42,7 @@ def stock_prior(frame: str, horizons: dict, blocks: list[str]) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--kind", choices=["v1", "v2", "market"], default="v1")
+    ap.add_argument("--kind", choices=["v1", "v2", "market", "fund"], default="v1")
     ap.add_argument("--version", required=True)
     ap.add_argument("--bundle", required=True)
     ap.add_argument("--train-blocks", nargs="+", default=["train", "inner", "valid"])
@@ -58,6 +59,10 @@ def main() -> None:
     elif a.kind == "v2":
         horizons, label_version = HORIZONS_V2, LABEL_VERSION_V2
         prior = stock_prior("v2_frame.parquet", horizons, a.train_blocks)
+    elif a.kind == "fund":   # fundamentals ranker (D-042): its own horizons; prior over its 2009-2018 refit rows
+        horizons, label_version = meta["horizons"], meta["label_version"]
+        prior = meta["refit_class_prior"]
+        a.train_blocks = ["train", "inner", "valid"]
     else:   # market read (E19): one instrument (SPY); prior over the refit sessions (train, inner, valid)
         horizons, label_version = meta["horizons"], meta["label_version"]
         prior = meta["refit_class_prior"]

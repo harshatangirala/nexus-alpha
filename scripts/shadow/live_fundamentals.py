@@ -112,6 +112,8 @@ def main() -> None:
     stale_bars = int((P.bar_date < P.bar_date.max()).sum())
     print(f"live fundamentals: {len(P)} tickers, {len(errors)} errors, {stale_bars} with an older last bar, "
           f"session {pd.Timestamp(P.date.iloc[0]).date()} ({time.time() - t0:.0f}s)", flush=True)
+    if errors:
+        print("errors:", [(e["ticker"], e["error"][:80]) for e in errors[:5]], flush=True)
 
 
 if __name__ == "__main__":

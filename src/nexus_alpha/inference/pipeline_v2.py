@@ -214,7 +214,9 @@ class NexusPredictorV2:
                       "direction_skill_validated": bool(self.meta["direction_skill"].get(h, {}).get("validated", False))}
         return {"ticker": ticker, "asof_session": str(asof_date.date()), "mode": mode, "bundle_id": self.meta["bundle_id"],
                 "reference_close": float(daily.close.iloc[k]), "forecasts": out, "missing": missing,
-                "features_missing_share": float(X.isna().mean(axis=1).iloc[0]), "components": parts}
+                "features_missing_share": float(X.isna().mean(axis=1).iloc[0]), "components": parts,
+                # the assembled tabular row (additive output; predictions unchanged): reused by the D-042 forward log
+                "x_row": {c: float(v) for c, v in X.iloc[0].items()}}
 
     def _ctx_vec(self, row: dict, fp: dict) -> np.ndarray:
         cols = fp["ctx_cols"]

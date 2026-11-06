@@ -188,6 +188,36 @@ So in the forward test (no live news feed), v1.1 and v2 both run with the news m
 * The full rules engine (`nexus`, `nexus_gated`) is flat to slightly negative with few trades.
 * The rules alone lose at every horizon.
 
+## E20: classic market-regime rules (O'Neil/IBD, from tradermonty/claude-trading-skills, MIT)
+
+Rule block R:
+* distribution days for SPY and QQQ (counts over 5, 15 and 25 sessions, plus the risk class);
+* the follow-through-day state (the skill's own state machine, vendored unchanged);
+* power trend.
+
+Spot checks match the known follow-through days (2009-03-23, 2020-04-02, 2022-06-24). Tested on E19's design.
+
+| Comparison | Family | Decision | Detail |
+|---|---|---|---|
+| R on top of the deployed market features (M2 + R vs M2) | logistic and LightGBM | **dropped** | e.g. logistic 2D-20D -0.0086 [-0.0246, +0.0089] |
+| R on its own (R vs P) | logistic | kept | 3M +0.0038 [+0.0010, +0.0064] on 2017-18; +0.0003 (n.s.) on 2020-22 |
+| R on its own (R vs P) | LightGBM | dropped | |
+
+* In 2020-22 the rules alone did show a 1D gain (+0.027 [+0.015, +0.040]) that was absent on 2017-18.
+* The placebo showed no gain.
+* Per the pre-registration, no new market read is frozen. The rule states appear in the Trade Desk as descriptive
+  context with this evidence.
+
+## Trade Desk tools adapted from the two skill repositories (D-034; tools, not signals)
+
+* **Live texts:** recent Yahoo Finance headlines (timestamped) and, when the owner sets `SEC_USER_AGENT`, EDGAR 8-Ks. Ticked
+  items join the texts.
+* **Market-regime panel:** distribution days, follow-through state and power trend.
+* **Section 7, trade discipline** (paper only; a local, git-ignored journal):
+  * drawdown circuit breaker (2% daily, 2-loss cooldown, 5% weekly, 8% monthly);
+  * pre-trade discipline gate (written plan, predefined stop, size, risk dollars, revenge window, breaker);
+  * fixed-risk sizing.
+
 ## Forward test and sealed period
 
 * **Logged every evening before the next open** (hash-chained), all three starting with session 2026-11-05:

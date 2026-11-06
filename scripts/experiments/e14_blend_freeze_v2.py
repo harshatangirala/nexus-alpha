@@ -55,6 +55,18 @@ def latest(prefix):
     return None, None
 
 
+GUARD_LOG: list = []      # D-033 comparisons made by tabular_choice (recorded by E18/E14 in their metrics)
+
+
+def _placebo_ok(e11_id: str) -> dict:
+    """Placebo decisions for the E11 run: D-032 (e11_rekeep) if present, else as registered."""
+    for rk in sorted(EXP.glob("*_e11_rekeep_*"), reverse=True):
+        mk = json.loads((rk / "metrics.json").read_text(encoding="utf-8")) if (rk / "metrics.json").exists() else {}
+        if mk.get("e11_run") == e11_id:
+            return mk["placebo_shows_no_gain"]
+    return json.loads((EXP / e11_id / "metrics.json").read_text(encoding="utf-8"))["placebo_shows_no_gain"]
+
+
 def tabular_choice(final: bool = True):
     """(feature columns, prediction dir, set name, source run, per-horizon results) from E16's keep decisions on top of
     E11's carried set. With final=True and a completed E18 run, its all-horizon predictions are used."""
@@ -75,7 +87,19 @@ def tabular_choice(final: bool = True):
             name = "B_newsv1"
         elif kept("B_finbert", "B"):
             name = "B_finbert"
-        return e16["sets"][name], paths.ARTIFACTS / "predictions" / "e16", name, e16_id, e16["by_horizon"]
+        # D-033 baseline guard: the B-based set must pass the keep rule against F0 for a family whose placebo passed
+        import e11_rekeep as RK
+        hz = [h for h in L.REP_HORIZONS if h in e16["by_horizon"]]
+        cmp_ = RK.compare_saved((paths.ARTIFACTS / "predictions" / "e16", name), (paths.ARTIFACTS / "predictions" / "e11", "F0"), hz)
+        plac = _placebo_ok(e11_id)
+        guard = {"set": name, "keep_vs_F0": cmp_["keep"], "placebo_ok": plac,
+                 "valid_gains": {k: v for k, v in cmp_["gains"].items() if "|valid|" in k}}
+        GUARD_LOG.append(guard)
+        print("D-033 guard:", name, "vs F0:", cmp_["keep"], flush=True)
+        if any(cmp_["keep"][f] and plac.get(f) for f in ("lgbm", "logistic")):
+            return e16["sets"][name], paths.ARTIFACTS / "predictions" / "e16", name, e16_id, e16["by_horizon"]
+        f0 = [c for c in e11["sets"]["F0"]]
+        return f0, paths.ARTIFACTS / "predictions" / "e11", "F0", e11_id, e11["by_horizon"]
     # no E16: use E11's top carried rung predictions
     order = [s for s in e11["sets"] if not s.endswith("placebo")]
     top = [s for s in order if set(e11["sets"][s]) - L.NEVER_CARRY == set(base)]

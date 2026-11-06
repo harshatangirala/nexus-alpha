@@ -31,6 +31,44 @@ from nexus_alpha.experiments import Run  # noqa: E402
 from nexus_alpha.targets_v2 import HORIZONS_V2  # noqa: E402
 
 
+def compare_saved(new: tuple[Path, str], old: tuple[Path, str], horizons: list[str], seed: int = 11) -> dict:
+    """Keep rule (D-032 bootstrap and eligibility) for set `new` vs set `old`, both read from saved selection-stage
+    predictions (dir, set name) on the E11/E16 row order. Returns {"keep": {family: bool}, "gains": {...}}."""
+    fr = pd.read_parquet(paths.ARTIFACTS / "samples" / "v2_frame.parquet",
+                         columns=["asof_date", "block"] + [f"y_{h}" for h in horizons])
+    fr = fr[fr.block.isin(["train", "inner", "valid", "test"])].reset_index(drop=True)
+    blk = fr.block.to_numpy()
+    month = (fr.asof_date.dt.year * 12 + fr.asof_date.dt.month).to_numpy()
+    rows, eligible = {}, {}
+    for h in horizons:
+        y = fr[f"y_{h}"].to_numpy()
+        lab = ~np.isnan(y)
+        eligible[h] = fr.asof_date[lab & (blk == "valid")].nunique() / HORIZONS_V2[h] >= E19.MIN_WINDOWS
+        for split in ("valid", "test"):
+            mm = lab & (blk == split)
+            yy = y[mm].astype(int)
+            for tag, (d, name) in (("new", new), ("old", old)):
+                for mdl in ("lgbm", "logistic"):
+                    P = np.load(Path(d) / f"{h}_{name}_{mdl}_{split}.npy").astype(float)
+                    assert len(P) == len(yy), (tag, h, mdl, split)
+                    rows[(h, tag, mdl, split)] = (L.ll_rows(yy, P), month[mm])
+    rng = np.random.default_rng(seed)
+    gains = {}
+    for mdl in ("lgbm", "logistic"):
+        for split in ("valid", "test"):
+            for g, hs in L.GROUPS.items():
+                hs = [h for h in hs if h in horizons and (split == "test" or eligible[h])]
+                if not hs:
+                    continue
+                per = [(rows[(h, "old", mdl, split)][1], rows[(h, "old", mdl, split)][0] - rows[(h, "new", mdl, split)][0])
+                       for h in hs]
+                blen = max(max(1, math.ceil(HORIZONS_V2[h] / 21)) for h in hs)
+                pt, ci = E19.block_boot(per, blen, rng)
+                gains[f"{mdl}|new_vs_old|{split}|{g}"] = {"gain": pt, "ci95": ci, "horizons": hs}
+    keep = {mdl: L.keep_decision(gains, mdl, "new", "old") for mdl in ("lgbm", "logistic")}
+    return {"keep": keep, "gains": gains}
+
+
 def main() -> None:
     e11_dir = sorted((REPO / "experiments").glob("*_e11_macro_ladder_*"), reverse=True)
     e11_dir = next(r for r in e11_dir if json.loads((r / "manifest.json").read_text(encoding="utf-8")).get("status") == "COMPLETED")

@@ -40,7 +40,7 @@ def main() -> None:
     pred_dir = paths.artifact("predictions", "e18", "x").parent
     res, _ = L.fit_eval(fr, {"FINAL": cols}, list(HORIZONS_V2), 8, pred_dir, log=lambda s: print(s, flush=True))
     run.finish("COMPLETED", f"E18 tabular final: set {set_name} from {src}, {len(cols)} columns, 23 horizons",
-               {"by_horizon": res, "set": set_name, "source": src, "cols": cols})
+               {"by_horizon": res, "set": set_name, "source": src, "cols": cols, "d033_guard": E14.GUARD_LOG})
 
 
 if __name__ == "__main__":

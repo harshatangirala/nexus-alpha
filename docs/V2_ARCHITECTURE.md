@@ -82,8 +82,24 @@ experiments) and never drives a choice.
   (a) + v1 news features (TF-IDF/SVD, Loughran-McDonald tone) with (b) + FinBERT features (`fb_*`: cluster-weighted tone,
   min/max, negative share, count, 16-d PCA of the mean embedding fitted on training rows) and (c) both. Same models, same
   bootstrap, same keep rule; reported on all rows and on rows with news. FinBERT weights are fixed (ProsusAI/finbert).
+* **E19 market-direction model** (added 2026-11-06, D-029; written after E11's 1D-10D validation log losses had printed and
+  before any E11 keep decision). One row per session in the v2 frame (2001-2022; blocks as above), label = SPY's own
+  v2 label (same rule, every horizon in D-026's set), features = the date-level values the stock models saw. Nested
+  sets: P (training class prior); M1 SPY technicals (`mkt_spy_*`); M2 = M1 + the other `mkt_*` (without `mkt_n`,
+  D-030); M3 = M2 + `gmd_*`; M4 = M3 + `fred_*`; placebo = M4 with whole feature rows permuted across dates (seed 11).
+  Models: logistic (median-imputed, standardised; per-row L2 chosen on inner 2016 from {1e-3, 1e-2, 0.1, 1, 10}) and
+  LightGBM (num_leaves 4, min_data_in_leaf 60, learning rate 0.03, feature/bagging fraction 0.7/0.8, L2 1, early
+  stopping on inner). 1Y has no inner labels: it takes 6M's penalty and tree count. Comparisons M1 vs P, M2 vs M1,
+  M3 vs M2, M4 vs M3, M4 vs P, placebo vs P. Keep rule as E11, per family, on validation, with two changes fixed now:
+  (1) the bootstrap resamples moving blocks of max(1, ceil(h/21)) months, because overlapping labels make one-month
+  blocks too narrow for long horizons; (2) a horizon enters the keep decision only if validation holds at least 4
+  non-overlapping label windows (labelled sessions / h >= 4); others are reported only. The placebo must not pass vs P.
+  Use: if a block passes for a family whose placebo passes, the market model is refitted on 2003-2018 with the selected
+  penalty / scaled tree count and shown in the Trade Desk as a separate market-direction read with its validation
+  skill. It is not blended into the stock forecast (stock-level stacking would be a new experiment). If nothing passes,
+  the Trade Desk shows the market and macro readings as context with "no validated predictive skill (E19)".
 * **Trial budget:** E11 <= 10 feature-set x model fits per horizon; E12 1 configuration x 5 seeds; E13 2 architectures;
-  E14 one blend search; E16 3 sets x 2 models per horizon. Every trial is counted for the deflated Sharpe ratio and PBO.
+  E14 one blend search; E16 3 sets x 2 models per horizon; E19 6 sets x 2 models x 9 horizons (logistic: 5 penalties each). Every trial is counted for the deflated Sharpe ratio and PBO.
 
 ## 5. Joint sealed evaluation (owner decision 2026-11-06)
 

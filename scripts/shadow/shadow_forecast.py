@@ -106,10 +106,13 @@ def main() -> None:
             asof_s, ref, dq = r["asof_session"], r["reference_close"], f"missing_share={r['features_missing_share']:.2f}"
             fc = {h: (f["p_down"], f["p_side"], f["p_up"], f["ret_q10"], f["ret_q50"], f["ret_q90"],
                       f["direction_skill_validated"]) for h, f in r["forecasts"].items()}
+            # cross-sectional ranker (D-038): the frozen F0 LightGBM component's p_up - p_down, logged for rank IC
+            rank = {h: float(p[2] - p[0]) for h, p in r.get("components", {}).get("lgbm", {}).items()}
         else:
             asof_s, ref, dq = r.instrument.asof_session, r.instrument.reference_price, r.instrument.data_quality
             fc = {h: (f.down_probability, f.sideways_probability, f.up_probability, f.return_q10, f.expected_return,
                       f.return_q90, f.direction_skill_validated) for h, f in r.forecasts.items()}
+            rank = {}
         dec = SH.decision_utc_for(pd.Timestamp(asof_s))
         if deadline["utc"] is None or dec - STOP_BEFORE_DECISION < deadline["utc"]:
             deadline["utc"] = dec - STOP_BEFORE_DECISION
@@ -118,7 +121,7 @@ def main() -> None:
                          "ret_q10": q10, "ret_q50": q50, "ret_q90": q90, "direction_skill_validated": sk,
                          "reference_close": ref, "data_quality": dq, "bundle_id": rec["bundle_id"],
                          "run_utc": run.isoformat(timespec="seconds"), "decision_utc": dec.isoformat(),
-                         "late": bool(run > dec)})
+                         "late": bool(run > dec), "rank_score": rank.get(h)})
         return True
 
     def past_deadline(extra_s: float = 0.0) -> bool:
@@ -177,6 +180,8 @@ def main() -> None:
               f"late rows {int(g.late.sum())}, failed tickers {len(failed)}")
     if failed and not a.dry_run:
         pd.DataFrame(failed).to_csv(SH.SHADOW_ROOT / a.version / "last_run_failures.csv", index=False)
+    elif failed:
+        print("[dry-run] failed:", [(f["ticker"], f["error"][:100]) for f in failed])
     probs = SH.verify_chain(a.version)
     print("chain:", "intact" if not probs else probs, flush=True)
     sys.stdout.flush()

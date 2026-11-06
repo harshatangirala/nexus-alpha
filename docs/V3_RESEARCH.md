@@ -58,3 +58,43 @@ This is a signal spread, not a tradable backtest: positions overlap, and borrow 
 No trading engine uses it until the forward test shows a positive IC.
 
 **Trial budget.** 3 candidates x 5 horizons, counted with the other experiments for deflation.
+
+## E21 results (2026-11-06)
+
+**Keep rule (validation, paired daily IC vs B0).** No candidate passed:
+
+| Candidate | 1D | 5D-20D | 3M |
+|---|---|---|---|
+| R1 | +0.012 [-0.004, +0.028] | -0.007 | -0.032 |
+| R2 | +0.009 | -0.011 | -0.035 |
+| R3 (lambdarank) | -0.017 | -0.038 | -0.042 |
+
+So **B0 stays the ranking signal**.
+
+**Validation IC of B0 (2017-2018):**
+
+| Horizon | IC |
+|---|---|
+| 1D | 0.009 |
+| 5D | 0.019 |
+| 10D | 0.020 |
+| 20D | 0.032 |
+| 3M | 0.034 |
+
+**Within-date top-minus-bottom quintile spread of B0, after 20 bp per spread** (validation, 95% interval):
+
+| Horizon | Spread |
+|---|---|
+| 1D | **-10.3 bp [-17.4, -3.4]** |
+| 5D | -1.7 bp [-23.0, +19.1] |
+| 10D | +10.2 bp [-25.2, +47.1] |
+| 20D | +36.1 bp [-36.6, +104.6] |
+
+On 2020-2022 (a reused diagnostic) the spreads are: 1D -10.5 bp [-18.7, -1.1]; 5D -1.3; 10D +4.5; 20D +3.6; and 3M -301.5 bp [-810, +83]. The 3M ranking is unreliable.
+
+**Reading.** The ranking skill is statistically real at 5-20D, but too small to cover trading costs reliably at the
+sample sizes we have. A short-horizon (1D) long-short would lose money.
+
+**Deployed for measurement only (D-038).** `rank_score` (v2's frozen F0 LightGBM component, 1D-20D) is logged every
+night for all ~500 stocks. The forward scorer reports daily rank IC across the whole universe, roughly ten times more
+stocks per date than the development samples, which gives a far more precise IC estimate within weeks.

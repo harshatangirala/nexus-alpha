@@ -104,6 +104,17 @@ def main() -> None:
         else:
             res["gain_ci95"] = None
             res["note"] = "fewer than 20 scored dates: no interval yet"
+        if "rank_score" in g and g.rank_score.notna().any():      # cross-sectional ranker (D-038)
+            gr = g.dropna(subset=["rank_score"])
+            ics, spreads = [], []
+            for _, x in gr.groupby("asof_session"):
+                if len(x) >= 30:
+                    ics.append(x.rank_score.rank().corr(x.real_ret.rank()))
+                    q = x.rank_score.rank(pct=True)
+                    spreads.append(x.real_ret[q > 0.8].mean() - x.real_ret[q <= 0.2].mean())
+            res["rank"] = {"dates": len(ics), "mean_rank_ic": float(np.mean(ics)) if ics else None,
+                           "mean_quintile_spread_gross": float(np.mean(spreads)) if spreads else None,
+                           "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"}
         summ[h] = res
     (root / "summary.json").write_text(json.dumps({"version": a.version, "scored_rows": len(sc),
                                                    "first_asof": str(sc.asof_session.min()),

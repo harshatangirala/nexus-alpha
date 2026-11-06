@@ -13,7 +13,7 @@ import pandas as pd
 import pandas_market_calendars as pmc
 
 RES = Path(__file__).resolve().parents[2] / "src" / "nexus_alpha" / "resources"
-END = "2027-12-31"
+END = "2030-12-31"   # extended in audit 2026-11-06 (A-32)
 
 
 def main() -> int:

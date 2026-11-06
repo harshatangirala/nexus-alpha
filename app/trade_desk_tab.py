@@ -59,7 +59,10 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     c[0].metric(f"v2 {h}: lean", "UP" if f["p_up"] > f["p_down"] else "DOWN", f"{f['p_up'] - f['p_down']:+.3f} (up - down)")
     c[1].metric("P(up / sideways / down)", f"{f['p_up']:.2f} / {f['p_side']:.2f} / {f['p_down']:.2f}")
     td = v2.meta.get("test_diagnostic", {}).get(h, {})
-    c[2].metric("Direction skill", "validated on 2017-18" if f["direction_skill_validated"] else "NOT validated",
+    # A-31: 2017-18 holds fewer than 4 independent 6M windows and about one 1Y window, so no skill claim is possible there
+    skill_txt = ("not validatable (too few independent windows in 2017-18)" if h in ("6M", "1Y")
+                 else "validated on 2017-18" if f["direction_skill_validated"] else "NOT validated")
+    c[2].metric("Direction skill", skill_txt,
                 f"2020-22 AUROC {td['auroc_ud']:.2f}" if td.get("auroc_ud") is not None else None, delta_color="off")
     c[3].metric("Return range q10..q90", "-" if f["ret_q10"] is None else f"{f['ret_q10']:+.1%} .. {f['ret_q90']:+.1%}")
     st.caption(f"Bundle {r['bundle_id']} ({status}); as-of {r['asof_session']}; share of model inputs missing "

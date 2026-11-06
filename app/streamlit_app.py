@@ -25,10 +25,12 @@ HZ = ["1D", "2D", "5D", "10D", "20D", "1M"]
 
 @st.cache_resource(show_spinner="Loading the inference bundle and knowledge base...")
 def load_predictor():
+    from nexus_alpha import shadow as SH
     from nexus_alpha.inference.pipeline import NexusPredictor
     from nexus_alpha.rag.explain import load_kb
     kb = load_kb()
-    return NexusPredictor(kb=kb), kb
+    bdir, _ = SH.verify_frozen("v1.1")          # the frozen model, hash-verified (not "the newest bundle")
+    return NexusPredictor(bdir, kb=kb), kb
 
 
 @st.cache_data

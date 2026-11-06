@@ -38,8 +38,16 @@ from .schema import HorizonForecast, InferenceResult, Instrument, ModelInfo, Tra
 BUNDLES = paths.ARTIFACTS / "bundles"
 
 
+def _is_v1_stock_bundle(p: Path) -> bool:
+    """v1 stock bundles (E03/E08). v2 (E14) and market (E19) bundles have their own loaders."""
+    m = p / "bundle_meta.json"
+    if not m.exists() or "_e14_" in p.name or "_e19_" in p.name:
+        return False
+    return json.loads(m.read_text(encoding="utf-8")).get("kind", "v1") == "v1"
+
+
 def latest_bundle() -> Path | None:
-    c = sorted(p for p in BUNDLES.glob("*") if (p / "bundle_meta.json").exists()) if BUNDLES.exists() else []
+    c = sorted(p for p in BUNDLES.glob("*") if _is_v1_stock_bundle(p)) if BUNDLES.exists() else []
     return c[-1] if c else None
 
 

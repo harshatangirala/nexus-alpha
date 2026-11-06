@@ -369,6 +369,117 @@ def _discipline_section(plan, ticker: str) -> None:
             st.success("Recorded (local, git-ignored journal).")
 
 
+@st.cache_data(ttl=6 * 3600, show_spinner="Loading fundamentals (SEC XBRL)...")
+def _fund_data(ticker: str, mode: str, asof: str):
+    from nexus_alpha.fundamentals import service as FS
+    try:
+        return FS.historical(ticker, asof) if mode == "historical" else FS.live(ticker)
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}"}
+
+
+def _e22_note() -> str:
+    import json
+    from pathlib import Path
+    for r in sorted(Path(__file__).resolve().parents[1].joinpath("experiments").glob("*_e22_fundamentals_*"), reverse=True):
+        try:
+            m = json.loads((r / "metrics.json").read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        return ("E22: fundamentals " + ("ADD validated skill to the stock model" if m.get("kept") else
+                "did NOT add validated skill to the stock model") + " on 2017-18 (see docs/V3_RESEARCH.md). "
+                "Shown here as analysis, not as a model input.")
+    return "E22 has not been run yet: fundamentals are analysis here, not a model input."
+
+
+def _fundamentals_section(tick, mode, asof) -> None:
+    import numpy as np
+    from nexus_alpha.fundamentals import service as FS
+    st.subheader("4c. Fundamental analysis (SEC XBRL, point in time)")
+    d = _fund_data(tick, mode, str(pd.Timestamp(asof).date()) if mode == "historical" else str(pd.Timestamp.now().date()))
+    if not d or d.get("error"):
+        st.info(f"Fundamentals unavailable for {tick}: {(d or {}).get('error', 'no XBRL facts')}")
+        return
+    s, r = d["snapshot"], d["ratios"]
+    g = lambda k: float(s.get(k)) if s.get(k) is not None and pd.notna(s.get(k)) else np.nan
+    debt = g("lt_debt_total") if np.isfinite(g("lt_debt_total")) else np.nansum([g("lt_debt_noncurrent"), g("lt_debt_current")])
+    debt += 0 if not np.isfinite(g("st_borrowings")) else g("st_borrowings")
+    gp = g("ttm_gross_profit") if np.isfinite(g("ttm_gross_profit")) else g("ttm_revenue") - g("ttm_cogs")
+    gp_p = g("ttm_gross_profit_prev") if np.isfinite(g("ttm_gross_profit_prev")) else g("ttm_revenue_prev") - g("ttm_cogs_prev")
+    rows = [("Income", "Revenue", g("ttm_revenue"), g("ttm_revenue_prev")), ("Income", "Gross profit", gp, gp_p),
+            ("Income", "Operating income (EBIT)", g("ttm_operating_income"), g("ttm_operating_income_prev")),
+            ("Income", "EBITDA", g("ttm_operating_income") + g("ttm_da"), np.nan),
+            ("Income", "Net income", g("ttm_net_income"), g("ttm_net_income_prev")),
+            ("Income", "Diluted EPS", g("ttm_eps_diluted"), g("ttm_eps_diluted_prev")),
+            ("Balance", "Total assets", g("assets"), g("assets_prev")), ("Balance", "Current assets", g("assets_current"), g("assets_current_prev")),
+            ("Balance", "Total liabilities", g("liabilities"), g("liabilities_prev")),
+            ("Balance", "Current liabilities", g("liabilities_current"), g("liabilities_current_prev")),
+            ("Balance", "Shareholders' equity", g("equity"), g("equity_prev")), ("Balance", "Cash", g("cash"), g("cash_prev")),
+            ("Balance", "Total debt", debt, np.nan),
+            ("Cash flow", "Operating cash flow", g("ttm_cfo"), g("ttm_cfo_prev")), ("Cash flow", "Capital expenditure", g("ttm_capex"), g("ttm_capex_prev")),
+            ("Cash flow", "Free cash flow", g("ttm_cfo") - np.nan_to_num(g("ttm_capex")), g("ttm_cfo_prev") - np.nan_to_num(g("ttm_capex_prev"))),
+            ("Cash flow", "Dividends paid", g("ttm_dividends"), g("ttm_dividends_prev")), ("Cash flow", "Buybacks", g("ttm_buybacks"), g("ttm_buybacks_prev"))]
+    t = pd.DataFrame(rows, columns=["statement", "item", "latest (TTM / latest)", "a year earlier"])
+    t["change"] = (t["latest (TTM / latest)"] / t["a year earlier"] - 1).where(t["a year earlier"].abs() > 0)
+    st.caption(f"{d['source']}. Statements as known at the decision time; flows are trailing twelve months; latest period "
+               f"end {pd.Timestamp(s.get('period_end')).date() if pd.notna(s.get('period_end')) else '?'}.")
+    st.dataframe(t.style.format({"latest (TTM / latest)": lambda v: "-" if pd.isna(v) else (f"{v:,.2f}" if abs(v) < 1000 else f"{v / 1e6:,.0f} M"),
+                                 "a year earlier": lambda v: "-" if pd.isna(v) else (f"{v:,.2f}" if abs(v) < 1000 else f"{v / 1e6:,.0f} M"),
+                                 "change": lambda v: "-" if pd.isna(v) else f"{v:+.1%}"}), width="stretch", hide_index=True)
+    if r is None:
+        st.info("No price-based ratios for this date.")
+        return
+    c = st.columns(6)
+    for col, (lab, k) in zip(c, (("P/E", "pe"), ("EV/EBITDA", "ev_ebitda"), ("P/S", "ps"), ("P/B", "pb"), ("P/FCF", "p_fcf"),
+                                 ("Market cap ($bn)", "market_cap"))):
+        v = r.get(k)
+        col.metric(lab, "-" if v is None or pd.isna(v) else (f"{v / 1e9:,.1f}" if k == "market_cap" else f"{v:,.1f}"))
+    groups = {"Valuation": ["earnings_yield", "sales_yield", "book_to_price", "ebitda_to_ev", "fcf_yield", "dividend_yield",
+                            "shareholder_yield", "dcf_to_price"],
+              "Profitability": ["gross_margin", "operating_margin", "net_margin", "ebitda_margin", "roe", "roa", "roic"],
+              "Growth": ["revenue_growth", "operating_income_growth", "eps_growth", "asset_growth", "share_issuance"],
+              "Leverage and liquidity": ["debt_to_equity", "net_debt_to_ebitda", "interest_coverage", "current_ratio", "cash_to_assets"],
+              "Efficiency": ["asset_turnover", "receivables_to_sales"],
+              "Quality and events": ["accruals", "piotroski_f", "altman_z", "sue"]}
+    pct_like = {"earnings_yield", "sales_yield", "ebitda_to_ev", "fcf_yield", "dividend_yield", "shareholder_yield", "gross_margin",
+                "operating_margin", "net_margin", "ebitda_margin", "roe", "roa", "roic", "revenue_growth", "operating_income_growth",
+                "eps_growth", "asset_growth", "share_issuance", "cash_to_assets", "accruals", "receivables_to_sales"}
+    rr = []
+    for grp, ks in groups.items():
+        for k in ks:
+            v = r.get(k)
+            p_ = r.get(f"fr_{k}")
+            rr.append({"group": grp, "ratio": k.replace("_", " "),
+                       "value": "-" if v is None or pd.isna(v) else (f"{v:+.1%}" if k in pct_like else f"{v:,.2f}"),
+                       "universe percentile": "-" if p_ is None or pd.isna(p_) else f"{100 * p_:.0f}"})
+    with st.expander("All 31 ratios (with the stock's percentile in the universe that day)", expanded=False):
+        st.dataframe(pd.DataFrame(rr), width="stretch", hide_index=True)
+    pf, az = r.get("piotroski_f"), r.get("altman_z")
+    zone = "-" if az is None or pd.isna(az) else ("safe (> 2.99)" if az > 2.99 else "grey (1.81-2.99)" if az >= 1.81 else "distress (< 1.81)")
+    c = st.columns(3)
+    c[0].metric("Piotroski F-score (0-9)", "-" if pf is None or pd.isna(pf) else f"{int(pf)}", "8-9 strong, 0-2 weak", delta_color="off")
+    c[1].metric("Altman Z", "-" if az is None or pd.isna(az) else f"{az:.2f}", zone, delta_color="off")
+    c[2].metric("Days since last 10-Q/10-K", "-" if pd.isna(r.get("days_since_filing")) else int(r.get("days_since_filing")))
+    with st.expander("Discounted cash flow (adjust the assumptions)"):
+        fcf = g("ttm_cfo") - np.nan_to_num(g("ttm_capex"))
+        rg = float(r.get("revenue_growth")) if pd.notna(r.get("revenue_growth")) else 0.0
+        cc = st.columns(4)
+        gr = cc[0].slider("FCF growth, years 1-5", -0.10, 0.30, float(np.clip(rg, -0.05, 0.15)), 0.01, key="dcf_g")
+        rr_ = cc[1].slider("Discount rate", 0.05, 0.15, 0.09, 0.005, key="dcf_r")
+        gt = cc[2].slider("Terminal growth", 0.0, 0.04, 0.025, 0.005, key="dcf_gt")
+        yrs = cc[3].slider("Explicit years", 3, 10, 5, key="dcf_n")
+        price = float(r.get("price_as_traded")) if pd.notna(r.get("price_as_traded")) else np.nan
+        shares = float(r.get("market_cap")) / price if np.isfinite(price) and price > 0 else np.nan
+        v = FS.dcf_per_share(fcf, gr, rr_, gt, yrs, debt, g("cash"), shares)
+        if np.isfinite(v):
+            st.write(f"Intrinsic value per share **{v:,.2f}** vs price **{price:,.2f}**: margin of safety **{v / price - 1:+.0%}**.")
+        else:
+            st.write("DCF not defined (missing or negative free cash flow, or discount rate <= terminal growth).")
+        st.caption("A DCF is only as good as its assumptions; it is shown as analysis and is not validated as a signal. "
+                   "The model's fixed-assumption version is the dcf_to_price ratio above.")
+    st.caption(_e22_note())
+
+
 def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     st.header("Trade Desk")
     st.caption("Pick the trade, add up to three chart screenshots (weekly, daily, hourly) and 1-10 texts. The model uses "
@@ -486,6 +597,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     st.caption(_e19_note())
     _market_read_section(mode, asof)
     _regime_section(mode, asof)
+    _fundamentals_section(tick, mode, asof)
 
     st.subheader("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]

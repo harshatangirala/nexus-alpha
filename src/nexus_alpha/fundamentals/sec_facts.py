@@ -64,6 +64,7 @@ INSTANT = {
     "ppe": ["PropertyPlantAndEquipmentNet"],
 }
 DEI_INSTANT = {"shares_outstanding": ["EntityCommonStockSharesOutstanding"]}
+UNITS = {"eps_diluted": "USD/shares", "diluted_shares": "shares", "shares_outstanding": "shares"}   # others: USD
 FORMS = {"10-K", "10-Q", "10-K/A", "10-Q/A", "10-KT", "20-F", "40-F"}
 COLS = ["cik", "concept", "tag", "rank", "kind", "unit", "value", "start", "end", "filed", "form", "accn", "fy", "fp"]
 
@@ -139,6 +140,8 @@ def parse(cik: int) -> pd.DataFrame:
                 if not spec:
                     continue
                 for unit, vals in (spec.get("units") or {}).items():
+                    if unit != UNITS.get(concept, "USD"):      # one currency/unit per concept (audit: no mixed units)
+                        continue
                     for v in vals:
                         if v.get("form") not in FORMS:
                             continue
@@ -160,3 +163,14 @@ def load(cik: int) -> pd.DataFrame:
     if not seal.is_open():
         df = df[df.filed < seal.SEAL_DATE]
     return df.reset_index(drop=True)
+
+
+def load_live(cik: int, max_age_hours: float = 20.0) -> pd.DataFrame:
+    """LIVE INFERENCE ONLY (dashboard and forward test): current facts, including those filed after the seal, like the
+    live Yahoo bars. Never used to build any training, selection or evaluation dataset. Refreshes the raw file when older
+    than max_age_hours."""
+    p = raw_path(cik)
+    if not p.exists() or (time.time() - p.stat().st_mtime) / 3600 > max_age_hours:
+        fetch(cik, refresh=True)
+    df = parse(cik)
+    return df[df.filed >= pd.Timestamp.now().normalize() - pd.Timedelta(days=1200)].reset_index(drop=True)

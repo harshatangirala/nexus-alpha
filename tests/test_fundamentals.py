@@ -62,3 +62,11 @@ def test_split_factor_and_asis_price():
 def test_dcf_monotone_in_fcf():
     v = RT.dcf_equity(np.array([100.0, 200.0]), np.array([0.05, 0.05]), np.array([0.0, 0.0]), np.array([0.0, 0.0]))
     assert v[1] > v[0] > 0
+
+
+def test_development_loader_never_returns_post_seal_facts():
+    from nexus_alpha import seal
+    from nexus_alpha.fundamentals import sec_facts as SF
+    f = SF.load(320193)                                    # Apple: its raw file also holds 2023-2026 filings
+    assert len(f) and f.filed.max() < seal.SEAL_DATE
+    assert not seal.is_open()

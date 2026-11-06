@@ -79,14 +79,14 @@ def _lastq(q: pd.Series, offset: int) -> float:
     return float(q.iloc[-1 - offset]) if len(q) > offset else np.nan
 
 
-def snapshots(facts: pd.DataFrame) -> pd.DataFrame:
+def snapshots(facts: pd.DataFrame, at: list | None = None) -> pd.DataFrame:
+    """at: compute only at these dates (default: every filing date)."""
     if facts.empty:
         return pd.DataFrame()
     facts = facts.sort_values("filed")
-    filed_dates = sorted(facts.filed.unique())
+    filed_dates = sorted(facts.filed.unique()) if at is None else sorted(pd.to_datetime(at))
     flows = {c: g for c, g in facts[facts.kind == "flow"].groupby("concept")}
     inst = {c: g for c, g in facts[facts.kind == "instant"].groupby("concept")}
-    forms = facts.drop_duplicates("accn").set_index("accn").form
     rows = []
     for F in filed_dates:
         r = {"snap_date": F}

@@ -48,6 +48,9 @@ def load_events(dev_only: bool = True) -> pd.DataFrame:
     ev["item_list"] = ev["items"].fillna("[]").map(lambda s: json.loads(s) if s.startswith("[") else s.split("|"))
     if dev_only:
         ev = ev[ev.available_utc < SEAL_UTC]
+    else:
+        from .. import seal as _seal
+        _seal.require_open("SEC events beyond the seal")
     return ev.sort_values(["ticker", "available_utc"]).reset_index(drop=True)
 
 

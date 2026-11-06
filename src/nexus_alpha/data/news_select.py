@@ -20,6 +20,9 @@ def load_index(dev_only: bool = True) -> pd.DataFrame:
     idx["available_utc"] = pd.to_datetime(idx.available_utc, utc=True)
     if dev_only:
         idx = idx[idx.available_utc < SEAL_UTC]
+    else:
+        from .. import seal as _seal
+        _seal.require_open("news index beyond the seal")
     return idx.reset_index(drop=True)
 
 

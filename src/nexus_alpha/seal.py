@@ -123,3 +123,37 @@ def unlock(who: str, rows_returned: int = 0) -> str:
             w.writeheader()
         w.writerow(rec)
     return sha
+
+
+# ------------------------------------------------------------------------------------------------ evaluation gate
+# Process-local. Set only by open_for_evaluation() after unlock() has verified the owner's key; never persisted, never
+# set by any other code path. Every reader takes its date limit from read_limit_date()/read_limit_utc() at read time.
+_OPENED: dict = {}
+
+
+def is_open() -> bool:
+    return bool(_OPENED)
+
+
+def read_limit_date() -> pd.Timestamp:
+    """Exclusive upper bound for bar dates readers may return: the seal, unless this process opened the evaluation."""
+    return pd.Timestamp("2262-04-11") if _OPENED else SEAL_DATE
+
+
+def read_limit_utc() -> pd.Timestamp:
+    return pd.Timestamp("2262-04-11", tz="UTC") if _OPENED else SEAL_UTC
+
+
+def require_open(what: str) -> None:
+    if not _OPENED:
+        raise HoldoutSealed(f"{what}: the sealed period is closed (only open_for_evaluation() after the owner's unlock "
+                            "can open it, once, for the joint evaluation)")
+
+
+def open_for_evaluation(who: str) -> str:
+    """The joint sealed evaluation's single entry point: runs unlock() (owner key, single use, hash-chained log) and
+    only then lets this process read the sealed period. Returns the frozen configuration's SHA-256."""
+    sha = unlock(who)
+    _OPENED.update({"config_hash": sha, "who": who,
+                    "opened_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")})
+    return sha

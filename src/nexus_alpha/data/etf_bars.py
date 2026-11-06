@@ -10,7 +10,8 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 from .. import paths
-from ..seal import SEAL_DATE, SEAL_UTC
+from .. import seal as _seal
+from ..seal import SEAL_DATE, SEAL_UTC  # noqa: F401
 
 SECTORS = ["XLK", "XLF", "XLE", "XLV", "XLY", "XLP", "XLI", "XLB", "XLU"]   # the nine SPDR sectors trading since 1998
 
@@ -23,15 +24,19 @@ def available() -> list[str]:
     return sorted(p.stem for p in (paths.ARTIFACTS / "etf" / "1day").glob("*.parquet"))
 
 
-@lru_cache(maxsize=64)
 def read_daily(t: str) -> pd.DataFrame:
-    d = pq.read_table(_p("1day", t), filters=[("date", "<", SEAL_DATE.to_pydatetime())]).to_pandas()
+    return _read_daily(t, _seal.read_limit_date())      # the cache is keyed on the read limit (never stale across the gate)
+
+
+@lru_cache(maxsize=64)
+def _read_daily(t: str, limit: pd.Timestamp) -> pd.DataFrame:
+    d = pq.read_table(_p("1day", t), filters=[("date", "<", limit.to_pydatetime())]).to_pandas()
     d["date"] = pd.to_datetime(d["date"]).dt.normalize()
     return d.sort_values("date").reset_index(drop=True)
 
 
 def read_hourly(t: str) -> pd.DataFrame:
-    h = pq.read_table(_p("1hour", t), filters=[("timestamp", "<", SEAL_UTC.to_pydatetime())]).to_pandas()
+    h = pq.read_table(_p("1hour", t), filters=[("timestamp", "<", _seal.read_limit_utc().to_pydatetime())]).to_pandas()
     return h.sort_values("timestamp").reset_index(drop=True)
 
 

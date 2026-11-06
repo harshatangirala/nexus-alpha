@@ -16,7 +16,8 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 from .. import paths
-from ..seal import SEAL_DATE, SEAL_UTC
+from .. import seal as _seal
+from ..seal import SEAL_DATE, SEAL_UTC  # noqa: F401  (re-exported)
 from .calendar import offset_session
 
 OHLCV = ["open", "high", "low", "close", "volume"]
@@ -31,21 +32,21 @@ def available_tickers() -> list[str]:
 
 
 def read_daily(ticker: str) -> pd.DataFrame:
-    t = pq.read_table(_path("1day", ticker), filters=[("date", "<", SEAL_DATE.to_pydatetime())])
+    t = pq.read_table(_path("1day", ticker), filters=[("date", "<", _seal.read_limit_date().to_pydatetime())])
     d = t.to_pandas().sort_values("date").reset_index(drop=True)
     d["date"] = pd.to_datetime(d["date"]).dt.normalize()
     return d
 
 
 def read_hourly(ticker: str) -> pd.DataFrame:
-    t = pq.read_table(_path("1hour", ticker), filters=[("timestamp", "<", SEAL_UTC.to_pydatetime())])
+    t = pq.read_table(_path("1hour", ticker), filters=[("timestamp", "<", _seal.read_limit_utc().to_pydatetime())])
     h = t.to_pandas().sort_values("timestamp").reset_index(drop=True)
     return h
 
 
 def read_weekly_frozen(ticker: str) -> pd.DataFrame:
     """The frozen weekly file, sealed on the week's last trading day (used only to verify `weekly_from_daily`)."""
-    t = pq.read_table(_path("1week", ticker), filters=[("last_day", "<", SEAL_DATE.to_pydatetime())])
+    t = pq.read_table(_path("1week", ticker), filters=[("last_day", "<", _seal.read_limit_date().to_pydatetime())])
     return t.to_pandas().sort_values("week_start").reset_index(drop=True)
 
 

@@ -155,7 +155,7 @@ def main() -> None:
             ["Chart images (computer vision)", "Small extra value"],
             ["News and filings (NLP)", "Weak; news exists for 46% of samples"],
             ["Macro and S&P 500 data", "No gain per stock; a useful SPY 20-day lean (AUROC 0.72 / 0.68)"],
-            ["Fundamentals (31 ratios, SEC)", "Help ranking once compared within each industry (E23 kept); now in the forward test"],
+            ["Fundamentals (31 ratios, SEC)", "Help ranking within each industry (E23 kept); in the forward test"],
             ["Up / sideways / down", "Better than the base rate at 1-20 days; direction itself is near a coin flip"],
             ["Ranking stocks against each other", "Real but small skill (rank IC 0.02-0.05); not yet shown to beat costs"]]
     t = Table(rows, colWidths=[W * 0.36, W * 0.64])
@@ -188,7 +188,7 @@ def main() -> None:
                         "SPY market read forecasts the market. The forecasts are hash-chained and pushed to the public "
                         "repository before the market opens, so nobody can change them after the fact. A one-time sealed "
                         "test of 2023 onward is ready; only you can open it.", P),
-              Paragraph("The audit (SWOT, fishbone, Six Sigma)", H2), fishbone(),
+              KeepTogether([Paragraph("The audit (SWOT, fishbone, Six Sigma)", H2), fishbone()]),
               Paragraph("Two audits were run back to back, following Six Sigma's Define-Measure-Analyze-Improve-Control "
                         "steps. Six problems were found and fixed:", P),
               bl("The forward scorer's labels now match training 99.2% of the time (was 98.4%)."),

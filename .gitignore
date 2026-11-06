@@ -31,3 +31,6 @@ Thumbs.db
 *.env
 *.env.*
 !.env.example
+
+# local task settings (paths to owner key files)
+scripts/shadow/local_env.cmd

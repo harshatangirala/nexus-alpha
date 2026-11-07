@@ -78,3 +78,16 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
     for 500 stocks on CPU, and is hash-checked through a flat bundle.
   * **When:** it joins `run_daily.cmd` only if E24's pre-registered necessary condition is met on 2017-18.
   * **Promotion:** the forward criterion in `docs/V3_RESEARCH.md`.
+
+## Incident on 2026-11-07 (A-50, D-045)
+
+* **What happened.** The 07:00 IST run reused a bar cache filled before Friday's close. v1.1 and v2 forecast the
+  already-logged session 2026-11-05 and wrote nothing; the run still marked itself complete; v3_fund logged a 1-stock
+  file for 2026-11-05 with every row late.
+* **Fixes.** A run now targets `expected_asof()` (the last session whose 16:00 New York close plus 5 minutes has
+  passed). A cache without that session is refetched. The done marker needs v1.1, v2 and market_e19 to have logged it.
+  v3_fund refuses partial or stale input. The scorer skips an all-late version.
+* **Makeup.** The full sequence re-ran at 13:05 IST on 2026-11-07, before the 2026-11-09 09:00 New York decision time:
+  v1.1, v2 and v3_fund each logged 499 stocks for 2026-11-06 with no late rows; every chain is intact.
+* **Permanent record.** The junk v3_fund file stays in the append-only log. It is never scored (late), and the SPC
+  monitor lists it as acknowledged, pinned by its SHA-256, instead of raising a nightly alarm.

@@ -27,6 +27,13 @@ from nexus_alpha import shadow as SH  # noqa: E402
 
 UNIVERSE = {"v1.1": 500, "v2": 500, "market_e19": 1, "v3_fund": 500}
 
+# Documented incidents in the append-only logs, pinned by the logged file's SHA-256. A pinned session is left out of the
+# coverage chart and the late-row alert (it is reported as acknowledged instead); anything else still alerts.
+ACKNOWLEDGED = {
+    ("v3_fund", "cb715cdaaaaccf913ab8d9ced3164d59bb07af5d5558aa7d83aec1239c60e9cb"):
+        "A-50: 1-stock 2026-11-05 file from the stale-cache run of 2026-11-07; every row late, never scored",
+}
+
 
 def p_chart(counts: pd.DataFrame, n: int) -> dict:
     """counts: per session failed tickers. Pooled p and 3-sigma upper limit; sessions above it are out of control."""
@@ -63,6 +70,9 @@ def main() -> None:
             continue
         probs = SH.verify_chain(ver)
         ch = pd.read_csv(root / "chain.csv")
+        ack = pd.Series([ACKNOWLEDGED.get((ver, h)) for h in ch.file_sha256], index=ch.index)
+        acknowledged = [f"{a} ({s})" for a, s in zip(ack[ack.notna()], ch.asof_session[ack.notna()], strict=True)]
+        ch = ch[ack.isna()]
         per = []
         for asof, g in ch.groupby("asof_session"):
             files = [root / f for f in g.file]
@@ -70,7 +80,8 @@ def main() -> None:
             per.append({"asof_session": asof, "logged": int(logged), "failed": int(max(n - logged, 0)),
                         "late_rows": int(g.late_rows.sum())})
         per = pd.DataFrame(per)
-        r = {"chain_intact": not probs, "coverage": p_chart(per, n), "late_rows_total": int(per.late_rows.sum())}
+        r = {"chain_intact": not probs, "coverage": p_chart(per, n), "late_rows_total": int(per.late_rows.sum()),
+             "acknowledged": acknowledged}
         if probs:
             alerts.append(f"{ver}: hash chain problem {probs}")
         if r["late_rows_total"]:
@@ -100,7 +111,8 @@ def main() -> None:
         if ver != "alerts":
             c = r["coverage"]
             print(f"  {ver}: sessions {c['sessions']}, failure rate {c['p_bar']:.4f} (DPMO {c['dpmo']:.0f}), "
-                  f"late rows {r['late_rows_total']}, chain {'intact' if r['chain_intact'] else 'BROKEN'}")
+                  f"late rows {r['late_rows_total']}, chain {'intact' if r['chain_intact'] else 'BROKEN'}"
+                  + (f"; acknowledged: {'; '.join(r['acknowledged'])}" if r["acknowledged"] else ""))
 
 
 if __name__ == "__main__":

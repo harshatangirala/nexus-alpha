@@ -67,3 +67,15 @@ def test_stale_bar_cache_is_refetched(tmp_path, monkeypatch):
     assert calls == ["ZZZ"] and pd.Timestamp(d.date.max()) == want                   # refetched
     d, _ = PL.fetch_live("ZZZ")
     assert calls == ["ZZZ"]                                                          # the fresh cache is then served
+
+
+def test_spc_acknowledgements_pin_real_logged_files():
+    """Audit 4 (2026-11-07, A-50): an acknowledged incident must name a file actually in that version's chain."""
+    import sys
+    import pandas as pd
+    sys.path.insert(0, str(REPO / "scripts" / "shadow"))
+    import spc_monitor
+    for (ver, sha), why in spc_monitor.ACKNOWLEDGED.items():
+        ch = pd.read_csv(REPO / "shadow" / ver / "chain.csv")
+        assert sha in set(ch.file_sha256), (ver, why)
+        assert why.startswith("A-"), "an acknowledgement must cite its audit row"

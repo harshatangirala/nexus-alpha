@@ -1,0 +1,61 @@
+{
+ "v1.1": {
+  "chain_intact": true,
+  "coverage": {
+   "sessions": 1,
+   "p_bar": 0.006,
+   "ucl": 0.016361081024680774,
+   "dpmo": 6000.0,
+   "out_of_control": []
+  },
+  "late_rows_total": 0,
+  "log_loss_gain_xmr": {
+   "1D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   }
+  }
+ },
+ "v2": {
+  "chain_intact": true,
+  "coverage": {
+   "sessions": 1,
+   "p_bar": 0.002,
+   "ucl": 0.007993996996996246,
+   "dpmo": 2000.0,
+   "out_of_control": []
+  },
+  "late_rows_total": 0,
+  "log_loss_gain_xmr": {
+   "1D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   }
+  }
+ },
+ "market_e19": {
+  "chain_intact": true,
+  "coverage": {
+   "sessions": 2,
+   "p_bar": 0.0,
+   "ucl": 3e-06,
+   "dpmo": 0.0,
+   "out_of_control": []
+  },
+  "late_rows_total": 0
+ },
+ "v3_fund": {
+  "chain_intact": true,
+  "coverage": {
+   "sessions": 1,
+   "p_bar": 0.998,
+   "ucl": 1.0039939969969962,
+   "dpmo": 998000.0,
+   "out_of_control": []
+  },
+  "late_rows_total": 9
+ },
+ "alerts": [
+  "v3_fund: 9 late rows (forecasts after decision time)"
+ ]
+}

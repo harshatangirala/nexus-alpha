@@ -1,0 +1,24 @@
+{
+  "version": "v1.1",
+  "scored_rows": 426,
+  "first_asof": "2026-11-05",
+  "last_asof": "2026-11-05",
+  "by_horizon": {
+    "1D": {
+      "n": 426,
+      "n_dates": 1,
+      "log_loss": 1.010267127795146,
+      "log_loss_prior": 1.0173585915082608,
+      "gain_vs_prior": 0.007091463713114754,
+      "auroc_up_vs_down": 0.3943646160754378,
+      "hit_rate_argmax": 0.5375586854460094,
+      "class_freq": [
+        0.1596244131455399,
+        0.5328638497652582,
+        0.3075117370892019
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet"
+    }
+  }
+}

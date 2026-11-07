@@ -48,6 +48,8 @@ def test_expected_asof_is_the_last_closed_session():
 def test_stale_bar_cache_is_refetched(tmp_path, monkeypatch):
     """Audit 4 (2026-11-07): a cache filled before the last close must not be served to a later run."""
     import pandas as pd
+    import pytest
+    pytest.importorskip("torch")                   # the inference pipeline imports the fusion network
     from nexus_alpha import shadow as SH
     from nexus_alpha.inference import pipeline as PL
     want = SH.expected_asof()

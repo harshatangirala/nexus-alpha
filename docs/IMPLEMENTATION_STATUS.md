@@ -39,7 +39,7 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | A | Visual audit report (loss and validation curves, ROC/PR, reliability, confusion, by-year, landscape, equity) | done | `reports/NEXUS_Audit_Report.html`, app tab "L Audit" |
 | 10 | Automated tests | see `reports/test_run.txt` | |
 | 10 | Model card, limitations, results report | done | `docs/MODEL_CARD.md`, `docs/LIMITATIONS.md`, `reports/RESULTS.md` |
-| — | GitHub repository | done, **private** | `harshatangirala/nexus-alpha`; making it public is the owner's decision |
+| — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order
 

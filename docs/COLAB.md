@@ -3,6 +3,25 @@
 Colab is optional: everything in this repository ran on the owner's CPU. It is useful for re-running the heavy stages away
 from that PC, or for the GPU-only extensions registered in the notebook (section 13).
 
+## One pass: `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb` (recommended)
+
+1. On the PC: `python scripts/colab/stage_for_drive.py --go`, then wait until Google Drive for desktop shows it as synced.
+2. In Colab: open the run-all notebook (from GitHub), **Runtime -> Run all**. A CPU runtime is enough; no secret is needed.
+3. At the end it prints, and saves to `MyDrive/antigravity_workspace/colab_results/<time>/COLAB_RESULTS.md`, one small
+   summary: versions, hardware, timings, test counts, the audit result, the E22/E23 comparison (**REPRODUCED** or
+   **MISMATCH**) and the frozen `v3_fund` check. It contains no data, no secrets and no email address.
+
+Everything runs through `scripts/colab/reproduce.py`, so the same command works on any machine:
+`python scripts/colab/reproduce.py --drive-root <staged folder> [--work <local copy>] [--skip-experiments]`.
+
+Rehearsed on 2026-11-07 on the owner's PC: a fresh clone, a clean environment built from `requirements-colab-repro.txt`
+plus torch (preinstalled on Colab; the script never reinstalls it and stops with a clear message if it is missing), the
+staged Drive copy as the data. Verdict **REPRODUCED** in about 21 minutes on 12 cores: copy 95 s, tests 19 passed, ratio
+build 93 s, audit 7 of 7, E22 467 s and E23 472 s with identical keep decisions and differences of 0.00000, frozen
+`v3_fund` verified. The rehearsal caught two hidden torch dependencies (one test, and E22/E23 through the v1.1 bundle
+loader). Not yet run on Colab itself; on a 2-core runtime expect about 1-2 hours. The orchestrator notebook below is the full v1 pipeline (about 15 GB of private data) and is not meant for Run
+all.
+
 ## What can and cannot run on Colab
 
 | Part | On Colab? | Why |

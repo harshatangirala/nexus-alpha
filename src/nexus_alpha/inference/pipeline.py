@@ -141,7 +141,11 @@ def fetch_live(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     if cache:
         fd, fh = Path(cache) / f"{ticker}_daily.pkl", Path(cache) / f"{ticker}_hourly.pkl"   # exact round trip
         if fd.exists() and fh.exists():
-            return pd.read_pickle(fd), pd.read_pickle(fh)
+            from .. import shadow as _SH
+            cached = pd.read_pickle(fd)
+            # a cache filled before the last close is stale: refetch (audit 4, 2026-11-07)
+            if len(cached) and pd.Timestamp(cached.date.max()) >= _SH.expected_asof():
+                return cached, pd.read_pickle(fh)
     daily, hourly = _fetch_live_uncached(ticker)
     if cache:
         Path(cache).mkdir(parents=True, exist_ok=True)

@@ -62,6 +62,9 @@ def main() -> None:
     horizons = {h: int(n) for h, n in meta.get("horizons", HORIZONS).items()}
     fc = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
     fc = fc[~fc.late.astype(bool)]
+    if fc.empty:
+        print("no on-time forecasts to score yet (every logged row was late)")
+        return
     # three years of history before the first forecast, as live inference fetches: the label threshold uses an EWMA
     # volatility (alpha 0.06) whose start value would still weigh ~8% after a 60-day warm-up (audit A-28)
     first = (pd.Timestamp(fc.asof_session.min()) - pd.Timedelta(days=3 * 365 + 7)).strftime("%Y-%m-%d")

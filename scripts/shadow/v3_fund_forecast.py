@@ -59,6 +59,10 @@ def main() -> None:
     if not lp_path.exists():
         sys.exit("no live fundamentals cross-section (run live_fundamentals.py first)")
     LP = pd.read_parquet(lp_path)
+    expected = str(SH.expected_asof().date())
+    if asof != expected or len(X) < 450:
+        sys.exit(f"v2 feature rows are for {asof} with {len(X)} stocks, expected session {expected} with at least 450: "
+                 "not logged (a partial or stale log would be permanent)")
     lp_session = str(pd.Timestamp(LP.date.iloc[0]).date())
     if lp_session != asof:
         sys.exit(f"live fundamentals are for {lp_session}, the v2 features for {asof}: not logged")

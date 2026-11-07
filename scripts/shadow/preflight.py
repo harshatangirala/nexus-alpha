@@ -54,8 +54,20 @@ def main() -> None:
     a = ap.parse_args()
     LOGS.mkdir(parents=True, exist_ok=True)
     if a.mark:
+        sys.path.insert(0, str(REPO / "src"))
+        from nexus_alpha import shadow as SH
+        want = str(SH.expected_asof().date())
+        missing = []
+        for v in ("v1.1", "v2", "market_e19"):               # the run is complete only if each logged the expected session
+            ch = SH.SHADOW_ROOT / v / "chain.csv"
+            if not ch.exists() or want not in set(pd.read_csv(ch).asof_session.astype(str)):
+                missing.append(v)
+        if missing:
+            print(f"preflight: NOT marked complete: no {want} forecasts logged for {missing}; a later trigger retries",
+                  flush=True)
+            return
         marker().write_text(pd.Timestamp.now().isoformat(timespec="seconds"), encoding="utf-8")
-        print(f"preflight: run marked complete ({marker().name})", flush=True)
+        print(f"preflight: run marked complete ({marker().name}; session {want} logged)", flush=True)
         return
     if marker().exists():
         print(f"preflight: today's run already completed ({marker().name}); nothing to do", flush=True)

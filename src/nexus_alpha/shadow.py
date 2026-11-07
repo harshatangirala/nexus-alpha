@@ -93,6 +93,18 @@ def append_chain(version: str, rec: dict) -> None:
         w.writerow(rec)
 
 
+def expected_asof(now=None) -> pd.Timestamp:
+    """The last session whose regular close (16:00 New York) plus 5 minutes has passed: the as-of session a nightly run
+    must forecast. (Audit 4, 2026-11-07: a bar cache filled before that close made a later run forecast an older
+    session, which was already logged, and write nothing.)"""
+    from .data.calendar import sessions
+    now = pd.Timestamp.now(tz="America/New_York") if now is None else pd.Timestamp(now).tz_convert("America/New_York")
+    today = pd.Timestamp(now.date())
+    after_close = (now.hour, now.minute) >= (16, 5)
+    s = sessions()
+    return s[s <= (today if after_close else today - pd.Timedelta(days=1))].max()
+
+
 def now_utc() -> pd.Timestamp:
     return pd.Timestamp(dt.datetime.now(dt.timezone.utc))
 

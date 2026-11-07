@@ -15,7 +15,7 @@
 8. **Sample frame.** NEXUS reuses TriFrame's s500 chart sets (one decision every ~10 sessions per stock) so stored embeddings can be reused. That limits the sample to 500 stocks and those dates.
 9. **Charts are OHLC bars, not candlesticks**, scaled to each window (so they cannot show the volatility level), resized to 224² (TriFrame's review flags resolution loss). A candlestick renderer and native-resolution inputs are registered, not run.
 10. **Fine-tuned chart embeddings** may be evaluated only from 2017; their weights saw TriFrame targets through 2014.
-11. **Text features are classical** in the local profile (TF-IDF/SVD, lexicon tone). Transformer encoders are registered adapters for GPU runs, not results.
+11. **Text features are classical** in the local profile (TF-IDF/SVD, lexicon tone). Transformer encoders are registered adapters for GPU runs; the one local transformer result is FinBERT in E16 (`docs/V2_RESULTS.md`).
 12. **Seeds.** The E03 variant comparison used one seed per variant. The selected configuration was re-run with 5 seeds in E06 (validation spread ± 0.0010), so differences between E03 variants smaller than about 0.002 are within seed noise.
 13. **The 20D and 1M horizons differ by one session**, so they are near-duplicates by construction.
 14. **Hourly triggers** are evaluated only on the as-of session's completed bars; intrabar decisions (rule E141) are out of scope.
@@ -35,5 +35,5 @@
 
 23. Live mode depends on Yahoo Finance, whose hourly bars can differ slightly between requests.
 24. The live mode does not fetch SEC filings.
-25. A final-evaluation script for the sealed period is not written yet; it should be written only after the owner decides what to freeze.
-26. Screenshots are displayed but never read; TriFrame's OCR screen reader was not integrated.
+25. The final-evaluation script for the sealed period is written and rehearsed on 2022 (`scripts/sealed/`, `docs/SEALED_EVALUATION_PLAN.md`); only the owner may run it on the sealed data, once.
+26. Screenshots are not read by a trained model. Legend values were read by Gemini and checked against real bars in E17 (`docs/V2_RESULTS.md`); that read is live, unvalidated at scale, and never changes the frozen probabilities.

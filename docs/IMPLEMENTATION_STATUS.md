@@ -1,6 +1,6 @@
 # Implementation status
 
-Status words: **passed** (ran and passed), **done** (built and exercised), **partial**, **not run**, **blocked**, **not applicable**. Updated 6 November 2026.
+Status words: **passed** (ran and passed), **done** (built and exercised), **partial**, **not run**, **blocked**, **not applicable**. Updated 7 November 2026.
 
 | Phase | Item | Status | Evidence |
 |---|---|---|---|
@@ -17,7 +17,7 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | 4 | CV branch: renderer and embedding parity, 5 backbones | passed | `reports/verification/cv_parity.json` |
 | 4 | Structured branch (E01), chart branch (E02) | done | `docs/EXPERIMENT_LOG.md`, `reports/RESULTS.md` |
 | 4 | Text branch (classical, CPU) | done | `data_manifests/text_features_summary.json` |
-| 4 | Transformer text encoders, chart fine-tuning on NEXUS labels | not run | GPU profile; registered in `configs/` |
+| 4 | Transformer text encoders (FinBERT, E16), chart fine-tuning on NEXUS labels | partial | FinBERT run in E16 (`docs/V2_RESULTS.md`); other encoders and chart fine-tuning not run, GPU profile in `configs/` |
 | 5 | RAG ingestion with page provenance; 6 retrieval methods; evaluation | done | `docs/RAG_DESIGN_AND_EVALUATION.md` |
 | 6 | Five fusion variants, ablations, missing-modality tests | done | E03 |
 | 7 | Calibration on 2019, registered hypotheses, walk-forward, backtest | done | E03, E05, E04 |
@@ -45,5 +45,5 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 
 1. Owner review of results and of what to freeze; then (optionally) the single sealed evaluation, reported as semi-confirmatory.
 2. GPU profile: transformer text encoders (FinBERT/BGE/ChronoBERT) as a pre-registered comparison against the classical features; native-resolution chart embeddings.
-3. Forward shadow test: score each session from the freeze date and log forecasts, the only clean test of direction.
+3. Forward shadow test: running since 2026-11-05 for v1.1, v2, market_e19 and v3_fund (`docs/FORWARD_SHADOW_TEST.md`); it is the only clean test of direction and needs about 120 sessions.
 4. Pre-register for the next study: an economic direction gate, rolling recalibration (or none), and the v1.1 blend as the frozen model.

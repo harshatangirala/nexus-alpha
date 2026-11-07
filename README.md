@@ -35,11 +35,11 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 * TriFrame: images add ~0 to volatility R².
 * SEC study: models know whether a stock moves, not which way.
 
-## Now in progress: v1.1 frozen, forward test running, v2 being built
+## Status: v1.1, v2, market_e19 and v3_fund are frozen and in the forward test
 
 * **v1.1 is frozen** (`registry/frozen_models/v1.1.json`, SHA-256 of every bundle file) and is in a **forward shadow test**:
   every evening it forecasts all 500 stocks before the next open, into a hash-chained log in `shadow/v1.1/`
-  ([`docs/FORWARD_SHADOW_TEST.md`](docs/FORWARD_SHADOW_TEST.md)). A golden test pins its outputs while v2 is built.
+  ([`docs/FORWARD_SHADOW_TEST.md`](docs/FORWARD_SHADOW_TEST.md)). A golden test pins its outputs. v2, market_e19 and v3_fund are frozen too and logged by the same nightly run.
 * **v2** ([`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md), pre-registered before any v2 fit) adds:
   * S&P 500 (SPY) and sector, rates, credit and commodity ETF bars at 1H/1D/1W, from the same minute source as TriFrame;
   * VIX, Treasury yields, dollar, oil, gold and copper;
@@ -111,7 +111,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `scripts/` | audits, data builds, experiments E01-E10, RAG build and evaluation, verification (parity, quantile coverage), report compilers (`make_results.py`, `audit_report.py`), pipeline orchestrator |
 | `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 109 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
+| `tests/` | 119 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 

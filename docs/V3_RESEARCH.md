@@ -364,3 +364,27 @@ sessions at 20D, Kronos becomes a shown signal in the Trade Desk (still not trad
 The forward IC minus the 2017-18 IC is reported as the estimated inflation from contamination.
 
 **Trial budget.** 1 configuration x 6 horizons x 2 endpoints. Nothing is selected on 2020-22, which E24 does not read.
+
+## E24 results (2026-11-07; run `experiments/20261107T125909_e24_kronos_zero_shot_32c34f`)
+
+11,666 of the 11,675 registered rows were scored (9 had under 400 prior bars): 489 stocks, 244 sessions, 2017-18.
+
+**Decision under the pre-registered rule: the necessary condition is NOT met.** Kronos is not frozen and does not enter the
+forward test. It stays in the Trade Desk as labelled analysis.
+
+| Endpoint (2017-18, contaminated) | Kronos zero-shot | Reference B0 (F0 LightGBM) |
+|---|---|---|
+| Log-loss gain over the class prior, swing 2D-20D | **-0.678 [-0.768, -0.581]** | +0.011 [+0.008, +0.015] |
+| Log-loss gain over the class prior, 1D | -0.220 [-0.248, -0.191] | +0.015 [+0.010, +0.020] |
+| Mean daily rank IC, swing | +0.005 [-0.028, +0.039] | +0.022 [-0.001, +0.043] |
+| Mean daily rank IC, 1D | -0.002 [-0.022, +0.017] | -0.005 [-0.027, +0.016] |
+
+**Reading.**
+* **Probabilities are unusable.** Kronos's log loss is 1.27 at 1D and 1.96 at 20D, against about 1.05-1.10 for the
+  class prior. The path distribution is far too wide or too shifted for the label rule's classes (the level-reversion
+  behaviour documented in `docs/KRONOS.md`).
+* **Ranking shows nothing.** The swing rank IC is +0.005 with an interval spanning zero, on data Kronos was trained on.
+  If it had memorised those years, the IC would have been high.
+* **Therefore** there is no skill to look for live, and the forward test is not spent on it.
+* **Not tested:** other configurations (Kronos-base, T = 0.6, mean-path point forecasts). None was registered, and
+  trying them now would be a post-result search. A new configuration would need its own pre-registration.

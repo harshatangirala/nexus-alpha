@@ -53,6 +53,13 @@ training data. Three consequences:
   with sideways within max(0.5 sigma_t sqrt(h), 10 bp), counts smoothed by 0.5 per class. `rank_score` is the mean path
   return.
 
+## E24 result (2026-11-07)
+
+On the contaminated 2017-18 diagnostic, Kronos-small zero-shot did **not** meet the pre-registered necessary condition:
+swing log-loss gain over the class prior -0.678 [-0.768, -0.581] (the LightGBM reference: +0.011), swing rank IC +0.005
+[-0.028, +0.039]. It is therefore **not** in the forward test (D-044). The forecaster and freeze script are kept,
+inactive. Details are in `docs/V3_RESEARCH.md`.
+
 ## Behaviour to know
 
 Kronos normalises **price levels** over its window. A stock at the top of its 400-bar range is therefore forecast to

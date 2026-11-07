@@ -92,7 +92,9 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     17-19x faster (2.9 s per stock on CPU). Probabilities use the NEXUS label rule.
   * **Contamination:** its pre-training data covers US daily stock bars from 2000 to June 2024, so it is never a model
     feature. A 2017-18 test (E24, pre-registered) can only rule it out.
-  * **Forward test:** only if E24's condition is met; it is the only evidence.
+  * **E24 result:** on 2017-18, inside its training data, Kronos-small had no ranking skill and unusable probabilities
+    (log loss 1.27-1.96 vs about 1.05 for the class prior). It is **not** in the forward test; it stays in the Trade
+    Desk as labelled analysis.
   * **Trade Desk:** a fan chart of sampled paths.
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.

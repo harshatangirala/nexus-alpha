@@ -1,0 +1,69 @@
+{
+ "run_id": "20261107T125909_e24_kronos_zero_shot_32c34f",
+ "name": "e24_kronos_zero_shot",
+ "profile": "local-cpu",
+ "config": {
+  "model": "Kronos-small",
+  "lookback": 400,
+  "paths": 32,
+  "T": 1.0,
+  "top_p": 1.0,
+  "horizons": [
+   "1D",
+   "2D",
+   "5D",
+   "10D",
+   "15D",
+   "20D"
+  ],
+  "rows_rule": "valid block, odd calendar months",
+  "weights": {
+   "repo": "NeoQuasar/Kronos-small",
+   "revision": "901c26c1332695a2a8f243eb2f37243a37bea320",
+   "files": {
+    "config.json": "5e0f6a605d5f81b5c9b559fe5cf716a1acb041c744e6f41bd05b097b7a685396",
+    "model.safetensors": "b082dfcbd8e8c142a725c8bbb99781802f38fec81210e13479effb32b3c3e020"
+   }
+  },
+  "tokenizer": {
+   "repo": "NeoQuasar/Kronos-Tokenizer-base",
+   "revision": "0e0117387f39004a9016484a186a908917e22426",
+   "files": {
+    "config.json": "2366e7ccfec76cbc19cf3c4c1b9c5d901be336ca1e83f2d2292c9bff381b77a2",
+    "model.safetensors": "59d85f6af76a2c3b8240ea06cb21db4213b4eeca053f246b23e29cf832fc6bee"
+   }
+  },
+  "block_len_months": 1,
+  "seed": 11
+ },
+ "config_hash": "32c34f000425dc43",
+ "git_commit": "f0e397946030cf83223c0673a0a3c1a1cf801621",
+ "git_dirty": false,
+ "git_dirty_files": [],
+ "git_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "environment": {
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "nexus_alpha": "0.1.0",
+  "numpy": "2.5.4",
+  "pandas": "3.1.1",
+  "torch": "2.15.0+cpu",
+  "lightgbm": "4.7.0",
+  "sklearn": "1.9.1",
+  "timm": "1.0.31",
+  "transformers": "5.22.1",
+  "cuda": false,
+  "gpu": null
+ },
+ "inputs": {
+  "v2_frame": {
+   "path": "C:\\Users\\harsh\\nexus-alpha\\artifacts\\samples\\v2_frame.parquet",
+   "digest": "8d294c7526fe6756a3d6ddee+partial(314602788)"
+  }
+ },
+ "started_utc": "2026-11-07T07:29:46Z",
+ "status": "COMPLETED",
+ "finished_utc": "2026-11-07T07:29:46Z",
+ "elapsed_s": 36.7,
+ "summary": "E24 Kronos zero-shot (contaminated 2017-18 diagnostic): necessary condition NOT met; swing log-loss gain -0.6783 [-0.7675713100928325, -0.5806114739936017], swing rank IC +0.0054 [-0.028175640645351076, 0.038743912877563146]"
+}

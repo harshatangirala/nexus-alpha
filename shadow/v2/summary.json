@@ -1,21 +1,21 @@
 {
   "version": "v2",
-  "scored_rows": 482,
+  "scored_rows": 499,
   "first_asof": "2026-11-05",
   "last_asof": "2026-11-05",
   "by_horizon": {
     "1D": {
-      "n": 482,
+      "n": 499,
       "n_dates": 1,
-      "log_loss": 1.0179451479757644,
-      "log_loss_prior": 1.012069508818482,
-      "gain_vs_prior": -0.005875639157282508,
-      "auroc_up_vs_down": 0.40009132420091326,
-      "hit_rate_argmax": 0.5477178423236515,
+      "log_loss": 1.0161083993721292,
+      "log_loss_prior": 1.0097982152432914,
+      "gain_vs_prior": -0.00631018412883777,
+      "auroc_up_vs_down": 0.39543394911118857,
+      "hit_rate_argmax": 0.5511022044088176,
       "class_freq": [
-        0.15560165975103735,
-        0.5414937759336099,
-        0.3029045643153527
+        0.1523046092184369,
+        0.5450901803607214,
+        0.3026052104208417
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"

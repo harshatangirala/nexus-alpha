@@ -2,10 +2,10 @@
  "v1.1": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 1,
-   "p_bar": 0.006,
-   "ucl": 0.016361081024680774,
-   "dpmo": 6000.0,
+   "sessions": 2,
+   "p_bar": 0.004,
+   "ucl": 0.012468293806901128,
+   "dpmo": 4000.0,
    "out_of_control": []
   },
   "late_rows_total": 0,
@@ -19,7 +19,7 @@
  "v2": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 1,
+   "sessions": 2,
    "p_bar": 0.002,
    "ucl": 0.007993996996996246,
    "dpmo": 2000.0,
@@ -47,15 +47,18 @@
  "v3_fund": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 1,
-   "p_bar": 0.998,
-   "ucl": 1.0039939969969962,
-   "dpmo": 998000.0,
-   "out_of_control": []
+   "sessions": 2,
+   "p_bar": 0.5,
+   "ucl": 0.5670820393249937,
+   "dpmo": 500000.0,
+   "out_of_control": [
+    "2026-11-05"
+   ]
   },
   "late_rows_total": 9
  },
  "alerts": [
-  "v3_fund: 9 late rows (forecasts after decision time)"
+  "v3_fund: 9 late rows (forecasts after decision time)",
+  "v3_fund: coverage out of control on ['2026-11-05']"
  ]
 }

@@ -62,6 +62,7 @@ forward test that no development step could see. An integration is useful only i
   * The adapter refuses a run that would not fit what is left today.
   * It adds every call it made (counted by a callback) to the shared usage counter.
   * This is why the committee runs on demand and never nightly.
+* **Live status, 2026-11-10.** The integration is complete and tested (quota guard, model fallback, public record, forward scorer). The first live run could not complete: Google answered 503 "high demand" on all four flash models available to the key, and a direct one-word request was refused too. Nothing was logged. The first completed run is still to come, from tab M.
 
 ## OpenBB: the options market's view (E26)
 

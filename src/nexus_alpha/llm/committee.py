@@ -59,7 +59,7 @@ def history() -> pd.DataFrame:
 
 
 TRANSIENT = ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "DEADLINE", "504")
-MAX_MODELS = 3
+MAX_MODELS = 4               # on 2026-11-10 the three newest flash models all answered 503; the fourth answered
 
 
 def _attempt(py, work, run_id: str, ticker: str, asof, analysts: list[str], m: str, extra: dict, timeout_s: int) -> dict:

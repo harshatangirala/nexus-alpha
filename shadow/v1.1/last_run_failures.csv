@@ -1,2 +1,5 @@
 ticker,error
 BZH,ValueError('only 66 usable daily bars from Yahoo for BZH: insufficient history')
+GSK,"TypeError('Cannot convert tz-naive timestamps, use tz_localize to localize')"
+ROKU,ValueError('only 2 usable daily bars from Yahoo for ROKU: insufficient history')
+TCBI,ValueError('only 1 usable daily bars from Yahoo for TCBI: insufficient history')

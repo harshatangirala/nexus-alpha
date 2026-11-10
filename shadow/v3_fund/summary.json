@@ -1,0 +1,30 @@
+{
+  "version": "v3_fund",
+  "scored_rows": 498,
+  "first_asof": "2026-11-06",
+  "last_asof": "2026-11-06",
+  "by_horizon": {
+    "1D": {
+      "n": 498,
+      "n_dates": 1,
+      "log_loss": 1.0514291237146158,
+      "log_loss_prior": 1.044243101199683,
+      "gain_vs_prior": -0.007186022514932722,
+      "auroc_up_vs_down": 0.5262958280657396,
+      "hit_rate_argmax": 0.46184738955823296,
+      "class_freq": [
+        0.07028112449799197,
+        0.4759036144578313,
+        0.4538152610441767
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 1,
+        "mean_rank_ic": 0.08409461885273635,
+        "mean_quintile_spread_gross": -0.0013691054469293605,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    }
+  }
+}

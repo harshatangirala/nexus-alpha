@@ -550,3 +550,102 @@ By E25's use clause, with the live-parity gate applied per horizon:
   1. its mean daily rank IC has a date-block bootstrap 95% lower bound above 0;
   2. its paired daily rank-IC difference against `ranker_v3` has a lower bound above 0.
 * **First logged session:** 2026-11-09, logged on 2026-11-10 before that session's decision time (19:30 IST).
+
+## E26 implied-volatility benchmark (forward only; pre-registered 2026-11-10, before any options snapshot was taken)
+
+**Question.** The models' one robust skill is "will it move" (sideways against a move). The options market prices
+the size of future moves. Does NEXUS's P(move) carry information beyond option-implied volatility? If it does not,
+the volatility skill is already in market prices.
+
+**Data, forward only.**
+* **When.** Every nightly run, after the forecasts and before 09:00 New York on the next session (the same decision
+  clock).
+* **What.** A snapshot of each forward-test stock's listed options from CBOE's delayed quotes, through OpenBB
+  (`obb.derivatives.options.chains`, provider `cboe`).
+* **Where.** The snapshot is stored in `artifacts/iv_snapshots/` (CBOE's data terms rule out publishing it). Its
+  SHA-256 goes into the public hash chain `shadow/iv_snapshot/chain.csv`, which fixes the time of each snapshot.
+* **History.** No historical options data is used, so nothing here can be overfitted.
+
+**Implied-volatility measure (fixed now).**
+* **Contracts.** Only those with a positive bid and ask, and an implied volatility between 0.01 and 5.0.
+* **ATM IV per expiration.** For each expiration at least 2 calendar days away: the mean of the call and put implied
+  volatilities at the listed strike closest to the underlying price, or the one that exists.
+* **30-day IV (IV30).** Linear interpolation in total variance (sigma^2 x days) between the two expirations that
+  bracket 30 calendar days. If every expiration is beyond 30 days, the nearest is used; if every one is shorter, the
+  longest is used. A stock with no valid expiration has no IV.
+* **Horizon scaling.** For h sessions, sigma_h = IV30 x sqrt(h / 252). This includes the first overnight, which the
+  label's window (open of t+1 to close of t+h) excludes; that is a stated approximation.
+
+**IV-implied probabilities.** With a zero-drift normal model for the label return and the label rule's own
+threshold tau_h (from `shadow.realized_labels`):
+* P_IV(sideways) = Phi(tau_h / sigma_h) - Phi(-tau_h / sigma_h);
+* P_IV(move) = 1 - P_IV(sideways).
+
+**Endpoints.** At 5D and 20D, for v1.1 and v2, on on-time rows of stocks that have both a forecast and an IV:
+1. **Raw comparison (descriptive).** Binary log loss of "move" under NEXUS (P(move) = 1 - p_side) and under IV. The
+   paired per-row difference (IV minus NEXUS) is given with a date-clustered bootstrap 95% interval.
+2. **Incremental value (decides).**
+   * Model: a logistic regression of the move indicator on logit(P_IV(move)) and logit(P_NEXUS(move)), fitted on the
+     first half of the scored forward sessions and evaluated on the second half.
+   * Baseline: the IV-only logistic, fitted and evaluated the same way.
+   * Statistic: the paired log-loss difference, with the same bootstrap.
+
+**Decision, after at least 120 scored sessions at 20D.**
+* NEXUS "adds to implied volatility" only if endpoint 2's lower bound is above 0.
+* Otherwise the reading is "NEXUS's volatility skill is already priced".
+* Endpoint 1 is reported only, because raw IV is not calibrated to the label rule.
+* Option coverage (the share of stocks with a valid IV) is reported.
+
+**Trial budget.** 2 models x 2 horizons x 2 endpoints, all forward. Nothing is selected.
+
+## E27 LLM committee (TradingAgents; forward only; pre-registered 2026-11-10, before any committee run)
+
+**What.**
+* **The tool.** TauricResearch TradingAgents v0.7.1 (Apache-2.0) runs in its own environment on the owner's Gemini
+  key. It is run on demand from the dashboard, never on a schedule, and never on history.
+* **Why never on history.** Its language model has read about the outcomes of 2003-2022, so a historical score would
+  measure memory, not skill (D-020).
+* **Each run.** A five-tier rating (Buy, Overweight, Hold, Underweight, Sell) for one stock as of the last closed
+  session.
+
+**Log.**
+* **Public part.** Every run is appended to the hash chain `shadow/committee/chain.csv`: ticker, as-of session, run
+  time, decision time, rating, models, and the SHA-256 of the full reports.
+* **Private part.** The reports themselves (LLM text built from news and filings) stay in `artifacts/llm_committee/`.
+* **Late runs.** A run after the decision time (09:00 New York on the next session) is logged and flagged late, and
+  never scored.
+
+**Scoring (forward).**
+* **Mapping.** Buy and Overweight count as up, Hold as sideways, Underweight and Sell as down. REVIEW (no readable
+  rating) counts as a failure.
+* **Labels.** At 5D and 20D with the training label rule.
+* **Metrics.**
+  * the up-vs-down hit rate on rows whose outcome is not sideways, against 50%;
+  * the agreement with v1.1's lean on the same stock and session;
+  * the share of Hold calls against the share of sideways outcomes.
+* **One vote per stock per window.** Runs on the same stock within 5 sessions of an earlier scored run count once:
+  the first one.
+
+**Decision.**
+* No claim of any kind before 100 scored runs.
+* The runs are chosen by the user, so the sample is not random. A hit rate is reported with that caveat and a
+  date-clustered bootstrap interval.
+* The committee is never a model feature, never blended into a probability, and never an input to the risk engine.
+
+## Forward-test multiplicity (amendment D-051, 2026-11-10, before any 20D forward outcome and before the first E26 snapshot)
+
+**The problem.** The forward test now holds two ranking candidates, `v3_fund` (E23) and `v3_alpha` (E25), each
+judged against `ranker_v3`, and E26 runs four incremental tests (v1.1 and v2, at 5D and 20D). Judging each at 5%
+inflates the chance that at least one passes by luck.
+
+**The amendment** (no 20D outcome of any model had matured, and no option snapshot existed, so it cannot be tuned to
+a result):
+1. **v3_fund and v3_alpha.** Each candidate's forward criterion is unchanged in substance: 20D rank IC above 0 and
+   above `ranker_v3` after 120 sessions.
+   * It is decided on one-sided date-block bootstrap p-values (the share of bootstrap means at or below 0).
+   * A candidate passes only if both of its p-values are at or below its Holm threshold across the two candidates
+     (0.025 for the smaller p-value, 0.05 for the other), on the larger of each candidate's two p-values.
+2. **E26.** The four endpoint-2 tests are Holm-corrected the same way (thresholds 0.0125, 0.0167, 0.025, 0.05).
+   * "NEXUS adds to implied volatility" is read only for a test that passes after correction.
+3. **Not corrected.** E27 is descriptive, so it is not corrected. The market read (`market_e19`) and the three-class
+   models are not ranking candidates.

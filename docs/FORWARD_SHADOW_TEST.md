@@ -125,3 +125,17 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
 * **Monitoring.** Scored by `shadow_score.py` and monitored by the SPC monitor like the others. Not needed for the done
   marker, as for v3_fund.
 * **Forward criterion.** As for v3_fund: 20D rank IC above 0 and above `ranker_v3` after 120 sessions.
+
+## Changes on 2026-11-10 (D-050): option snapshots and committee records
+
+* **Option snapshot (E26).** After the forecasts, `iv_snapshot.py` captures every forward-test stock's option chain
+  through OpenBB (CBOE delayed quotes).
+  * It fetches one stock at a time, because CBOE throttles bursts. 500 stocks take about 15 minutes.
+  * It reduces each chain to the E26 measures.
+  * The data stays private. The public record `shadow/iv_snapshot/<asof>.json` (counts, times, both files' SHA-256)
+    is hash-chained.
+  * `iv_benchmark_score.py` scores E26 once sessions mature. It decides nothing before 120 sessions at 20D.
+* **Committee records (E27).** Each on-demand LLM committee run from the dashboard adds a public record to
+  `shadow/committee/`, hash-chained like the forecasts. `committee_score.py` scores them nightly.
+* **Effect on the other models.** Both steps are non-fatal, run after every model has logged, and do not count
+  towards the done marker.

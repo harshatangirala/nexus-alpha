@@ -1,0 +1,24 @@
+{
+ "horizon": "20D",
+ "ranker": "v2 rank_score (ranker_v3)",
+ "results": {
+  "v3_fund": {
+   "sessions": 0,
+   "mean_ic": null,
+   "mean_ic_minus_ranker": null,
+   "p_ic_above_0": NaN,
+   "p_above_ranker": NaN,
+   "ranker_mean_ic": null,
+   "decision": "insufficient: 0 scored sessions at 20D (needs 120 for every candidate)"
+  },
+  "v3_alpha": {
+   "sessions": 0,
+   "mean_ic": null,
+   "mean_ic_minus_ranker": null,
+   "p_ic_above_0": NaN,
+   "p_above_ranker": NaN,
+   "ranker_mean_ic": null,
+   "decision": "insufficient: 0 scored sessions at 20D (needs 120 for every candidate)"
+  }
+ }
+}

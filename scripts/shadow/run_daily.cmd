@@ -27,6 +27,13 @@ rem v3_fund (E23 kept, D-042): F0 rows from tonight's v2 run + the live fundamen
 rem v3_alpha (E25 kept, D-049): F0 rows from tonight's v2 run + Alpha158 from tonight's cached bars; 5D-1Y only
 .venv\Scripts\python.exe -B scripts\shadow\v3_alpha_forecast.py >> artifacts\logs\shadow_daily.log 2>&1
 .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version v3_alpha >> artifacts\logs\shadow_daily.log 2>&1
+rem Forward promotion criteria of v3_fund and v3_alpha vs ranker_v3, Holm-corrected (D-051); progress until 120 sessions
+.venv\Scripts\python.exe -B scripts\shadow\forward_criteria.py >> artifacts\logs\shadow_daily.log 2>&1
+rem E26 (D-050): option-implied volatility snapshot via OpenBB/CBOE (data private; SHA-256 chained); non-fatal
+.venv\Scripts\python.exe -B scripts\shadow\iv_snapshot.py >> artifacts\logs\shadow_daily.log 2>&1
+.venv\Scripts\python.exe -B scripts\shadow\iv_benchmark_score.py >> artifacts\logs\shadow_daily.log 2>&1
+rem E27 (D-050): forward scoring of on-demand LLM committee runs; non-fatal
+.venv\Scripts\python.exe -B scripts\shadow\committee_score.py >> artifacts\logs\shadow_daily.log 2>&1
 rem Statistical process control of the forward test (alerts in the log and shadow/spc_report.json)
 .venv\Scripts\python.exe -B scripts\shadow\spc_monitor.py >> artifacts\logs\shadow_daily.log 2>&1
 rem Regression alarm: the full test suite every night (summary in the log)

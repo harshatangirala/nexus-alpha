@@ -18,6 +18,16 @@ software, provided its copyright notice and permission notice are included; the 
 repository, and in `src/nexus_alpha/kronos/vendor/LICENSE` for the vendored Kronos files. The software is provided
 "as is", without warranty of any kind.
 
+## Separate programs in their own environments (not redistributed)
+
+| Project | Licence | Use |
+|---|---|---|
+| TradingAgents (`TauricResearch/TradingAgents`) v0.7.1 | Apache-2.0 | The on-demand LLM committee (dashboard tab M, E27), installed in `artifacts/envs/tradingagents` and called by `scripts/llm/tradingagents_runner.py` |
+| OpenBB Open Data Platform (`openbq-org/OpenBB`) 5.0.0 | Apache-2.0 | CBOE delayed option chains through its `openbb_cboe` provider (dashboard tab N, the E26 snapshot), installed in `artifacts/envs/openbb` and called by `scripts/openbb/options_chains.py`. The fallback parser in that script is NEXUS's own code |
+| pyqlib 0.9.7 (`microsoft/qlib`) | MIT | Verification only (`artifacts/envs/qlib`) |
+
+Option data comes from CBOE's delayed quotes and is kept private (`artifacts/iv_snapshots/`), never committed; only counts and SHA-256 hashes are public.
+
 ## Loaded by the dashboard at run time (not redistributed)
 
 | Resource | Licence | Pinned source |

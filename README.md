@@ -98,6 +98,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
   * **Trade Desk:** a fan chart of sampled paths.
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.
+* **Audit 5 (2026-11-10)** ([`docs/AUDIT_5_2026-11-10.md`](docs/AUDIT_5_2026-11-10.md)): end-to-end review of the integrations; findings A-53 to A-62 fixed. Every selection trial is counted in [`docs/TRIAL_LEDGER.md`](docs/TRIAL_LEDGER.md), and forward tests are Holm-corrected (D-051).
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
   * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
     checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
@@ -110,8 +111,12 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 
     It uses globe.gl, and the Magic UI and Arwes styles recreated in plain HTML/CSS. Licences are listed in
     [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
-  * **TradingAgents and OpenBB** are planned as live-only tools (an LLM committee, and implied-volatility context
-    and benchmark). The plans and the Gemini free-tier quota limit are in `docs/INTEGRATIONS.md`.
+  * **TradingAgents** (dashboard tab M) is an on-demand LLM committee on the owner's Gemini key. Its analysts,
+    bull/bear debate, trader, risk team and portfolio manager end in a five-tier rating, which is logged publicly
+    and scored forward only (E27). It never feeds a model or the risk engine.
+  * **OpenBB** (dashboard tab N) shows CBOE's option chains: implied volatility and implied moves next to the
+    model's range. A nightly snapshot feeds a pre-registered forward test (E26): does NEXUS's "will it move" add
+    anything beyond option prices?
 * **Keys the owner sets** (environment variables, never committed):
   * `FRED_API_KEY` for ALFRED vintages;
   * `GEMINI_API_KEY` for the Trade Desk's LLM read.
@@ -125,7 +130,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `scripts/` | audits, data builds, experiments E01-E10, RAG build and evaluation, verification (parity, quantile coverage), report compilers (`make_results.py`, `audit_report.py`), pipeline orchestrator |
 | `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 137 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
+| `tests/` | 156 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 

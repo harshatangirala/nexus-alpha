@@ -1,7 +1,7 @@
-# External integrations (D-046, 2026-11-10)
+# External integrations (D-046 to D-050, 2026-11-10)
 
 The owner asked for OpenBB, TradingAgents and Qlib to make the engine more solid, and for six visual projects to make
-the dashboard stronger. This file records what each one adds, how it is integrated, and what is left for later.
+the dashboard stronger. This file records what each one adds, how it is integrated, and what it cannot do.
 
 ## The rule behind every choice
 
@@ -13,84 +13,83 @@ forward test that no development step could see. An integration is useful only i
 3. **An LLM's output never enters a backtest.** A modern LLM has read about the outcomes of 2003-2022, so any
    historical score of it measures memory, not skill (D-020). It can only be tested forward.
 4. **Data without point-in-time vintages is live context only**, never a training input.
-5. **Heavy tools get their own environment** (`artifacts/envs/`, git-ignored), so the environment the frozen models
-   run in does not change.
+5. **Heavy tools get their own environment** (`artifacts/envs/`, git-ignored; `src/nexus_alpha/envs.py`), called
+   through subprocesses that exchange files. The environment the frozen models run in imports none of them.
 
 ## Status by repository
 
 | Repository | Licence | What it adds | Integration | Status |
 |---|---|---|---|---|
-| microsoft/qlib | MIT | Alpha158, the most used public factor library, as a benchmark for the 80 hand-built features | Re-implemented in `src/nexus_alpha/indicators/alpha158.py` (157 of 158 features; VWAP0 needs a VWAP the bars lack). Checked against pyqlib 0.9.7's own engine on 23 stocks and 122,797 stock-days: the definitions are identical (`reports/verification/alpha158_qlib_parity.json`). Tested as **E25** under the E22/E23 keep rule | done; result below |
-| TauricResearch/TradingAgents | Apache-2.0 | A multi-agent LLM committee: analysts, a bull/bear debate, a trader, a risk team | A live, on-demand second opinion in the Trade Desk, logged for forward scoring (plan below) | next step |
-| OpenBB (`openbq-org/OpenBB`, the Open Data Platform; the old `OpenBB-finance` address redirects there) | Apache-2.0 | One interface to many data providers | Live context, and an implied-volatility benchmark for the forward test (plan below) | next step |
+| microsoft/qlib | MIT | Alpha158, the most used public factor library, as a benchmark for the 80 hand-built features | Re-implemented in `src/nexus_alpha/indicators/alpha158.py` (157 of 158 features; VWAP0 needs a VWAP the bars lack). Checked against pyqlib 0.9.7's own engine on 23 stocks and 122,797 stock-days: identical definitions. Tested as **E25**. `v3_alpha` frozen and in the forward test at 5D-1Y (D-049) | done |
+| TauricResearch/TradingAgents | Apache-2.0 | A multi-agent LLM committee: analysts, a bull/bear debate, a trader, a risk team, a portfolio manager | v0.7.1 in `artifacts/envs/tradingagents`; `src/nexus_alpha/llm/committee.py`; dashboard tab M; forward scoring **E27** | done |
+| OpenBB (`openbq-org/OpenBB`, the Open Data Platform; the old `OpenBB-finance` address redirects there) | Apache-2.0 | One interface to many data providers; here CBOE's delayed option chains | 5.0.0 in `artifacts/envs/openbb`; `scripts/openbb/options_chains.py`; `src/nexus_alpha/options.py`; dashboard tab N; nightly snapshot and forward benchmark **E26** | done |
 | vasturiano/globe.gl | MIT | WebGL globe | Mission Control globe: company addresses and Global Macro Database country data (pinned 2.46.2) | done |
 | arwes/arwes | MIT | Framed sci-fi UI language | Recreated in CSS (`app/ui.py`, `.streamlit/config.toml`) | done |
 | magicuidesign/magicui | MIT | Animated components | NumberTicker, Marquee and AnimatedBeam behaviour, re-written in plain HTML/CSS/JS | done |
 | koala73/worldmonitor | AGPL-3.0 | A situational-awareness layout around a globe | Layout reference only. AGPL code cannot be copied into this repository | done |
 | hal9ai/awesome-dataviz, sjfricke/awesome-webgl | lists | Library choice | Plotly and deck.gl (pydeck) were already installed; globe.gl is the WebGL globe | done |
 
-## Qlib: E25 Alpha158 benchmark
+## Qlib: E25 and v3_alpha
 
-Pre-registered in `docs/V3_RESEARCH.md` (section E25) before the features were built; result there and in
-`docs/DECISION_LOG.md`. Qlib itself is never imported by the package: the parity check exports the sealed bars in
-Qlib's binary format and runs Qlib's expression engine in `artifacts/envs/qlib`. Qlib computes some inputs in
-float32, which explains the only differences (at most 3.1e-5, in the correlation features); with float32 inputs
-those agree on every row too.
+* **Pre-registration.** `docs/V3_RESEARCH.md` (E25), written before the features were built.
+* **Result.** Kept on ranking only; no gain in probabilities; partial 2020-22 replication (D-047).
+* **Parity.** Qlib itself is never imported by the package. The parity check exports the sealed bars in Qlib's binary
+  format and runs Qlib's expression engine in `artifacts/envs/qlib`. Qlib computes some inputs in float32, which
+  explains the only differences (at most 3.1e-5, in the correlation features); with float32 inputs those agree on
+  every row too.
+* **v3_alpha.** Refitted, frozen and given a live-parity check against Yahoo bars, whose criteria were written before
+  it ran:
+  * price features pass (median correlation 0.9989);
+  * rank_score agreement passes at 5D-1Y and fails at 1D/2D, because Yahoo's daily volume differs from the vendor's.
+  It is therefore logged at 5D-1Y only, from session 2026-11-09 (D-049).
 
-## TradingAgents: plan (not built yet)
+## TradingAgents: the LLM committee (E27)
 
-**What it would be.** A button in the Trade Desk, "Ask the LLM committee". It runs TradingAgents v0.7.1 (pinned) in
-its own environment on the owner's Gemini key and shows the analysts' reports, the debate and the five-tier rating.
-The rating is never blended into the model's probabilities and never touches the risk engine. Every run is appended
-to a hash-chained log (as the Gemini reads are), so its ratings can be scored forward.
+* **What it does.** Dashboard tab M runs TradingAgents v0.7.1 for one stock as of the last closed session, on the
+  owner's Gemini key. It shows the analysts' reports, the debate and the five-tier rating, and puts the frozen v1.1
+  lean next to it.
+* **Isolation.** The key travels only through the child process environment, never through a file. TradingAgents'
+  result folders, cache and memory log live in `artifacts/llm_committee/work/`, not in the user's home folder.
+* **Logging.** Every run is recorded twice:
+  * the full reports privately (`artifacts/llm_committee/runs/`; LLM text built from news and filings);
+  * the rating with its metadata and the reports' SHA-256 publicly (`shadow/committee/`, hash-chained). The nightly
+    job pushes that record to GitHub, which fixes its time.
+* **Scoring.** Forward only, by `scripts/shadow/committee_score.py` under E27's pre-registered rules: one vote per
+  stock per 5 sessions, no claim before 100 runs. A run after the decision time is flagged late and never scored.
+* **Never on history.** TradingAgents' own backtester is not used as evidence (rule 3).
+* **Quota.** The free Gemini tier allows 20 requests per model per day, shared with the Trade Desk's Gemini read. A
+  market-only run takes about 12 calls by our estimate from the graph's steps (each analyst adds about 4).
+  * The adapter refuses a run that would not fit what is left today.
+  * It adds every call it made (counted by a callback) to the shared usage counter.
+  * This is why the committee runs on demand and never nightly.
 
-**The quota fact that shapes it.** One analysis with three analysts, one debate round and one risk round makes
-roughly 15-30 model calls. That is our estimate from the graph's steps, not a published figure: each analyst's tool
-rounds, two researchers, the research manager, the trader, three risk analysts and the portfolio manager. The
-Gemini free tier allows **20 requests per model per day** (recorded in
-`src/nexus_alpha/llm/gemini.py`), and the Trade Desk's own Gemini read uses the same quota. So on the free tier, one
-committee run can use up a model's day. The choices:
-* give the committee a different Gemini model from the Trade Desk's (for example a "lite" model for the analysts), so
-  their quotas do not collide; or
-* use a paid Gemini tier; or
-* run a local model through Ollama (free, slower, weaker).
+## OpenBB: the options market's view (E26)
 
-**Forward test (a draft, to be pre-registered before the first logged run).**
-* A fixed panel: for example the 20 largest forward-test stocks by market value, fixed before the first run.
-* A weekly run.
-* Ratings mapped Buy/Overweight = up, Hold = sideways, Underweight/Sell = down. TradingAgents' REVIEW signal
-  (output with no readable rating) is logged and counted as a failure, never scored as Hold.
-* Scored at 5D and 20D with the frozen models' label rule, and compared with v1.1 on the same stock-days.
-* About 120 scored sessions before any claim.
-
-TradingAgents' own backtester is not used as evidence (rule 3).
-
-**Steps.**
-1. `uv venv artifacts/envs/tradingagents --python 3.13`.
-2. Clone at tag v0.7.1 and run `uv pip install .`.
-3. Pass the owner's key as `GOOGLE_API_KEY` at run time only.
-4. Write an adapter (`src/nexus_alpha/llm/committee.py`) that calls it through a subprocess with a timeout.
-5. Run one smoke test, then the Trade Desk panel and its tests.
-
-About half a day.
-
-## OpenBB: plan (not built yet)
-
-**Install.** `openbb` 5.0.0 (Python 3.10+) in `artifacts/envs/openbb`, called by a small script that writes JSON or
-parquet.
-
-**Uses, in order of value.**
-1. **Implied-volatility benchmark (the most important test it enables).** The models' one solid skill is "will it
-   move". The options market prices exactly that. Each night, log the 30-day at-the-money implied volatility of each
-   forward-test stock next to the forecasts, before 09:00 New York. After about 120 sessions, test whether P(move)
-   from NEXUS adds anything to an implied-volatility-only baseline on sideways-versus-move log loss. If it does not,
-   the volatility skill is the options market's, already priced. Pre-register this before the first snapshot.
-2. **A second data source for the audit.** Compare the SEC-derived fundamentals of the largest stocks with OpenBB's
-   providers, automatically, as a repeatable check.
-3. **Live context in the Trade Desk.** Insider filings (Form 4), short interest (FINRA) and the economic calendar.
-   These are context only: rule 4.
-
-About a day for item 1 (the nightly snapshot needs the same hardening as the forecasters), half a day each for 2 and 3.
+* **Dashboard tab N.** A stock's option chain from CBOE's delayed quotes, with:
+  * the 30-day ATM implied volatility, the front expiry and put/call open interest;
+  * the options-implied 1D/5D/20D moves and 10%-90% ranges, next to v1.1's own logged return range;
+  * the ATM term structure.
+* **Nightly snapshot** (`scripts/shadow/iv_snapshot.py`). Each night, after the forecasts, every forward-test stock's
+  chain is captured and reduced to the E26 measures (`src/nexus_alpha/options.py`, definitions fixed by the
+  pre-registration).
+  * The data stays private (`artifacts/iv_snapshots/`) under CBOE's terms.
+  * Each snapshot's counts, times and SHA-256 are hash-chained publicly in `shadow/iv_snapshot/`.
+* **The test** (`scripts/shadow/iv_benchmark_score.py`, statistics in `src/nexus_alpha/evaluation/iv_benchmark.py`):
+  after 120 sessions, does NEXUS's P(move) add to an implied-volatility-only baseline? The statistics were checked on
+  synthetic data: they find information that is there and reject noise.
+* **Engineering findings (2026-11-10).**
+  * **Command layer too slow.** `obb.cboe.options.chains` took about 40 s per stock under threads. The runner calls
+    the same OpenBB provider code (`openbb_cboe`'s `CboeOptionsChainsFetcher`: its extract and transform steps)
+    directly, at about 2 s per stock.
+  * **Outdated certificate store.** The interpreter's default store failed CBOE's (valid, Let's Encrypt)
+    certificate. The runner points `SSL_CERT_FILE` at certifi's current bundle; verification stays on.
+  * **Throttling.** CBOE's CDN throttles concurrent bursts (82 of 500 stocks at 8 requests at a time). The runner
+    fetches one stock at a time with retries and backoff, about 15 minutes for 500 stocks.
+  * **An OpenBB transform bug.** OpenBB's transform raises on some payloads (TSLA: a missing last-trade time). A
+    minimal fallback parser reads the same raw payload. It agrees exactly with OpenBB's transform on every contract
+    of AAPL, KO, JPM and ZUMZ (6,360 contracts, zero differences in bid, ask, IV, days to expiry and spot).
+  * **Coverage.** Stocks missing from CBOE's options directory (for example NVR, AHT) have no IV and are reported as
+    missing.
 
 ## What these integrations cannot fix
 
@@ -98,4 +97,5 @@ About a day for item 1 (the nightly snapshot needs the same hardening as the for
   historical delisted constituents.
 * **The reused test years.** 2020-22 has been read many times. Only the forward test and the sealed 2023+ period are
   clean.
-* **Sample size.** The forward test needs months, not days. No library shortens that.
+* **Sample size.** E26 and E27 are forward tests: months of nightly data before they can say anything. No library
+  shortens that.

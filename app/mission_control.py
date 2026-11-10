@@ -194,12 +194,26 @@ def _forward_panel(fs: pd.DataFrame) -> None:
              "breaks the chain, and the scorer refuses a broken chain.")
 
 
+def side_logs(root: Path = ROOT) -> dict:
+    """The forward-only side records: the E26 option snapshots and the E27 committee runs (public parts only)."""
+    snaps = sorted((root / "shadow" / "iv_snapshot").glob("????-??-??.json"))
+    last = json.loads(snaps[-1].read_text(encoding="utf-8")) if snaps else None
+    runs = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((root / "shadow" / "committee" / "runs").glob("*.json"))]
+    return {"iv": (f"{len(snaps)} logged; last {last['asof_session']}, {last['tickers_with_iv30']} stocks with IV30"
+                   if last else "first snapshot tonight"),
+            "committee": (f"{len(runs)} runs logged, {sum(not r['late'] for r in runs)} on time" if runs
+                          else "no runs yet")}
+
+
 def _status_panel(fs: pd.DataFrame, root: Path) -> None:
     alerts = spc_alerts(root)
     last = fs.last_run_utc.max()
+    side = side_logs(root)
     kv = [("Last nightly run (UTC)", str(last).replace("T", " ")[:16]),
           ("Next run", "07:00 IST, Tue-Sat (scheduled task)"),
           ("SPC monitor", "no alerts" if not alerts else f"{len(alerts)} alert(s)"),
+          ("Option snapshots (E26)", side["iv"]),
+          ("LLM committee (E27)", side["committee"]),
           ("Sealed 2023+ period", holdout_status(root)),
           ("Reproduction", colab_status()),
           ("Orders sent to a broker", "none, ever")]

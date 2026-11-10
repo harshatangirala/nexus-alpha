@@ -61,3 +61,24 @@ Open `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb`, set `DRIVE_ROOT`, add `HF
 ## 6. The sealed final evaluation (owner only)
 
 Freeze the configuration file, compute its SHA-256, set `NEXUS_HOLDOUT_CONFIG` and `NEXUS_HOLDOUT_UNLOCK`, then run the final-evaluation script (to be written once the owner decides what to freeze). The unlock is single-use and logged with a hash chain in `governance/holdout_access_log.csv`. Results on 2023+ are semi-confirmatory (that period was opened before by TriFrame and is the SEC study's spent locked test).
+
+### Tabs M and N (live tools, 2026-11-10)
+
+* **M LLM committee.**
+  * Pick a stock and the analysts, and press **Run the committee**. It runs TradingAgents on your Gemini key, which
+    takes a few minutes.
+  * The free tier allows 20 calls a day per model. A market-only run takes about 12, so the tab shows what is left
+    and refuses a run that would not fit.
+  * Each run is logged publicly and scored forward (E27). A run after 09:00 New York on the session after the as-of
+    session is flagged late and never scored.
+  * The rating never changes a forecast or the risk engine.
+* **N Options.**
+  * **Fetch the option chain** for a stock: implied volatility, implied moves and the term structure from CBOE's
+    delayed quotes, next to the model's own range.
+  * The status line shows the nightly snapshots for the E26 benchmark.
+
+Both tools run in their own environments under `artifacts/envs/`. Install them with `uv`:
+* TradingAgents: `uv venv artifacts/envs/tradingagents --python 3.12`, then
+  `uv pip install --python artifacts/envs/tradingagents/Scripts/python.exe "tradingagents @ git+https://github.com/TauricResearch/TradingAgents@v0.7.1"`.
+* OpenBB: `uv venv artifacts/envs/openbb --python 3.12`, then
+  `uv pip install --python artifacts/envs/openbb/Scripts/python.exe openbb==5.0.0`.

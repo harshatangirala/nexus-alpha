@@ -114,7 +114,13 @@ if go:
 res = st.session_state.get("res")
 all_tabs = st.tabs(["Mission Control", "Trade Desk", "A Forecast", "B Charts", "C News", "D SEC", "E Indicators",
                     "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting", "J Knowledge base",
-                    "K Configuration", "L Audit"])
+                    "K Configuration", "L Audit", "M LLM committee", "N Options"])
+with all_tabs[14]:
+    import committee_tab  # noqa: E402
+    committee_tab.render(universe())
+with all_tabs[15]:
+    import options_tab  # noqa: E402
+    options_tab.render(universe())
 with all_tabs[0]:
     import mission_control  # noqa: E402
     mission_control.render()

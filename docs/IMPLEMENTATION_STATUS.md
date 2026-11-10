@@ -43,8 +43,8 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | v3 | E25 Alpha158 benchmark (pre-registered) | done | `docs/V3_RESEARCH.md` (E25) |
 | v3 | v3_alpha refit, live-parity check (Yahoo vs vendor), frozen, in the forward test at 5D-1Y | done | `registry/frozen_models/v3_alpha.json`, `reports/verification/alpha158_live_parity.json`, D-049 |
 | App | Mission Control tab, mission-control theme, Plotly charts, Trade Desk plan chart | done | `app/mission_control.py`, `tests/test_dashboard.py` |
-| — | TradingAgents LLM committee (live, logged, forward-scored) | planned | `docs/INTEGRATIONS.md` |
-| — | OpenBB live context and implied-volatility forward benchmark | planned | `docs/INTEGRATIONS.md` |
+| App | TradingAgents LLM committee (live, on demand, logged; E27 forward scoring) | done | `src/nexus_alpha/llm/committee.py`, app tab M, `tests/test_committee.py` |
+| App + forward test | OpenBB option chains (tab N) and the nightly implied-volatility snapshot for E26 | done | `scripts/openbb/options_chains.py`, `src/nexus_alpha/options.py`, `scripts/shadow/iv_snapshot.py`, `tests/test_options.py`, `tests/test_iv_benchmark.py` |
 | — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order

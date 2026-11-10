@@ -8,7 +8,7 @@ from that PC, or for the GPU-only extensions registered in the notebook (section
 1. On the PC: `python scripts/colab/stage_for_drive.py --go`, then wait until Google Drive for desktop shows it as synced.
 2. In Colab: open the run-all notebook (from GitHub), **Runtime -> Run all**. A CPU runtime is enough; no secret is needed.
 3. At the end it prints, and saves to `MyDrive/antigravity_workspace/colab_results/<time>/COLAB_RESULTS.md`, one small
-   summary: versions, hardware, timings, test counts, the audit result, the E22/E23 comparison (**REPRODUCED** or
+   summary: versions, hardware, timings, test counts, the audit result, the E22/E23/E25 comparison (**REPRODUCED** or
    **MISMATCH**) and the frozen `v3_fund` check. It contains no data, no secrets and no email address.
 
 Everything runs through `scripts/colab/reproduce.py`, so the same command works on any machine:
@@ -77,3 +77,13 @@ against Colab's preinstalled packages, and `rsync` on the Drive mount. The repro
 * `v3_fund` is never refitted there: its bundle is frozen (`registry/frozen_models/v3_fund.json`) and the notebook only
   verifies it file by file.
 * The forward test, the sealed evaluation and anything that writes to `shadow/`.
+
+## E25 added to the one pass (2026-11-10)
+
+After E22 and E23, `reproduce.py` rebuilds the Alpha158 features from the staged daily bars
+(`scripts/data/build_alpha158.py`), re-runs E25 and compares it with the committed record. The verdict is
+**REPRODUCED** only if all three match. E25 adds about 1-3 hours on a small runtime; set `WITH_E25 = False` in the
+notebook to skip it.
+* **Rehearsal status.** The E25 step was not rehearsed through a Drive copy: the PC's Google Drive mount was not
+  available that evening. Its comparison logic was checked against a copy of the committed run. The inputs it needs
+  (daily bars, the v2 frame, the v1.1 bundle) are the ones the E22/E23 rehearsal already used.

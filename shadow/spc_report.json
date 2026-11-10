@@ -75,5 +75,17 @@
    }
   }
  },
+ "v3_alpha": {
+  "chain_intact": true,
+  "coverage": {
+   "sessions": 1,
+   "p_bar": 0.008,
+   "ucl": 0.019951903614069184,
+   "dpmo": 8000.0,
+   "out_of_control": []
+  },
+  "late_rows_total": 0,
+  "acknowledged": []
+ },
  "alerts": []
 }

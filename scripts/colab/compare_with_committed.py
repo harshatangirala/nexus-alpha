@@ -1,4 +1,4 @@
-"""Compare a re-run of E22 / E23 (for example on Colab) with the committed, pre-registered result.
+"""Compare a re-run of E22 / E23 / E25 (for example on Colab) with the committed, pre-registered result.
 
     python scripts/colab/compare_with_committed.py e22_fundamentals e23_industry_fundamentals
 
@@ -29,7 +29,8 @@ def main(names: list[str]) -> None:
             continue
         a, b = (json.loads((Path(r) / "metrics.json").read_text(encoding="utf-8")) for r in (runs[0], runs[-1]))
         same_keep = a["keep"] == b["keep"] and a["kept"] == b["kept"]
-        ic = max(abs(a["mean_daily_ic"][k] - b["mean_daily_ic"][k]) for k in a["mean_daily_ic"])
+        key = "mean_daily_ic" if "mean_daily_ic" in a else "mean_daily_rank_ic"     # E25 names it explicitly
+        ic = max(abs(a[key][k] - b[key][k]) for k in a[key])
         ll = 0.0
         for h, d in a["by_horizon"].items():
             for s, dd in d.items():
@@ -45,4 +46,4 @@ def main(names: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["e22_fundamentals", "e23_industry_fundamentals"])
+    main(sys.argv[1:] or ["e22_fundamentals", "e23_industry_fundamentals", "e25_alpha158"])

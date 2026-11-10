@@ -4,14 +4,16 @@
 
 Steps, in order (a failed step is recorded and the summary is still written):
   env report -> Drive check -> copy Drive to local disk -> layout check -> tests -> ratio build -> audit (7 hard
-  checks) -> E22 -> E23 -> compare with the committed, pre-registered records -> verify the frozen v3_fund bundle.
+  checks) -> E22 -> E23 -> Alpha158 build -> E25 -> compare with the committed, pre-registered records -> verify the
+  frozen v3_fund bundle.
 
 Writes one small summary (COLAB_RESULTS.md and COLAB_RESULTS.json) to <drive-root>/colab_results/<UTC stamp>/ and prints it.
 The summary holds versions, hardware, timings, pass/fail counts and the metric differences; it holds no secrets, no data
 and no article text. A re-run is a reproduction only: it never touches shadow/, registry/ or the sealed period.
 
     --no-sync            use the data where it is (no copy to local disk)
-    --skip-experiments   skip the ratio build, E22, E23 and the comparison (quick check of everything else)
+    --skip-experiments   skip the ratio build, E22, E23, E25 and the comparison (quick check of everything else)
+    --skip-e25           skip the Alpha158 build and E25 (the Qlib benchmark; about 1-3 hours on a small runtime)
 """
 from __future__ import annotations
 
@@ -142,6 +144,7 @@ def main() -> int:
     ap.add_argument("--work", default="/content/nexus_work")
     ap.add_argument("--no-sync", action="store_true")
     ap.add_argument("--skip-experiments", action="store_true")
+    ap.add_argument("--skip-e25", action="store_true")
     a = ap.parse_args()
     drive, work = Path(a.drive_root), Path(a.work)
     started = datetime.now(timezone.utc)
@@ -160,7 +163,7 @@ def main() -> int:
     #    Colab; this script never reinstalls it)
     if summary["versions"]["torch"] == "not installed" and not a.skip_experiments:
         summary["steps"].append({"step": "environment", "ok": False, "seconds": 0, "exit": 1, "fatal": True,
-                                 "tail": "torch is not installed; E22/E23 need it. On Colab it is preinstalled (use a standard "
+                                 "tail": "torch is not installed; E22, E23 and E25 need it. On Colab it is preinstalled (use a standard "
                                          "runtime); elsewhere: pip install torch, then run again."})
         summary["verdict"] = "BLOCKED: torch missing"
         write_summary(out_dir, summary)
@@ -206,7 +209,8 @@ def main() -> int:
         summary["verdict"] = "FAILED: layout"
     else:
         t = r.run("tests", [py, "-m", "pytest", "-p", "no:warnings", "-p", "no:cacheprovider",
-                            "tests/test_fundamentals.py", "tests/test_shadow_runner.py", "tests/test_repo_hygiene.py"])
+                            "tests/test_fundamentals.py", "tests/test_shadow_runner.py", "tests/test_repo_hygiene.py",
+                            "tests/test_alpha158.py"])
         summary["tests"] = parse_tests(t["tail"])
         if not a.skip_experiments:
             if r.run("ratio build", [py, "scripts/data/build_fundamentals.py", "--workers", str(os.cpu_count() or 2)],
@@ -214,8 +218,12 @@ def main() -> int:
                 r.run("audit (7 hard checks)", [py, "scripts/verify/audit_fundamentals.py"])
                 r.run("E22", [py, "scripts/experiments/e22_fundamentals.py"])
                 r.run("E23", [py, "scripts/experiments/e23_industry_fundamentals.py"])
-                c = r.run("compare with committed", [py, "scripts/colab/compare_with_committed.py",
-                                                    "e22_fundamentals", "e23_industry_fundamentals"])
+                names = ["e22_fundamentals", "e23_industry_fundamentals"]
+                if not a.skip_e25:      # the Qlib Alpha158 benchmark (pre-registered E25)
+                    if r.run("Alpha158 build", [py, "scripts/data/build_alpha158.py"])["ok"]:
+                        r.run("E25", [py, "scripts/experiments/e25_alpha158.py"])
+                    names.append("e25_alpha158")
+                c = r.run("compare with committed", [py, "scripts/colab/compare_with_committed.py", *names])
                 summary["compare"] = "\n".join(l for l in c["tail"].splitlines() if "REPRODUCED" in l or "MISMATCH" in l
                                               or "keep decisions" in l or "committed" in l)
         else:

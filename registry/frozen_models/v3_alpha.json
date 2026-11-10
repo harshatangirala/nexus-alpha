@@ -1,0 +1,75 @@
+{
+  "version": "v3_alpha",
+  "bundle_id": "20261110T171026_v3_alpha_refit_a14783",
+  "files": {
+    "bundle_meta.json": "ae085e150b2d2f6132571e00297408cfc1b9834b578bc0cc28f8228278751243",
+    "lgbm_10D.txt": "64f2855b33b07e24591c45d06af03e6888b974a2426c0d6120487ec969aafdb1",
+    "lgbm_15D.txt": "cb307e014fc6ef0fa2413c3d9b22e6fe92b74e5308e034b092735689af120837",
+    "lgbm_1D.txt": "4726758ea87f6f1e65f24cdc45d20542a92c4cdf0ab6bab5de3fd0ba1ed74312",
+    "lgbm_1Y.txt": "a9f982441f9976fe91cdc4d4694a3f0c60f13a652c6521b12fbe839cd59d5b0a",
+    "lgbm_20D.txt": "22420991740314062f65c1fe1d357021602f4e208861dc3355cd8e349810219b",
+    "lgbm_2D.txt": "e798c42b7c7352003618be85be7e693c46e875b1e07087def20a9e25ed56c647",
+    "lgbm_3M.txt": "015dd8fa34baf99e22337cb820817bbdfb66993b2c07755fb5d739ee24b6f6a5",
+    "lgbm_5D.txt": "2deaaff76e6bfdcf021b564ff24fdf0e0c0318539a24d8add7c08cd154390be0",
+    "lgbm_6M.txt": "856ac78e2a77880256dfc12338f4f62d41987738c02b8fd59e196491d3003c2e"
+  },
+  "frozen_utc": "2026-11-10T11:46:17+00:00",
+  "code_commit_at_freeze": "3b98dffb286158973211cd5513d2ea3e8dfd99b3",
+  "recipe": "LightGBM (E07 params), F0 + A158 (Qlib Alpha158 without VWAP0); E25 kept on rank IC",
+  "trained_through_block": "valid (as-of 2003 .. 2018-12-31)",
+  "kind": "alpha",
+  "label_version": "nexus-labels-v2",
+  "horizons": {
+    "5D": 5,
+    "10D": 10,
+    "15D": 15,
+    "20D": 20,
+    "3M": 63,
+    "6M": 126,
+    "1Y": 252
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid"
+  ],
+  "train_class_prior": {
+    "5D": [
+      0.26244573776877095,
+      0.4283794997431541,
+      0.309174762488075
+    ],
+    "10D": [
+      0.25505083291466507,
+      0.42170715047784635,
+      0.32324201660748864
+    ],
+    "15D": [
+      0.25203077635211035,
+      0.41244376203083283,
+      0.3355254616170568
+    ],
+    "20D": [
+      0.24968247068851646,
+      0.40715442932220897,
+      0.3431630999892746
+    ],
+    "3M": [
+      0.22821685860019983,
+      0.3896981063726607,
+      0.3820850350271395
+    ],
+    "6M": [
+      0.20904174298065478,
+      0.3795842352259202,
+      0.41137402179342497
+    ],
+    "1Y": [
+      0.19361182083186196,
+      0.36625052796299756,
+      0.4401376512051405
+    ]
+  },
+  "note": "D-049: E25 kept (rank IC); live-parity check passed at 5D-1Y and failed at 1D/2D (Spearman 0.935/0.947 < 0.95, Yahoo vs vendor volume), so 1D and 2D are not deployed; forward criterion as v3_fund (20D rank IC > 0 and > ranker_v3 after 120 sessions)"
+}

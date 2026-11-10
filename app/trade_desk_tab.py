@@ -245,6 +245,42 @@ def _bars_for_check(ticker: str, mode: str, asof):
     return {"W": w, "D": d, "H": h}
 
 
+H_SESSIONS = {"1D": 1, "2D": 2, "5D": 5, "10D": 10, "20D": 20, "1M": 21}
+
+
+def _plan_chart(daily: pd.DataFrame, h: str, f, p) -> None:
+    """Last 90 daily bars, the model's 10-90% return range for the horizon, and the plan's levels if one was approved."""
+    import plotly.graph_objects as go
+
+    import ui as UI
+    d = daily.tail(90)
+    fig = go.Figure(go.Candlestick(
+        x=d.date, open=d.open, high=d.high, low=d.low, close=d.close, name="daily bars",
+        increasing=dict(line=dict(color=UI.GOOD, width=1), fillcolor=UI.GOOD),
+        decreasing=dict(line=dict(color=UI.BAD, width=1), fillcolor=UI.BAD)))
+    last, ref = pd.Timestamp(d.date.iloc[-1]), float(d.close.iloc[-1])
+    fut = pd.bdate_range(last + pd.Timedelta(days=1), periods=H_SESSIONS.get(h, 5))
+    if f.return_q10 is not None and f.return_q90 is not None:
+        fig.add_shape(type="rect", x0=last, x1=fut[-1], y0=ref * (1 + f.return_q10), y1=ref * (1 + f.return_q90),
+                      fillcolor="rgba(63,208,224,0.10)", line=dict(color=UI.ACCENT, width=1, dash="dot"))
+        if f.expected_return is not None:
+            fig.add_trace(go.Scatter(x=[last, fut[-1]], y=[ref, ref * (1 + f.expected_return)], mode="lines",
+                                     line=dict(color=UI.ACCENT, dash="dash"), name="median return"))
+    if p.decision in ("LONG", "SHORT"):
+        for lab, val, col in (("entry", p.entry_reference, UI.TEXT), ("stop", p.stop, UI.BAD),
+                              ("target 1", p.target_1, UI.GOOD), ("target 2", p.target_2, UI.GOOD)):
+            if val:
+                fig.add_hline(y=val, line=dict(color=col, width=1.2, dash="dot" if lab == "target 2" else "solid"),
+                              annotation_text=f"{lab} {val:,.2f}", annotation_position="right",
+                              annotation_font=dict(color=col, size=11))
+    fig.update_layout(xaxis_rangeslider_visible=False, showlegend=False)
+    fig.update_xaxes(rangebreaks=[dict(bounds=["sat", "mon"])])
+    UI.plot(fig, height=380)
+    st.caption("Last 90 daily bars to the as-of session. Shaded box: the model's 10-90% return range for this horizon, "
+               "shown only where its coverage was validated (a range, not a direction call). Entry, stop and targets "
+               "are drawn only when the risk engine approved a trade; a rejected plan shows no levels.")
+
+
 def _headline_fetcher(ticker: str) -> None:
     """Recent headlines (Yahoo Finance RSS) and, if SEC_USER_AGENT is set, 8-K filings; ticked items join the texts."""
     from nexus_alpha import trade_tools as TT
@@ -629,6 +665,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         res = predictor.predict(tick, asof=str(asof) if mode == "historical" else None, mode=mode,
                                 articles=company_news, risk=risk, explain=False)
     h = choice.served_by
+    bars_all = None
     st.subheader("2. Model forecast")
     if h is None:
         st.warning("No frozen model covers this horizon yet. Showing all available horizons for context only.")
@@ -654,7 +691,13 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         c[2].metric("Risk engine decision", p.decision)
         c[3].metric("Return range q10..q90", "-" if f.return_q10 is None else f"{f.return_q10:+.1%} .. {f.return_q90:+.1%}")
         st.subheader("3. Trade plan (deterministic risk engine)")
-        st.json({k: v for k, v in p.model_dump().items() if v not in (None, [], {})})
+        try:
+            bars_all = _bars_for_check(tick, mode, asof)
+            _plan_chart(bars_all["D"], h, f, p)
+        except Exception as e:  # noqa: BLE001  (the chart is optional; the plan below is the record)
+            st.info(f"Price chart unavailable: {type(e).__name__}: {e}")
+        with st.expander("Full plan record", expanded=p.decision in ("LONG", "SHORT")):
+            st.json({k: v for k, v in p.model_dump().items() if v not in (None, [], {})})
     for lim in res.limitations:
         st.caption(lim)
 
@@ -698,7 +741,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
             except Exception as e:
                 st.warning(f"Gemini call failed: {type(e).__name__}: {e}")
     if images:
-        bars = _bars_for_check(tick, mode, asof)
+        bars = bars_all if bars_all is not None else _bars_for_check(tick, mode, asof)
         cols = st.columns(len(images))
         for col, (k, data, _) in zip(cols, images):
             col.image(data, caption=f"{k} screenshot", width="stretch")

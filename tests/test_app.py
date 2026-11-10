@@ -24,4 +24,4 @@ def test_app_runs_an_analysis():
     assert "res" in at.session_state
     res = at.session_state["res"]
     assert set(res.forecasts) == {"1D", "2D", "5D", "10D", "20D", "1M"}
-    assert len(at.tabs) == 13 and at.tabs[0].label == "Trade Desk"
+    assert len(at.tabs) == 14 and at.tabs[0].label == "Mission Control" and at.tabs[1].label == "Trade Desk"

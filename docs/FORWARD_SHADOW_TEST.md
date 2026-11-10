@@ -91,3 +91,37 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
   v1.1, v2 and v3_fund each logged 499 stocks for 2026-11-06 with no late rows; every chain is intact.
 * **Permanent record.** The junk v3_fund file stays in the append-only log. It is never scored (late), and the SPC
   monitor lists it as acknowledged, pinned by its SHA-256, instead of raising a nightly alarm.
+
+## Incident on 2026-11-10 (D-048)
+
+* **What happened.** The 07:00 IST run for session 2026-11-09 did not start on time: the PC was not awake, and the
+  task has no wake timer (`WakeToRun` is off). Task Scheduler started it when the PC woke, at 10:19 IST. It ended
+  with exit code 0xC000013A (the console was closed, or Ctrl+C) before writing its first log line: the task runs as an
+  interactive task in a visible console window. A manual start at 13:58 was stopped with Ctrl+C after its first line.
+* **Makeup.** The full nightly sequence ran from 14:21 IST at the owner's instruction and finished at 16:04 IST,
+  before the decision time (09:00 New York on 2026-11-10 = 19:30 IST):
+  * v1.1 logged 496 stocks x 6 horizons;
+  * v2 logged 496 x 23;
+  * market_e19 logged its SPY read;
+  * v3_fund logged 496 x 9.
+
+  No row is late, every chain is intact, and only `shadow/` was committed and pushed, as every night.
+* **Also found and fixed (A-53).** `scripts/shadow/local_env.cmd` had a corrupted last line. The keys still loaded.
+* **Owner actions recommended** (the assistant does not change scheduled tasks):
+  1. Turn on "Wake the computer to run this task" (Task Scheduler, Conditions tab). Wake timers must be allowed in
+     the power plan, and the PC must be asleep, not shut down.
+  2. Run the task without a console window: General tab, "Run whether user is logged on or not" (asks for the
+     Windows password once). Then the window cannot be closed by accident.
+
+## Changes on 2026-11-10 (D-049): v3_alpha joins
+
+* **What it is.** A fifth frozen model, `v3_alpha`: LightGBM on the v1.1 numeric features plus Qlib's Alpha158 (E25
+  kept on rank IC), refitted on 2003-2018.
+* **Horizons.** It is logged at 5D-1Y only. Its live-parity check (Yahoo against vendor bars on 2022) passed there and
+  failed at 1D/2D (`reports/verification/alpha158_live_parity.json`).
+* **Inputs.** v2's assembled F0 row (as for v3_fund) and the Alpha158 features of the as-of session, computed from
+  the same cached Yahoo bars v1.1 and v2 used that night (`scripts/shadow/v3_alpha_forecast.py`).
+* **Start.** First logged session 2026-11-09, written on 2026-11-10 at 17:18 IST, before that session's decision time.
+* **Monitoring.** Scored by `shadow_score.py` and monitored by the SPC monitor like the others. Not needed for the done
+  marker, as for v3_fund.
+* **Forward criterion.** As for v3_fund: 20D rank IC above 0 and above `ranker_v3` after 120 sessions.

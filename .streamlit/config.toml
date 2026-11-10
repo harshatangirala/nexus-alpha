@@ -1,0 +1,26 @@
+# NEXUS Alpha dashboard theme: "mission control" (dark ink, luminous cyan, semantic amber/green/red).
+# Design references: arwes/arwes (MIT; framed sci-fi panels), koala73/worldmonitor (AGPL-3.0; layout reference only,
+# no code copied), magicuidesign/magicui (MIT; animated components ported in app/ui.py). See THIRD_PARTY_NOTICES.md.
+
+[theme]
+base = "dark"
+primaryColor = "#3FD0E0"
+backgroundColor = "#05090F"
+secondaryBackgroundColor = "#0C1622"
+textColor = "#D5E3EE"
+borderColor = "#1B2B3D"
+linkColor = "#7FE3EE"
+baseRadius = "0.25rem"
+showWidgetBorder = true
+font = "IBM Plex Sans:https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap, sans-serif"
+headingFont = "Oxanium:https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&display=swap, sans-serif"
+codeFont = "JetBrains Mono:https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap, monospace"
+chartCategoricalColors = ["#3FD0E0", "#F2B544", "#9B8CFF", "#3DDC97", "#FF6B6B", "#5B8DEF", "#E58BD8"]
+dataframeHeaderBackgroundColor = "#0F1D2C"
+metricValueFontSize = "1.45rem"
+greenColor = "#3DDC97"
+redColor = "#FF6B6B"
+orangeColor = "#F2B544"
+
+[theme.sidebar]
+backgroundColor = "#08111B"

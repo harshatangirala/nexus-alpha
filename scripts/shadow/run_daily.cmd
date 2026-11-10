@@ -24,6 +24,9 @@ rem Live fundamentals cross-section for the Trade Desk (live inference only; SEC
 rem v3_fund (E23 kept, D-042): F0 rows from tonight's v2 run + the live fundamentals; scored like the others
 .venv\Scripts\python.exe -B scripts\shadow\v3_fund_forecast.py >> artifacts\logs\shadow_daily.log 2>&1
 .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version v3_fund >> artifacts\logs\shadow_daily.log 2>&1
+rem v3_alpha (E25 kept, D-049): F0 rows from tonight's v2 run + Alpha158 from tonight's cached bars; 5D-1Y only
+.venv\Scripts\python.exe -B scripts\shadow\v3_alpha_forecast.py >> artifacts\logs\shadow_daily.log 2>&1
+.venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version v3_alpha >> artifacts\logs\shadow_daily.log 2>&1
 rem Statistical process control of the forward test (alerts in the log and shadow/spc_report.json)
 .venv\Scripts\python.exe -B scripts\shadow\spc_monitor.py >> artifacts\logs\shadow_daily.log 2>&1
 rem Regression alarm: the full test suite every night (summary in the log)

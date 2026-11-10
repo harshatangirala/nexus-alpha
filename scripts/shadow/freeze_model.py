@@ -42,11 +42,13 @@ def stock_prior(frame: str, horizons: dict, blocks: list[str]) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--kind", choices=["v1", "v2", "market", "fund", "kronos"], default="v1")
+    ap.add_argument("--kind", choices=["v1", "v2", "market", "fund", "kronos", "alpha"], default="v1")
     ap.add_argument("--version", required=True)
     ap.add_argument("--bundle", required=True)
     ap.add_argument("--train-blocks", nargs="+", default=["train", "inner", "valid"])
     ap.add_argument("--note", default="")
+    ap.add_argument("--horizons", nargs="+", default=None,
+                    help="freeze only these horizons of the bundle (a subset; D-049: v3_alpha 5D-1Y)")
     a = ap.parse_args()
     out = SH.FROZEN_DIR / f"{a.version}.json"
     if out.exists():
@@ -59,10 +61,14 @@ def main() -> None:
     elif a.kind == "v2":
         horizons, label_version = HORIZONS_V2, LABEL_VERSION_V2
         prior = stock_prior("v2_frame.parquet", horizons, a.train_blocks)
-    elif a.kind in ("fund", "kronos"):   # v3_fund (D-042) / kronos_zs (D-043): horizons and prior from the bundle
+    elif a.kind in ("fund", "kronos", "alpha"):   # v3_fund (D-042) / kronos_zs (D-043) / v3_alpha (D-049): from the bundle
         horizons, label_version = meta["horizons"], meta["label_version"]
         prior = meta["refit_class_prior"]
         a.train_blocks = ["train", "inner", "valid"]
+        if a.horizons:                   # a subset of the bundle (D-049), never a horizon it does not have
+            assert set(a.horizons) <= set(horizons), f"not in the bundle: {set(a.horizons) - set(horizons)}"
+            horizons = {h: horizons[h] for h in horizons if h in a.horizons}
+            prior = {h: prior[h] for h in horizons}
     else:   # market read (E19): one instrument (SPY); prior over the refit sessions (train, inner, valid)
         horizons, label_version = meta["horizons"], meta["label_version"]
         prior = meta["refit_class_prior"]

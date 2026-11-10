@@ -37,3 +37,12 @@
 24. The live mode does not fetch SEC filings.
 25. The final-evaluation script for the sealed period is written and rehearsed on 2022 (`scripts/sealed/`, `docs/SEALED_EVALUATION_PLAN.md`); only the owner may run it on the sealed data, once.
 26. Screenshots are not read by a trained model. Legend values were read by Gemini and checked against real bars in E17 (`docs/V2_RESULTS.md`); that read is live, unvalidated at scale, and never changes the frozen probabilities.
+27. **Live inputs come from a different vendor than the training data.**
+    * **The setup.** The forward test forecasts from Yahoo bars; every model was trained on the TriFrame vendor's bars.
+    * **Measured on 2022 for Alpha158** (`reports/verification/alpha158_live_parity.json`):
+      * price features agree closely (median correlation 0.9989);
+      * volume features agree less (median 0.92, minimum 0.72), because Yahoo's consolidated daily volume is not the
+        vendor's sum of minute bars.
+    * **Effect on v3_alpha.** Its 1D/2D ranking agreement falls to 0.935/0.947, so those horizons are not deployed (D-049).
+    * **Other models.** The F0 features of v1.1, v2 and v3_fund include volume-based indicators and face the same
+      shift. It was not measured for them.

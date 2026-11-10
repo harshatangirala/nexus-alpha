@@ -39,11 +39,17 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | A | Visual audit report (loss and validation curves, ROC/PR, reliability, confusion, by-year, landscape, equity) | done | `reports/NEXUS_Audit_Report.html`, app tab "L Audit" |
 | 10 | Automated tests | see `reports/test_run.txt` | |
 | 10 | Model card, limitations, results report | done | `docs/MODEL_CARD.md`, `docs/LIMITATIONS.md`, `reports/RESULTS.md` |
+| v3 | Qlib Alpha158 re-implementation, parity with pyqlib 0.9.7 | done | `src/nexus_alpha/indicators/alpha158.py`, `reports/verification/alpha158_qlib_parity.json` |
+| v3 | E25 Alpha158 benchmark (pre-registered) | done | `docs/V3_RESEARCH.md` (E25) |
+| v3 | v3_alpha refit, live-parity check (Yahoo vs vendor), frozen, in the forward test at 5D-1Y | done | `registry/frozen_models/v3_alpha.json`, `reports/verification/alpha158_live_parity.json`, D-049 |
+| App | Mission Control tab, mission-control theme, Plotly charts, Trade Desk plan chart | done | `app/mission_control.py`, `tests/test_dashboard.py` |
+| — | TradingAgents LLM committee (live, logged, forward-scored) | planned | `docs/INTEGRATIONS.md` |
+| — | OpenBB live context and implied-volatility forward benchmark | planned | `docs/INTEGRATIONS.md` |
 | — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order
 
 1. Owner review of results and of what to freeze; then (optionally) the single sealed evaluation, reported as semi-confirmatory.
 2. GPU profile: transformer text encoders (FinBERT/BGE/ChronoBERT) as a pre-registered comparison against the classical features; native-resolution chart embeddings.
-3. Forward shadow test: running since 2026-11-05 for v1.1, v2, market_e19 and v3_fund (`docs/FORWARD_SHADOW_TEST.md`); it is the only clean test of direction and needs about 120 sessions.
+3. Forward shadow test: running since 2026-11-05 for v1.1, v2, market_e19 and v3_fund, and since 2026-11-09 for v3_alpha (`docs/FORWARD_SHADOW_TEST.md`); it is the only clean test of direction and needs about 120 sessions.
 4. Pre-register for the next study: an economic direction gate, rolling recalibration (or none), and the v1.1 blend as the frozen model.

@@ -388,3 +388,165 @@ forward test. It stays in the Trade Desk as labelled analysis.
 * **Therefore** there is no skill to look for live, and the forward test is not spent on it.
 * **Not tested:** other configurations (Kronos-base, T = 0.6, mean-path point forecasts). None was registered, and
   trying them now would be a post-result search. A new configuration would need its own pre-registration.
+
+## E25 Qlib Alpha158 factor block (pre-registered 2026-11-10, before the Alpha158 features of the frame were built and before any E25 fit)
+
+**Why (owner decision D-046).** Microsoft Qlib's most used asset is its Alpha158 factor library, the default feature
+set of its benchmark models. Testing it under this project's rules asks one question: do the 80 hand-built F0 features
+miss price-volume information that a widely used public factor library captures?
+
+**Features.** The 157 Alpha158 features of `nexus_alpha.indicators.alpha158`:
+* definitions from Qlib's `Alpha158DL` with the `Alpha158` handler's configuration; VWAP0 is left out because the bars
+  have no VWAP;
+* computed from the sealed daily bars up to and including the as-of session (causal; the same split-adjusted vendor
+  bars as F0); +/-inf set to missing; no other processing;
+* parity with Qlib 0.9.7's own expression engine on 23 tickers and 122,797 stock-days: the definitions are identical.
+  The 10 correlation features differ by at most 3.1e-5 because Qlib computes their inputs in float32; with float32
+  inputs they agree on every row (`reports/verification/alpha158_qlib_parity.json`). The check ran before this
+  pre-registration and reads no label.
+
+**Rows and blocks.** The v2 frame's train (2003-2015), inner (2016), valid (2017-18) and test (2020-22) rows, as in
+E21. Selection uses valid only; test is a reused diagnostic; the sealed period is not read.
+
+**Sets.**
+* B = F0 (the 80 v1.1 numeric features);
+* B + A158;
+* placebo: B + A158 with the A158 values permuted across tickers within each as-of date (seed 11), as in E22 and E23;
+* A158 alone: descriptive only (a public factor library against the hand-built features), no keep decision.
+
+**Models, horizons, endpoints and keep rule: unchanged from E22 and E23.**
+* LightGBM (E07 parameters, early stopping on inner) and the multinomial logistic, through `evaluation/ladder.fit_eval`.
+* The 9 representative horizons.
+* Endpoint 1: the log-loss keep rule (D-032 bootstrap and eligibility). Endpoint 2: the daily rank-IC keep rule (E21
+  metric and bootstrap).
+* A158 is kept if either endpoint passes for a family whose placebo does not pass that endpoint.
+
+**Sharper check (E22's lesson; reported, not part of the decision).** The paired gain of B + A158 over its placebo, by
+group and endpoint. A keep where that gain's interval does not lie above 0 in the passing group is reported as weak.
+
+**Qlib-style report (descriptive).** For every set, family, horizon and split: IC (daily Pearson correlation of
+p_up - p_down with the h-session return), ICIR (mean / standard deviation of the daily IC), rank IC and rank ICIR.
+Qlib's published benchmarks use Chinese A-shares (CSI300) and a 1-day label, so their levels are not comparable.
+
+**Use.**
+* If kept: a candidate `v3_alpha` (LightGBM on B + A158 if the LightGBM family passes, otherwise the logistic) is
+  refitted on 2003-2018 with E08's tree-count scaling and frozen. It joins the forward test after a live-parity check
+  (features from live Yahoo bars equal the development computation on overlapping sessions). Forward criterion: the
+  same as `v3_fund`'s (20D rank IC above 0, and above `ranker_v3`, after 120 sessions).
+* If not kept: no model is frozen, and Alpha158 stays in the package for analysis.
+
+**Disclosure.** The validation block (2017-18) has been read by every experiment since E11. Each new keep decision on it
+is more optimistic than the last, so the forward test, not this table, is the evidence.
+
+**Trial budget.** 4 sets x 2 families x 9 horizons x 2 endpoints, added to the project's trial count for deflation.
+
+## E25 results (2026-11-10; run `experiments/20261110T144028_e25_alpha158_951bbf`)
+
+Rows: 213,103 (train 2003-2015, inner 2016, valid 2017-18, test 2020-22). The run's manifest records the SHA-256 of
+the pre-registration text above as it stood when the run started (`476d72df...`); the run began at 14:40, five
+minutes after that text was written, and before any E25 feature or fit existed.
+
+**Decision under the pre-registered rule: Alpha158 is kept, on the ranking endpoint only.** No placebo passes.
+
+| Family, endpoint | B + A158 passes | Placebo passes | Kept | Beats its own placebo |
+|---|---|---|---|---|
+| LightGBM, log loss | no | no | no | - |
+| LightGBM, rank IC | yes | no | **yes** | yes |
+| Logistic, log loss | no | no | no | - |
+| Logistic, rank IC | yes | no | **yes** | yes |
+
+Rank-IC gains of B + A158 over B (95% block-bootstrap intervals; 2020-22 is a reused diagnostic):
+
+| Family | Group | 2017-18 | 2020-22 |
+|---|---|---|---|
+| LightGBM | intraday | +0.0037 [-0.0070, +0.0144] | +0.0076 [+0.0002, +0.0147] |
+| LightGBM | swing | +0.0042 [-0.0022, +0.0102] | +0.0056 [+0.0001, +0.0107] |
+| LightGBM | long | **+0.0134 [+0.0071, +0.0215]** | +0.0003 [-0.0097, +0.0188] |
+| Logistic | intraday | +0.0076 [-0.0025, +0.0181] | +0.0033 [-0.0079, +0.0149] |
+| Logistic | swing | **+0.0145 [+0.0042, +0.0252]** | +0.0075 [-0.0039, +0.0221] |
+| Logistic | long | +0.0055 [-0.0110, +0.0209] | -0.0024 [-0.0151, +0.0102] |
+
+The sharper check (B + A158 against its own placebo, in the passing group): LightGBM long +0.0094 [+0.0029, +0.0159];
+logistic swing +0.0213 [+0.0096, +0.0334]. For the logistic, part of that margin is the placebo hurting (swing
+-0.0068 [-0.0164, +0.0017] against B): random columns cost a linear model ranking quality.
+
+Log loss: no horizon group improves for either family on 2017-18 (every interval includes zero). On 2020-22 the
+logistic's long group is worse (-0.0024 [-0.0038, -0.0002]).
+
+Mean daily rank IC of LightGBM, 2017-18 / 2020-22:
+
+| Horizon | B | B + A158 | Placebo | A158 alone |
+|---|---|---|---|---|
+| 1D | 0.009 / 0.016 | 0.013 / 0.023 | 0.014 / 0.017 | 0.019 / 0.028 |
+| 5D | 0.019 / 0.013 | 0.015 / 0.017 | 0.008 / 0.011 | 0.016 / 0.020 |
+| 10D | 0.020 / 0.018 | 0.032 / 0.028 | 0.018 / 0.015 | 0.027 / 0.031 |
+| 20D | 0.032 / 0.020 | 0.041 / 0.019 | 0.032 / 0.020 | 0.035 / 0.023 |
+| 3M | 0.034 / 0.016 | 0.047 / 0.014 | 0.038 / 0.020 | 0.023 / 0.014 |
+
+**A158 alone against the 80 hand-built features (descriptive).** In log loss it is worse for both families on 2017-18
+(LightGBM intraday -0.0045 [-0.0057, -0.0033], long -0.0042 [-0.0053, -0.0032]). In LightGBM ranking it is no
+different. For the logistic it ranks better at swing on 2017-18 (+0.0164 [+0.0042, +0.0289]), not on 2020-22
+(+0.0044 [-0.0160, +0.0262]).
+
+**Qlib-style figures (LightGBM, 20D).**
+
+| Split | Set | Rank IC | Rank ICIR |
+|---|---|---|---|
+| 2017-18 | B | 0.0317 | 0.180 |
+| 2017-18 | B + A158 | 0.0408 | 0.225 |
+| 2020-22 | B | 0.0205 | 0.106 |
+| 2020-22 | B + A158 | 0.0185 | 0.094 |
+
+The full table is in the run's metrics (`qlib_style`). Qlib's published CSI300 benchmarks are not comparable.
+
+**Honest reading.**
+* **Probabilities:** Alpha158 does not improve them at any horizon.
+* **Ranking:** it improves cross-sectional ranking on validation, with clean placebos, and both families beat their
+  own placebo directly.
+* **Replication is partial.** On 2020-22, LightGBM's intraday and swing gains are positive with lower bounds just
+  above zero (+0.0002 and +0.0001). The long-group gain that carried the LightGBM keep does not replicate, and the
+  logistic's swing interval spans zero.
+* **The hand-built features already hold most of the price-volume information.** The public library alone is worse
+  in log loss and no better in tree ranking. What it adds is a small amount of cross-sectional information on top.
+* **Trials.** E25 adds 4 sets x 2 families x 9 horizons x 2 endpoints, and the keep came from 2 of the 4
+  family-endpoint cells on a validation block that every experiment since E11 has read. The forward test is the
+  evidence.
+
+**Use, per the pre-registration (D-047).** The candidate `v3_alpha` is LightGBM on F0 + A158, refitted on 2003-2018
+with E08's tree-count scaling. It will be:
+1. frozen;
+2. given a live-parity check: A158 from Yahoo bars against the vendor's on the same 2021-22 sessions, because the
+   nightly cache does not reach back into the development years;
+3. added to the forward test with `v3_fund`'s criterion.
+
+No trading engine uses it. Timing follows the owner's scope decision of 2026-11-10: the nightly run stays unchanged
+in the presentation week. (Superseded the same day by D-049: the owner asked for every integration at once, and
+v3_alpha joined the forward test after its live-parity check; see the next section.)
+
+## v3_alpha in the forward test (D-049)
+
+By E25's use clause, with the live-parity gate applied per horizon:
+* **Model.** LightGBM (E07 parameters) on F0 + A158, refitted on as-of 2003-2018, with E25's early-stopping tree
+  counts scaled by rows (E08's convention). Bundle `20261110T171026_v3_alpha_refit_a14783`, frozen as `v3_alpha`.
+* **Live-parity check.** `scripts/verify/alpha158_live_parity.py`, criteria written before it ran; result in
+  `reports/verification/alpha158_live_parity.json`. Yahoo against vendor bars on 2022 (39 of 40 sampled stocks;
+  BZH has no Yahoo history; 9,789 stock-days):
+
+  | Check | Result | Criterion |
+  |---|---|---|
+  | Price features (117) | median correlation 0.9989, minimum 0.961 | pass |
+  | Volume features (40) | median correlation 0.920, minimum 0.722 | reported |
+  | rank_score Spearman, 5D-1Y | 0.971 (5D) to 0.999 (6M) | pass |
+  | rank_score Spearman, 1D / 2D | 0.935 / 0.947 | fail (below 0.95) |
+
+* **Deployed horizons:** 5D, 10D, 15D, 20D, 3M, 6M and 1Y. 1D and 2D are not logged.
+* **Nightly inputs.**
+  * v2's assembled F0 row for each stock (as for v3_fund).
+  * The 157 Alpha158 features of the as-of session, from the same cached Yahoo bars v1.1 and v2 used that night
+    (`alpha158.features_at` refuses stale or short histories).
+* **Logging:** hash-chained in `shadow/v3_alpha/` with `rank_score` = p_up - p_down. No trading engine uses it.
+* **Forward criterion (as v3_fund's, from E25's use clause).** v3_alpha becomes a shown signal (still not traded)
+  only if, on on-time rows after at least 120 scored sessions at 20D, both hold:
+  1. its mean daily rank IC has a date-block bootstrap 95% lower bound above 0;
+  2. its paired daily rank-IC difference against `ranker_v3` has a lower bound above 0.
+* **First logged session:** 2026-11-09, logged on 2026-11-10 before that session's decision time (19:30 IST).

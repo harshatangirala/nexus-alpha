@@ -35,11 +35,11 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 * TriFrame: images add ~0 to volatility R².
 * SEC study: models know whether a stock moves, not which way.
 
-## Status: v1.1, v2, market_e19 and v3_fund are frozen and in the forward test
+## Status: v1.1, v2, market_e19, v3_fund and v3_alpha are frozen and in the forward test
 
 * **v1.1 is frozen** (`registry/frozen_models/v1.1.json`, SHA-256 of every bundle file) and is in a **forward shadow test**:
   every evening it forecasts all 500 stocks before the next open, into a hash-chained log in `shadow/v1.1/`
-  ([`docs/FORWARD_SHADOW_TEST.md`](docs/FORWARD_SHADOW_TEST.md)). A golden test pins its outputs. v2, market_e19 and v3_fund are frozen too and logged by the same nightly run.
+  ([`docs/FORWARD_SHADOW_TEST.md`](docs/FORWARD_SHADOW_TEST.md)). A golden test pins its outputs. v2, market_e19, v3_fund and v3_alpha are frozen too and logged by the same nightly run.
 * **v2** ([`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md), pre-registered before any v2 fit) adds:
   * S&P 500 (SPY) and sector, rates, credit and commodity ETF bars at 1H/1D/1W, from the same minute source as TriFrame;
   * VIX, Treasury yields, dollar, oil, gold and copper;
@@ -98,6 +98,20 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
   * **Trade Desk:** a fan chart of sampled paths.
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.
+* **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
+  * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
+    checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
+  * **Mission Control** (the dashboard's first tab):
+    * header counters and an evidence tape;
+    * forward-test tracker and system status;
+    * an evidence board in which every number quotes its source document (tested);
+    * the data flow;
+    * a globe of the forward-test companies over Global Macro Database data.
+
+    It uses globe.gl, and the Magic UI and Arwes styles recreated in plain HTML/CSS. Licences are listed in
+    [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+  * **TradingAgents and OpenBB** are planned as live-only tools (an LLM committee, and implied-volatility context
+    and benchmark). The plans and the Gemini free-tier quota limit are in `docs/INTEGRATIONS.md`.
 * **Keys the owner sets** (environment variables, never committed):
   * `FRED_API_KEY` for ALFRED vintages;
   * `GEMINI_API_KEY` for the Trade Desk's LLM read.
@@ -107,11 +121,11 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | Path | Contents |
 |---|---|
 | `src/nexus_alpha/` | package: seal, data, indicators, targets, splits, CV, NLP, rules, fusion, calibration, evaluation, trading, RAG, explainability, inference |
-| `app/streamlit_app.py` | dashboard (forecast with return ranges, charts, news, SEC, indicators, explanation, trade planner, diagnostics, backtest v1/v1.1 with equity curves, knowledge base, configuration, audit figures) |
+| `app/streamlit_app.py` | dashboard: Mission Control (`app/mission_control.py`, `app/globe_view.py`, `app/ui.py`), Trade Desk with a price chart of the plan, forecast with return ranges, charts, news, SEC, indicators, explanation, trade planner, diagnostics, backtest v1/v1.1 with equity and drawdown curves, knowledge base, configuration, audit figures; theme in `.streamlit/config.toml` |
 | `scripts/` | audits, data builds, experiments E01-E10, RAG build and evaluation, verification (parity, quantile coverage), report compilers (`make_results.py`, `audit_report.py`), pipeline orchestrator |
 | `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 119 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
+| `tests/` | 137 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 
@@ -119,7 +133,7 @@ Not in the repository, by licence: price data, chart caches, embeddings, article
 
 ## Run it
 
-See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md); for Google Colab see [`docs/COLAB.md`](docs/COLAB.md) (fundamentals and the E22/E23 reproduction run on a CPU runtime; the nightly forward test stays on the owner's PC). In short: create the environment from `requirements-colab.txt`, `pip install -e .`, run `pytest`, then `streamlit run app/streamlit_app.py`. The data stages need the TriFrame data store, the SEC study outputs and a Hugging Face login with access to the private TriFrame repositories and the gated news corpus.
+See [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md); for Google Colab see [`docs/COLAB.md`](docs/COLAB.md) (fundamentals, the E22/E23 reproduction and E25 run on a CPU runtime; the nightly forward test stays on the owner's PC). In short: create the environment from `requirements-colab.txt`, `pip install -e .`, run `pytest`, then `streamlit run app/streamlit_app.py`. The data stages need the TriFrame data store, the SEC study outputs and a Hugging Face login with access to the private TriFrame repositories and the gated news corpus.
 
 ## Governance
 

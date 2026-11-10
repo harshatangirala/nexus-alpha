@@ -25,7 +25,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from nexus_alpha import shadow as SH  # noqa: E402
 
-UNIVERSE = {"v1.1": 500, "v2": 500, "market_e19": 1, "v3_fund": 500}
+UNIVERSE = {"v1.1": 500, "v2": 500, "market_e19": 1, "v3_fund": 500, "v3_alpha": 500}
 
 # Documented incidents in the append-only logs, pinned by the logged file's SHA-256. A pinned session is left out of the
 # coverage chart and the late-row alert (it is reported as acknowledged instead); anything else still alerts.

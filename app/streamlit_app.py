@@ -19,7 +19,10 @@ sys.path.insert(0, str(ROOT / "src"))
 from nexus_alpha import paths  # noqa: E402
 from nexus_alpha.trading.plan import RiskConfig  # noqa: E402
 
-st.set_page_config(page_title="NEXUS Alpha", layout="wide")
+st.set_page_config(page_title="NEXUS Alpha", layout="wide", page_icon=":material/radar:")
+import ui as UI  # noqa: E402  (app/ is on sys.path when Streamlit runs this script)
+
+UI.inject_css()
 HZ = ["1D", "2D", "5D", "10D", "20D", "1M"]
 
 
@@ -109,15 +112,18 @@ if go:
             st.error(f"Analysis failed: {type(e).__name__}: {e}")
 
 res = st.session_state.get("res")
-all_tabs = st.tabs(["Trade Desk", "A Forecast", "B Charts", "C News", "D SEC", "E Indicators", "F Explain",
-                    "G Trade planner", "H Model diagnostics", "I Backtesting", "J Knowledge base", "K Configuration",
-                    "L Audit"])
+all_tabs = st.tabs(["Mission Control", "Trade Desk", "A Forecast", "B Charts", "C News", "D SEC", "E Indicators",
+                    "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting", "J Knowledge base",
+                    "K Configuration", "L Audit"])
 with all_tabs[0]:
+    import mission_control  # noqa: E402
+    mission_control.render()
+with all_tabs[1]:
     import trade_desk_tab  # noqa: E402  (app/ is on sys.path when Streamlit runs this script)
     trade_desk_tab.render(predictor if bundle_ok else None, universe(),
                           dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
                                allow_short=allow_short, cost_scenario=cost_sc))
-tabs = all_tabs[1:]
+tabs = all_tabs[2:]
 
 with tabs[0]:
     st.header("Forecast overview")
@@ -140,7 +146,13 @@ with tabs[0]:
         st.dataframe(df, width="stretch")
         st.caption("Return range: quantile heads of the fusion seeds (10%, 50%, 90% of the horizon's simple return), shown only "
                    "where the 10-90% band covered 80% ± 8 points on 2017-2018 validation. A range, not a direction call.")
-        st.bar_chart(df[["UP", "SIDEWAYS", "DOWN"]].astype(float))
+        import plotly.graph_objects as pgo   # not "go": that name is the sidebar's Run analysis button
+        pr = df[["DOWN", "SIDEWAYS", "UP"]].astype(float)
+        fig = pgo.Figure([pgo.Bar(y=pr.index, x=pr[c], name=c, orientation="h", marker_color=col,
+                                hovertemplate=f"{c} %{{x:.1%}}<extra></extra>")
+                         for c, col in (("DOWN", UI.BAD), ("SIDEWAYS", "#3A4F66"), ("UP", UI.GOOD))])
+        fig.update_layout(barmode="stack", xaxis=dict(tickformat=".0%", range=[0, 1]), yaxis=dict(autorange="reversed"))
+        UI.plot(fig, height=260)
         st.subheader("Decision (separate risk engine)")
         st.dataframe(pd.DataFrame({h: {"decision": p.decision, "first reason": (p.reasons or [""])[0]}
                                    for h, p in res.trade_plans.items()}).T, width="stretch")
@@ -275,7 +287,23 @@ with tabs[8]:
         if eq.exists():
             d = pd.read_csv(eq, index_col=0, parse_dates=True)
             st.subheader("Equity curves, test 2020-2022 (base costs)")
-            st.line_chart((1 + d).cumprod())
+            import plotly.graph_objects as pgo
+            from plotly.subplots import make_subplots
+            curve = (1 + d).cumprod()
+            fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.72, 0.28], vertical_spacing=0.04)
+            palette = [UI.ACCENT, UI.WARN, UI.ACCENT2, UI.GOOD, UI.BAD, "#5B8DEF", "#E58BD8", "#9FB3C8", "#C9A227"]
+            for i, c in enumerate(curve.columns):
+                bench = "benchmark" in str(c)
+                style = (dict(width=2.6, color=UI.TEXT, dash="dash") if bench
+                         else dict(width=1.4, color=palette[i % len(palette)]))
+                fig.add_trace(pgo.Scatter(x=curve.index, y=curve[c], name=str(c), mode="lines", line=style,
+                                          legendgroup=str(c)), row=1, col=1)
+                fig.add_trace(pgo.Scatter(x=curve.index, y=curve[c] / curve[c].cummax() - 1, name=f"{c} drawdown",
+                                         mode="lines", line={**style, "width": 1.0 if not bench else 1.8},
+                                         legendgroup=str(c), showlegend=False), row=2, col=1)
+            fig.update_yaxes(title_text="growth of 1", row=1, col=1)
+            fig.update_yaxes(title_text="drawdown", tickformat=".0%", row=2, col=1)
+            UI.plot(fig, height=460)
         st.caption("Entry at the next open; gap-through stops fill at the open; stop-first on ambiguous bars; "
                    "costs 10/15/20 bps round trip plus 0.5%/yr short borrow. Benchmark: equal-weight survivors.")
         st.dataframe(pd.DataFrame(b["test_final"]).T[["trades", "sharpe", "sharpe_ci95_month_blocks", "cagr", "max_drawdown",

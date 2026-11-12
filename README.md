@@ -23,6 +23,13 @@ The test years were already read by TriFrame and have been re-scored several tim
 2. **Multimodal fusion adds little.**
    * None of the five pre-registered hypotheses is supported after Holm correction: tri-frame, news + SEC, indicators, trainable fusion vs late fusion, and calibration.
    * With five seeds, images, news and filings add 0.0005-0.0012 log loss over numbers alone, about one seed SD.
+   * Transformer language (E28, 2026-11-13) does not change this:
+     * the blocks tested were FinBERT news, ChronoBERT filing vectors (a model pretrained only on pre-2011 text) and
+       an SEC price-impact expert trained on the SEC study's labels;
+     * they beat a within-date placebo (+0.00023 [+0.00003, +0.00040]) but not the six current blocks (-0.00029
+       [-0.00082, +0.00025]): NOT KEPT;
+     * the language is stock-specific but redundant, and the SEC expert again predicts whether a stock moves (AUC
+       0.656), not which way (0.513).
    * Charts alone carry some information: better than random-weight controls, with the hourly view best.
 3. **The audited model is better, not profitable.**
    * The audit fixed 21 issues, including two that changed trading results.
@@ -114,6 +121,18 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     * double-click `RUN_DASHBOARD.cmd`;
     * the new **Compare 1-5** tab;
     * entry, stop and targets drawn with a reason card in every trade view.
+* **Vision + NLP and audit 7 (2026-11-13)** ([`docs/AUDIT_7_2026-11-13.md`](docs/AUDIT_7_2026-11-13.md)):
+  * **E28** (D-053, [`docs/V3_RESEARCH.md`](docs/V3_RESEARCH.md)) put three new language blocks into the fusion:
+    FinBERT news, ChronoBERT-2010 filing vectors and the SEC price-impact expert. Result: NOT KEPT (see results 2).
+  * Audit 7 found that the first E28 run's SEC expert had read timestamps as numbers. The fix was committed before
+    the re-run (D-054). Type and calendar-time guards now protect every model input
+    (`scripts/verify/time_proxy_scan.py`).
+  * **Dashboard tab O "Vision + NLP":**
+    * the decision and how much each input feeds the network;
+    * the SEC expert per filing;
+    * a point-in-time filing explorer;
+    * a ChronoBERT box: paste any filing or news text to find its historical analogues.
+  * **Notebook** sections 8A-8C reproduce the language branch on a Colab GPU.
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
   * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
     checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
@@ -147,7 +166,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb`, `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | one-pass Colab reproduction of E22/E23/E25; Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `RUN_DASHBOARD.cmd` | double-click to open the dashboard at `http://localhost:8501` |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 169 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper |
+| `tests/` | 182 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash) |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 

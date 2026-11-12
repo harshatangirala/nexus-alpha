@@ -737,3 +737,99 @@ decision on them, so the forward test, not this table, is the evidence.
 
 **Trial budget.** One eligible comparison: MM against BASE, guarded by the placebo. Six descriptive configurations,
 three seeds each, are added to the trial ledger for deflation.
+
+## E28 results (2026-11-13; run of record `experiments/20261113T035556_e28_vision_nlp_fusion_b1f899`)
+
+**Decision: NOT KEPT.** The three language blocks beat the placebo but not the current six blocks.
+
+| Validation 2017-18 (mean six-horizon log-loss gain of MM; positive = MM better) | Gain | 95% month-block interval |
+|---|---|---|
+| MM vs BASE | -0.00029 | [-0.00082, +0.00025] |
+| MM vs PLACEBO | +0.00023 | [+0.00003, +0.00040] |
+
+**Reading.** The language blocks hold information about the stock itself: the same blocks moved to another stock of the
+same date do worse. But that information is already in the charts, indicators and classical text features, so adding
+it does not improve the forecast. It is real but redundant.
+
+**Every configuration** (seed-averaged; the test column was read after the decision):
+
+| Configuration | Valid mean log loss | Test mean log loss |
+|---|---|---|
+| BASE (charts W/D/H, indicators, classical news and SEC) | 1.05774 | 1.06360 |
+| MM = BASE + news_tx + sec_tx + sec_impact | 1.05803 | 1.06253 |
+| PLACEBO (new blocks moved within the date) | 1.05826 | 1.06271 |
+| BASE + news_tx (FinBERT) | 1.05827 | 1.06222 |
+| BASE + sec_tx (ChronoBERT filings) | 1.05772 | 1.06309 |
+| BASE + sec_impact (SEC price-impact expert) | 1.05754 | 1.06354 |
+| text only (news, sec, news_tx, sec_tx, sec_impact) | 1.07047 | 1.07266 |
+| vision only (charts W/D/H) | 1.06718 | 1.06895 |
+
+**Reported, deciding nothing.**
+* **Each block alone against BASE** (validation):
+  * news_tx: -0.00053 [-0.00103, -0.00004]. FinBERT news makes the network slightly worse. News is present for 30% of
+    training rows but 64% of validation rows (the corpus grows over time), so the block is learned in a sparser regime
+    than it is used in. This is an interpretation, not a tested cause.
+  * sec_tx: +0.00002 [-0.00047, +0.00052].
+  * sec_impact: +0.00020 [-0.00016, +0.00059]. This is the best single block, but its interval includes zero.
+* **Rows with any text** (MM vs BASE): -0.00034 [-0.00089, +0.00025].
+* **Rank IC of P(up) - P(down), MM minus BASE:**
+  * 5D: -0.0052 [-0.0111, +0.0006] on validation; +0.0004 [-0.0044, +0.0054] on test.
+  * 20D: -0.0009 [-0.0070, +0.0048] on validation; -0.0018 [-0.0068, +0.0031] on test.
+  * BASE's own rank IC is +0.021 (5D) and +0.036 (20D) on validation, and +0.028 and +0.032 on test.
+* **Up-vs-down AUROC** (validation, MM / BASE): 0.513 / 0.514 at 1D, 0.518 / 0.521 at 5D, 0.536 / 0.534 at 20D. Language
+  does not bring direction.
+* **Gate weights of MM** (validation means): vision 42.5% (weekly 13.3, daily 13.7, hourly 15.5), indicators 40.6%,
+  language 16.9%. The language share splits into classical news 5.0, classical SEC 5.1, FinBERT news 2.6, ChronoBERT
+  filings 2.8 and the SEC expert 1.4. Gates show what the network reads, not causality.
+* **SEC price-impact expert** (118 features, no year, no timestamps, no accounting family):
+
+  | Horizon | Move AUC, out of fold 2003-15 | Move AUC, valid 2017-18 | Up-vs-down AUC, out of fold 2003-15 | Up-vs-down AUC, valid 2017-18 |
+  |---|---|---|---|---|
+  | 1 session | 0.635 | 0.656 | 0.522 | 0.513 |
+  | 5 sessions | 0.591 | 0.600 | 0.524 | 0.536 |
+
+  The SEC study's locked figure for move AUC is 0.635. So the SEC study's finding replicates inside NEXUS: filings
+  predict whether a stock moves, not which way.
+* **Block presence** (train / valid / test): news and news_tx 30% / 64% / 45%; sec 52% / 53% / 53%; sec_tx 51% / 52% /
+  53%; sec_impact 24% / 22% / 22%.
+
+**Test 2020-22, read once after the decision.**
+
+| Comparison | Gain | 95% interval |
+|---|---|---|
+| MM vs BASE | +0.00108 | [-0.00050, +0.00273] |
+| MM vs PLACEBO | +0.00018 | [-0.00002, +0.00040] |
+| MM vs BASE on rows with text | +0.00117 | [-0.00042, +0.00299] |
+
+All three test estimates are positive, but every interval includes zero. The test years have been read many times
+before, so they are a diagnostic and cannot reverse a validation decision.
+
+**The first run and D-054.**
+* The first run (`20261113T025828_e28_vision_nlp_fusion_b1f899`) was also NOT KEPT:
+  * MM vs BASE -0.00030 [-0.00082, +0.00024];
+  * MM vs PLACEBO +0.00023 [+0.00004, +0.00042];
+  * test MM vs BASE +0.00106.
+* Audit 7 then found that its SEC expert had read three availability timestamps as numbers (calendar time). The fix
+  and the single re-run were decided and committed (9b43581) before the corrected result existed.
+* The fix moved the expert's 1-session validation move AUC from 0.658 to 0.656, and nothing else material.
+* Both runs are in `docs/EXPERIMENT_LOG.md` and count in the trial ledger.
+
+**Disclosures.**
+* **A plumbing check ran first.** On 2026-11-12, a quick dry run printed validation numbers before the full run, as a
+  check of the code path (`artifacts/predictions/e28_quick/metrics_quick.json`):
+  * settings: 2 epochs, seed 7 only, BASE / MM / PLACEBO only, and the sec_tx block absent because the encoder had not
+    finished;
+  * result: MM vs BASE -0.00070 [-0.00159, +0.00023], i.e. NOT KEPT.
+  * Nothing in the design was changed after it.
+* **Determinism.** BASE reproduced to the fifth decimal across the two runs. The training is deterministic on this PC.
+* **Compute.** The ChronoBERT encoding took 6.0 h on the CPU (68,853 filings, 295 empty after cleaning). Each E28 run
+  took 44-49 minutes with 10 threads.
+
+**Use.**
+* Nothing changes in v1.1, v2, v3_* or the forward test, and no `e28_mm` bundle is saved.
+* The three blocks stay in the package (`multimodal.dataset.NLP_BLOCKS`), in notebook sections 8A-8C and in dashboard
+  tab O. There they are research displays: the filing explorer, the SEC expert's per-filing view and the ChronoBERT
+  analogue search.
+* **What would be an honest next test.** Not another selection on 2017-18. A language block could enter only through
+  data that has not been read: the forward test (which first needs a live news and filing path) or the sealed 2023+
+  evaluation, both under rules fixed before they are read.

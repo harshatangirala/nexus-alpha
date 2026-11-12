@@ -50,7 +50,7 @@ RUNS = {
     "e06": "20261106T005012_e06_optimization_fa42d8",
     "e08": "20261106T020411_e08_final_model_5c4327",
     "e14": "20261106T142918_e14_blend_freeze_v2_3298d4",
-    "e28": "20261113T025828_e28_vision_nlp_fusion_b1f899",
+    "e28": "20261113T035556_e28_vision_nlp_fusion_b1f899",
 }
 E01 = ["prior", "momentum_lr", "lgbm_structured", "lgbm_struct_x33"]
 E02 = ["img_lr__resnet18_random_s0__WDH", "img_lr__resnet18__WDH", "img_lr__convnext_tiny__WDH",

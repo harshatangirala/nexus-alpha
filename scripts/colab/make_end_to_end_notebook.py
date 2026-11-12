@@ -1434,8 +1434,10 @@ def verify_chain(version):
     ch = pd.read_csv(REPO_DIR / "shadow" / version / "chain.csv", dtype=str, keep_default_na=False)
     problems, prev = [], "GENESIS"
     for _, r in ch.iterrows():
-        f = REPO_DIR / "shadow" / version / "forecasts" / r.file
-        if not f.exists() or sha256(f) != r.file_sha256:
+        f = REPO_DIR / "shadow" / version / r.file           # r.file already starts with "forecasts/"
+        if not f.exists():
+            problems.append(f"{r.file}: missing")
+        elif sha256(f) != r.file_sha256:
             problems.append(f"{r.file}: file hash differs")
         expect = hashlib.sha256((prev + "|" + "|".join(str(r[c]) for c in FIELDS)).encode()).hexdigest()
         if r.prev_hash != prev or r.row_hash != expect:
@@ -1476,6 +1478,11 @@ md(r"""
   not replicate. Because the probabilities stay close to the prior, the edge gate rejects most plans, and the risk
   engine returns NO TRADE.
 * Charts, news and filings add little beyond the indicators (section 14; E03's H1-H3 are not significant after Holm).
+* Transformer language does not change that (sections 8A-8C, E28). FinBERT news, ChronoBERT filing vectors and the SEC
+  price-impact expert beat a within-date placebo on validation (+0.00023 [+0.00003, +0.00040]) but not the current six
+  blocks (-0.00029 [-0.00082, +0.00025]): NOT KEPT. The language is stock-specific but redundant with the charts and
+  indicators. The SEC expert reproduces the SEC study inside NEXUS: filings predict whether a stock moves (AUC 0.656)
+  but not which way (0.513).
 * Fine-tuning the vision network on charts does not beat the prior (section 10), as TriFrame found.
 * No backtest edge over equal-weight buy-and-hold after costs (section 16).
 

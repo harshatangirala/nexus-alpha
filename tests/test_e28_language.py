@@ -101,6 +101,23 @@ def test_language_blocks_are_zeroed_and_flagged_when_absent_and_separate_from_cl
         assert np.all(d.x[m][d.mask[:, j[m]] == 0] == 0)
 
 
+def test_a_timestamp_can_never_enter_the_fusion_as_a_number():
+    import pytest
+    from nexus_alpha.multimodal.dataset import check_feature_types
+    fr = pd.DataFrame({"sec_n_8k_7d": [1.0, 2.0], "sec_ok_flag": [True, False],
+                       "sec_avail": pd.to_datetime(["2015-01-02", "2016-01-04"], utc=True),
+                       "sec_age": pd.to_timedelta([1, 2], unit="D"), "sec_kind": ["8K", "10Q"]})
+    check_feature_types(fr, ["sec_n_8k_7d", "sec_ok_flag"])
+    for c in ("sec_avail", "sec_age", "sec_kind"):
+        with pytest.raises(TypeError):
+            check_feature_types(fr, ["sec_n_8k_7d", c])
+    fr2 = fr.drop(columns=["sec_kind"])
+    fr2["y_1D"] = 1
+    with pytest.raises(TypeError):                               # build() runs the guard when it fits
+        build(fr2.assign(**{f"{p}_{h}": v for h in ("1D", "2D", "5D", "10D", "20D", "1M") for p, v in (("y", 1), ("z", 0.0))},
+                         sample_id=["a", "b"], sec_covered=1), np.ones(2, bool), ("sec",))
+
+
 def test_placebo_moves_values_and_flags_together_within_each_date():
     e28 = _e28()
     n = 12
@@ -160,6 +177,25 @@ def test_analogue_search_removes_the_common_direction(monkeypatch):
     monkeypatch.setattr(LV, "_labels", lambda: None)
     out, s = LV.analogues(mu + np.array([0, 0, 0.1], np.float32), k=1)   # raw cosine would favour "x"
     assert list(out.event_id) == ["y"] and np.isclose(s["mean_cosine"], 1.0)
+
+
+def test_the_documented_e28_run_is_pinned_identically_and_its_preregistration_is_unchanged():
+    import json
+    import re
+    pins = {f: re.findall(r'(?:E28_RUN = |"e28": )"([^"]+)"', (REPO / f).read_text(encoding="utf-8"))
+            for f in ("src/nexus_alpha/language_view.py", "scripts/colab/nb_sections_nlp.py",
+                      "scripts/colab/stage_notebook_inputs.py")}
+    runs = {r for v in pins.values() for r in v}
+    assert len(runs) == 1 and all(len(v) == 1 for v in pins.values()), pins
+    run = runs.pop()
+    d = REPO / "experiments" / run
+    assert run != "PENDING" and (d / "metrics.json").exists()
+    m = json.loads((d / "metrics.json").read_text(encoding="utf-8"))
+    assert m["decision"] in ("KEPT", "NOT KEPT")
+    man = json.loads((d / "manifest.json").read_text(encoding="utf-8"))
+    assert man["status"] == "COMPLETED" and not man["config"]["quick"]
+    # the pre-registered E28 section must still be the text the run was made under (results go in their own section)
+    assert man["config"]["prereg_sha256"] == _e28().prereg_sha256()
 
 
 def test_dashboard_tables_from_a_metrics_record():

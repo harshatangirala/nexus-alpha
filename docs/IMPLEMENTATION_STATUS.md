@@ -17,7 +17,7 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | 4 | CV branch: renderer and embedding parity, 5 backbones | passed | `reports/verification/cv_parity.json` |
 | 4 | Structured branch (E01), chart branch (E02) | done | `docs/EXPERIMENT_LOG.md`, `reports/RESULTS.md` |
 | 4 | Text branch (classical, CPU) | done | `data_manifests/text_features_summary.json` |
-| 4 | Transformer text encoders (FinBERT, E16), chart fine-tuning on NEXUS labels | partial | FinBERT run in E16 (`docs/V2_RESULTS.md`); other encoders and chart fine-tuning not run, GPU profile in `configs/` |
+| 4 | Transformer text encoders (FinBERT, E16), chart fine-tuning on NEXUS labels | done (frozen encoders) | FinBERT in E16 (`docs/V2_RESULTS.md`); FinBERT and ChronoBERT-2010 inside the fusion in E28, not kept; a live ConvNeXt fine-tune on charts in notebook section 10. Fine-tuning a text encoder was rejected (D-053: more selection on reused validation years) |
 | 5 | RAG ingestion with page provenance; 6 retrieval methods; evaluation | done | `docs/RAG_DESIGN_AND_EVALUATION.md` |
 | 6 | Five fusion variants, ablations, missing-modality tests | done | E03 |
 | 7 | Calibration on 2019, registered hypotheses, walk-forward, backtest | done | E03, E05, E04 |
@@ -48,11 +48,14 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | App | Compare 1-5 tab; plan explainer (reason card, CONDITIONAL levels) in the Trade Desk, Trade planner and Compare; missed sessions on Mission Control; `RUN_DASHBOARD.cmd` | done | `app/compare_tab.py`, `app/plan_view.py`, `src/nexus_alpha/compare.py`, `src/nexus_alpha/trading/explain_plan.py`, `tests/test_compare_and_reasons.py`, audit 6 |
 | 9 | End-to-end presentation notebook (code inline; GPU fusion and fine-tuning sections) | done; Colab run by the owner | `notebooks/NEXUS_Alpha_End_to_End.ipynb`, `scripts/colab/make_end_to_end_notebook.py`, `scripts/colab/run_notebook_locally.py` |
 | Forward test | Incident 2026-11-11/12: session 2026-11-10 missed, 2026-11-11 made up; keep-awake helper; session-keyed done marker | done; owner task settings pending | D-052, A-63, A-64, `scripts/shadow/owner_fix_task.ps1` |
+| v3 | E28 vision + NLP fusion (FinBERT news, ChronoBERT-2010 filings, SEC price-impact expert; pre-registered D-053) | done: NOT KEPT (record run `20261113T035556_e28_vision_nlp_fusion_b1f899`; first run superseded, D-054) | `docs/V3_RESEARCH.md` (E28), `scripts/experiments/e28_vision_nlp_fusion.py`, `scripts/verify/audit_e28.py` (17 checks) |
+| App + notebook | Tab O "Vision + NLP"; notebook sections 8A-8C (GPU re-encoding with parity, expert refit, MM vs placebo) | done | `app/vision_nlp_tab.py`, `src/nexus_alpha/language_view.py`, `scripts/colab/nb_sections_nlp.py` |
+| Audit 7 | End-to-end audit with SWOT; time-proxy and type guards on every model input | done | `docs/AUDIT_7_2026-11-13.md`, `scripts/verify/time_proxy_scan.py` |
 | — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order
 
 1. Owner review of results and of what to freeze; then (optionally) the single sealed evaluation, reported as semi-confirmatory.
-2. GPU profile: transformer text encoders (FinBERT/BGE/ChronoBERT) as a pre-registered comparison against the classical features; native-resolution chart embeddings.
+2. GPU profile: transformer text was tested in E28 (not kept); what remains is native-resolution chart embeddings.
 3. Forward shadow test: running since 2026-11-05 for v1.1, v2, market_e19 and v3_fund, and since 2026-11-09 for v3_alpha (`docs/FORWARD_SHADOW_TEST.md`); it is the only clean test of direction and needs about 120 sessions.
 4. Pre-register for the next study: an economic direction gate, rolling recalibration (or none), and the v1.1 blend as the frozen model.

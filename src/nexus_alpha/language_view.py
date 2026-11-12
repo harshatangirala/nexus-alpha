@@ -14,7 +14,8 @@ import pandas as pd
 
 from . import paths
 
-E28_RUN = "20261113T025828_e28_vision_nlp_fusion_b1f899"   # experiments/ folder of the documented E28 run, pinned (never "the newest")
+E28_RUN = "20261113T035556_e28_vision_nlp_fusion_b1f899"   # experiments/ folder of the documented E28 run, pinned (never "the newest")
+E28_FIRST_RUN = "20261113T025828_e28_vision_nlp_fusion_b1f899"   # superseded by D-054 (SEC expert read timestamps)
 FEAT = paths.ARTIFACTS / "features"
 GROUP = {"img_W": "vision", "img_D": "vision", "img_H": "vision", "num": "indicators", "news": "language",
          "sec": "language", "news_tx": "language", "sec_tx": "language", "sec_impact": "language", "rules": "indicators"}
@@ -34,6 +35,9 @@ def e28(run: str | None = None) -> dict | None:
     m = json.loads(p.read_text(encoding="utf-8"))
     g = d / "gates.json"
     m["gates_file"] = json.loads(g.read_text(encoding="utf-8")) if g.exists() else m.get("gates", {})
+    if (run or E28_RUN) == E28_RUN:
+        m["run_note"] = (f"{E28_RUN} is the result of record (D-054). The first run, {E28_FIRST_RUN}, used three "
+                         "timestamp columns in the SEC expert by mistake; it was also NOT KEPT (MM vs BASE -0.00030)")
     return m
 
 

@@ -46,6 +46,10 @@
 | `targets.py`, `splits.py` | six-horizon labels, purged/embargoed splits, walk-forward folds |
 | `cv/render.py`, `cv/backbones.py`, `cv/store.py`, `cv/features.py` | vendored renderer r1, backbone registry and embedder, stored-embedding access with the fine-tuning rule, train-fitted PCA |
 | `nlp/text_features.py`, `nlp/aggregate.py` | lexicon tone, TF-IDF->SVD, aggregation shared by training and inference |
+| `nlp/transformer_text.py` | ChronoBERT-2010 (pinned revision): filing cleaning (safe harbour dropped), resumable length-sorted encoding, 256 tokens, masked mean pooling (E28 `sec_tx`) |
+| `nlp/sec_impact.py` | the SEC price-impact expert: LightGBM on the SEC study's event features and `T_trade` labels (exits before 2019 only, numeric non-time features only), out-of-fold before 2016, point-in-time per-sample evidence (E28 `sec_impact`) |
+| `multimodal/dataset.py` | the fusion's blocks, incl. the E28 language blocks (`NLP_BLOCKS`), presence masks and the input type guard (`check_feature_types`) |
+| `language_view.py` | data layer of dashboard tab O: the pinned E28 run, the expert per filing, point-in-time similar filings and ChronoBERT analogues (centred vectors) |
 | `rules/catalog.py`, `rules/detectors.py`, `rules/batch.py` | 270-rule catalogue, executable causal detectors, batch evaluation |
 | `multimodal/dataset.py`, `fusion.py`, `trainer.py` | masked modality blocks, five fusion variants, resumable trainer |
 | `calibration/scalers.py` | temperature and vector scaling with method choice on the calibration block |

@@ -24,12 +24,19 @@ def _ci(d: dict) -> str:
 
 
 def _sankey(gt: pd.DataFrame) -> go.Figure:
-    labels = list(gt.label) + ["gated fusion", "6 horizons x UP / SIDEWAYS / DOWN"]
+    labels = list(gt.label) + ["gated fusion", "6 horizon heads"]
     n = len(gt)
     colors = [GROUP_COLOR[g] for g in gt.group]
+    # fixed columns: inputs at the left, fusion in the middle, heads at the right (labels of the last two no longer collide)
+    xs = [0.01] * n + [0.5, 0.99]
+    g = gt.gate.to_numpy(float)
+    gap = 0.03                                          # node centres stacked by gate size, so nodes never overlap
+    scale = (1 - gap * (n - 1)) / g.sum()
+    ys = [float((g[:i].sum() + g[i] / 2) * scale + gap * i) for i in range(n)] + [0.5, 0.5]
     fig = go.Figure(go.Sankey(
-        arrangement="snap",
-        node=dict(label=labels, pad=14, thickness=14, color=colors + [UI.WARN, UI.TEXT], line=dict(width=0)),
+        arrangement="fixed",
+        node=dict(label=labels, x=xs, y=ys, pad=14, thickness=14, color=colors + [UI.WARN, UI.TEXT], line=dict(width=0),
+                  hovertemplate="%{label}<extra></extra>"),
         link=dict(source=list(range(n)) + [n], target=[n] * n + [n + 1], value=list(gt.gate) + [float(gt.gate.sum())],
                   color=[_alpha(c, .35) for c in colors] + [_alpha(UI.WARN, .25)],
                   hovertemplate="%{source.label} -> %{target.label}: gate %{value:.3f}<extra></extra>")))
@@ -52,7 +59,10 @@ def _decision(m: dict) -> None:
     UI.frame("E28, pre-registered (D-053)", f"Keep test of the language blocks: {dec}",
              UI.chip("supported" if dec == "KEPT" else "not supported") + body,
              note="Gain = mean six-horizon log loss of the other model minus the vision + NLP model; positive = better. "
-                  "Kept only if both validation intervals lie above zero. Month-block bootstrap, 95%.")
+                  "Kept only if both validation intervals lie above zero. Month-block bootstrap, 95%. Beating the "
+                  "placebo but not the six blocks means the language carries real but redundant information: what it "
+                  "says about the stock is already in the charts, indicators and classical text features."
+                  + (f" Run {m.get('run_note')}." if m.get("run_note") else ""))
 
 
 def _ablations(m: dict) -> None:
@@ -78,7 +88,8 @@ def _expert() -> None:
     rows = []
     for k, v in d.items():
         h, per = k.split("_", 1)
-        rows += [{"horizon": h.replace("h", "") + " session(s)", "period": per.replace("_", " "), "what": w, "AUC": v[key]}
+        per = {"oof_2003_2015": "out of fold 2003-15", "valid_2017_2018": "validation 2017-18"}.get(per, per.replace("_", " "))
+        rows += [{"horizon": h.replace("h", "") + " session(s)", "period": per, "what": w, "AUC": v[key]}
                  for w, key in (("does it move?", "auc_move"), ("up vs down", "auc_up_vs_down"))]
     df = pd.DataFrame(rows)
     fig = go.Figure()
@@ -92,7 +103,7 @@ def _expert() -> None:
     fig.update_layout(barmode="group", title="SEC price-impact expert: filings say whether a stock moves, not which way",
                       yaxis=dict(range=[0.45, 0.72], title="AUC"), legend=dict(y=-0.2, yanchor="top"))
     UI.plot(fig, height=360)
-    st.caption(f"LightGBM on the SEC study's {meta['n_features']} event features (no year, no accounting family), "
+    st.caption(f"LightGBM on the SEC study's {meta['n_features']} event features (no year, no timestamps, no accounting family), "
                f"labels T_trade at 1 and 5 sessions; fitted before 2016, trees chosen on 2016; "
                f"before 2016 the predictions are out of fold. Present for {meta['present_share']:.0%} of samples.")
 
@@ -206,7 +217,9 @@ def render(universe: list[str]) -> None:
             st.dataframe(pd.DataFrame({k: {"BASE": v["BASE"]["estimate"], "vision + NLP": v["MM"]["estimate"],
                                            "difference": v["MM_minus_BASE"]["estimate"],
                                            "95% low": v["MM_minus_BASE"]["ci95"][0], "95% high": v["MM_minus_BASE"]["ci95"][1]}
-                                       for k, v in ric.items()}).T.style.format("{:+.4f}"), width="stretch")
+                                       for k, v in ric.items()}).T.rename(index=lambda k: k.replace("valid_", "valid 2017-18, ")
+                                                                          .replace("test_", "test 2020-22, "))
+                         .style.format("{:+.4f}"), width="stretch")
             st.caption("Daily cross-sectional rank IC of P(up) - P(down): reported, decides nothing.")
     _expert()
     _explorer(universe)

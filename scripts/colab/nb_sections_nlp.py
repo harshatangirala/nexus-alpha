@@ -4,7 +4,7 @@ Imported by make_end_to_end_notebook.py, which places these cells after section 
 """
 from __future__ import annotations
 
-E28_RUN = "20261113T025828_e28_vision_nlp_fusion_b1f899"   # the documented E28 run under experiments/ (pinned)
+E28_RUN = "20261113T035556_e28_vision_nlp_fusion_b1f899"   # the documented E28 run under experiments/ (pinned)
 
 
 def add(md, code, e28_run: str = E28_RUN) -> None:

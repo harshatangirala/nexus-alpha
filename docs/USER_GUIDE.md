@@ -38,6 +38,14 @@ logged appears at once:
 
 "Run the full model and trade plans" then scores each stock live and draws its plan with the reasons.
 
+**Vision + NLP** (tab O): the E28 result and how much each input feeds the network. Below it:
+* the SEC price-impact expert's view of every filing of a stock;
+* a filing explorer that finds the most similar earlier filings of other firms (point in time);
+* a box where any pasted filing or news text is encoded with ChronoBERT and compared with every encoded filing.
+
+The first paste loads the model, which can take a minute. Everything in the tab is descriptive: it changes no
+probability and no plan.
+
 **Levels and reasons.** The Trade Desk, the Trade planner and Compare draw each plan on the price chart with a reason
 card. The card covers:
 * the entry, stop and target rules with their rulebook ids;

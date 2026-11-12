@@ -44,6 +44,16 @@ class Preprocessor:
         return np.clip(np.nan_to_num(Z, nan=0.0), -8, 8).astype(np.float32)
 
 
+def check_feature_types(fr: pd.DataFrame, cols: list[str]) -> None:
+    """Every model input must be a plain number. A timestamp or duration read as a number is calendar time, and a name
+    rule cannot see it (audit 7: three `_avail_*` timestamps reached the SEC expert, D-054)."""
+    bad = [c for c in cols if c in fr.columns and (pd.api.types.is_datetime64_any_dtype(fr[c])
+                                                    or pd.api.types.is_timedelta64_dtype(fr[c])
+                                                    or not pd.api.types.is_numeric_dtype(fr[c]))]
+    if bad:
+        raise TypeError(f"non-numeric or time-typed model inputs: {bad[:10]}")
+
+
 def load_tables(nlp: bool = False) -> pd.DataFrame:
     """nlp: also join the E28 language blocks (FinBERT news, ChronoBERT filings, SEC price-impact expert)."""
     fr = pd.read_parquet(paths.ARTIFACTS / "samples" / "s500_frame.parquet")
@@ -75,6 +85,8 @@ def build(fr: pd.DataFrame, train_mask: np.ndarray, modalities=ALL_MODALITIES, b
                            rule_cols=[c for c in fr.columns if c.startswith("rule_")],
                            nlp_cols={m: [c for c in fr.columns if c.startswith(pfx) and c != flag and c != "sec_tx_present"]
                                      for m, (pfx, flag) in NLP_BLOCKS.items() if m in modalities})
+        check_feature_types(fr, pre.num_cols + pre.news_cols + pre.sec_cols + pre.rule_cols
+                            + [c for cols in pre.nlp_cols.values() for c in cols])
     rows_fit = np.flatnonzero(train_mask) if fit else None
     x, masks = {}, []
     img_views = [m.split("_")[1] for m in modalities if m.startswith("img_")]

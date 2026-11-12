@@ -44,7 +44,9 @@ See `docs/LIMITATIONS.md`. In brief:
 * Survivor-only universe from one vendor.
 * The test years were already read by TriFrame and have been re-scored by six NEXUS experiments.
 * The sealed 2023+ period is not virgin.
-* Charts are scale-free OHLC bars, and the text features are classical.
+* Charts are scale-free OHLC bars, and the text features are classical. Transformer text was tested inside the
+  fusion in E28 (FinBERT news, ChronoBERT-2010 filings, an SEC price-impact expert) and not kept: it beat a
+  placebo but not the classical blocks (`docs/V3_RESEARCH.md`, E28 results).
 * Calibration error grows with horizon (ECE 0.038-0.042 at 10D and longer).
 * The model was trained on 2003-2018, so live 2026 forecasts are extrapolations.
 

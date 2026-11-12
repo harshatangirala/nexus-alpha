@@ -649,3 +649,91 @@ a result):
    * "NEXUS adds to implied volatility" is read only for a test that passes after correction.
 3. **Not corrected.** E27 is descriptive, so it is not corrected. The market read (`market_e19`) and the three-class
    models are not ranking candidates.
+
+## E28 Vision + NLP multimodal fusion (pre-registered 2026-11-12, before any E28 feature was built and before any E28 fit)
+
+**Why (owner request, D-053).** Make NEXUS one multimodal model in which chart vision and language are both learned
+inputs. The fusion (E03, notebook section 8) reads charts, indicators and two classical text blocks (TF-IDF/SVD and
+Loughran-McDonald tone of news and filings). Three things were never inside it:
+* transformer representations of company news (FinBERT was tested in E16, but only in the tabular ladder on top of the
+  carried set B, never inside the fusion and never against F0);
+* transformer representations of the SEC filings themselves;
+* the SEC price-impact study's own labels: what a filing did to the price.
+
+Question: do these three blocks, added together, make the vision + indicator + classical-text fusion better?
+
+**New blocks.**
+* `news_tx`: FinBERT (ProsusAI/finbert, revision 0bc2ac1) per-sample news features, unchanged from E16
+  (`artifacts/features/finbert_features.parquet`, 21 columns). Present when at least one headline was available before
+  the decision time. FinBERT's pretraining (Reuters TRC2, 2008-2010) and fine-tuning text (Financial PhraseBank) lie
+  inside the training years.
+* `sec_tx`: ChronoBERT (manelalab/chrono-bert-v1-20101231, revision 1520cf2, MIT). It is chronologically consistent:
+  it was pretrained only on text dated before 2011, so it never read a filing from 2016 or later. SEC-BERT (pretrained on
+  10-K filings up to 2019) would have read the evaluation years' filings and is not used.
+  * The filings: each sample's latest 8-K (30 days) and latest 10-Q/10-K (120 days), the same filings the classical
+    `sec` block reads.
+  * The text: the SEC study's event text (S09). Safe-harbour paragraphs are dropped, whitespace is collapsed, and the
+    first 256 tokens are encoded.
+  * The vector: the masked mean of the last layer, reduced by a PCA(32) fitted on filings available before 2016. That
+    gives 32 components per filing type plus presence flags (`scripts/data/build_sec_tx_features.py`,
+    `nexus_alpha.nlp.transformer_text`). The weights are fixed; there is no fine-tuning.
+* `sec_impact`: an SEC price-impact expert trained on the SEC study's own event targets (`nexus_alpha.nlp.sec_impact`).
+  * **Data.** S07 events, S08 targets and S09 features of the 500-firm study, for events available before the seal.
+  * **Targets.** The 3-class `label3` of `T_trade` (entry at the first tradable price after the decision time) at
+    horizons 1 and 5. Only eligible, uncensored rows are used.
+  * **Features.** The S09 event features, without `meta_year` (review finding N2). The accounting families (`acc_*`,
+    `sue_*`, `ear_*` and their availability flags) are also left out: their availability rule is wrong before 2009
+    (review finding N1), and D-077 superseded their results.
+  * **Model.** LightGBM multiclass, fixed parameters: 31 leaves, learning rate 0.05, feature and bagging fractions
+    0.8, at least 200 rows per leaf, up to 2,000 rounds, early stopping (100 rounds) on 2016 events, deterministic,
+    seed 11.
+  * **Fitted on.** Events available before 2016-01-01 whose horizon-5 exit is also before 2016-01-01.
+  * **Predictions.** Events from 2016 on are predicted by that model. Events before 2016 get out-of-fold predictions
+    from five year-block folds (2000-02, 2003-05, 2006-08, 2009-11, 2012-15), each fitted without its own years and
+    without events within 30 days of the fold's edges.
+  * **Per sample.** From the latest event available within 14 days of the decision time: P(move) = 1 - P(sideways)
+    and P(up) - P(down) at h1 and h5, log(1 + days since), and the event type. Over the last 30 days: the maximum
+    h5 P(move) and the event count. The block is present when an event lies within 14 days.
+
+**Rows, horizons, training.** The s500 frame of the v1 fusion (236,520 samples; the notebook's frame):
+* train 2003-2015 (fit), inner 2016 (early stopping), valid 2017-18 (the decision), test 2020-22 (one report after the
+  decision);
+* the six fusion horizons (1D, 2D, 5D, 10D, 20D, 1M);
+* the gated fusion with the notebook's section-8 settings: d_model 64, dropout 0.3, AdamW at 3e-4 with a cosine
+  schedule, weight decay 1e-4, modality dropout 0.15, quantile weight 0.2, batch 1,024, at most 30 epochs, early
+  stopping on inner (patience 4);
+* seeds 7, 11 and 23, with probabilities averaged over seeds;
+* every block is standardised on training rows where it is present; a missing block is zeroed and flagged.
+
+**Configurations.**
+* BASE: img_W, img_D, img_H, num, news, sec (the current six blocks);
+* MM: BASE + news_tx + sec_tx + sec_impact;
+* PLACEBO: BASE + the three new blocks, with their rows (values and presence flags together) permuted across tickers
+  within each as-of date (seed 11);
+* descriptive only, with no decision: BASE + each new block alone; text only (news, sec, news_tx, sec_tx, sec_impact);
+  vision only (img_W, img_D, img_H).
+
+**Keep rule.**
+* **Primary endpoint.** The mean six-horizon validation log loss of the seed-averaged probabilities. Gain = loss(other)
+  - loss(MM); a positive gain is an improvement. The interval is a paired month-block bootstrap with 1,000 resamples.
+* **The rule.** The NLP blocks are KEPT if the 95% interval of MM's gain over BASE lies above 0 **and** the 95% interval
+  of MM's gain over PLACEBO lies above 0.
+* **Reported, deciding nothing.**
+  * The daily cross-sectional rank IC of P(up) - P(down) with the realised h-session return, at 5D and 20D, for MM -
+    BASE, with a date bootstrap.
+  * The same comparisons on rows where any text block is present.
+  * The SEC expert's validation AUC for P(move) at h1 (the SEC study's locked figure was 0.635).
+  * The gate weights per block.
+* **Afterwards.** One test-block (2020-22) report of the same comparisons, whatever the decision. It selects nothing.
+
+**Use.**
+* **If kept,** the MM bundle is saved with kind `e28_mm`. Freezing it into the forward test needs a further decision:
+  the live path has no news feed (D-028), and live 8-K text needs the owner's SEC User-Agent.
+* **If not kept,** nothing changes in v1.1, v2 or the forward test. The blocks stay in the package and the notebook as
+  analysis.
+
+**Disclosure.** The validation years (2017-18) have been read by every experiment since E11. This adds one more keep
+decision on them, so the forward test, not this table, is the evidence.
+
+**Trial budget.** One eligible comparison: MM against BASE, guarded by the placebo. Six descriptive configurations,
+three seeds each, are added to the trial ledger for deflation.

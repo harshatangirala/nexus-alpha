@@ -99,6 +99,21 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 * **QVeris MCP** ([`docs/QVERIS.md`](docs/QVERIS.md)): the public discovery endpoint is connected; paid calls need the
   owner's one-time `/mcp` sign-in.
 * **Audit 5 (2026-11-10)** ([`docs/AUDIT_5_2026-11-10.md`](docs/AUDIT_5_2026-11-10.md)): end-to-end review of the integrations; findings A-53 to A-62 fixed. Every selection trial is counted in [`docs/TRIAL_LEDGER.md`](docs/TRIAL_LEDGER.md), and forward tests are Holm-corrected (D-051).
+* **Audit 6 (2026-11-12)** ([`docs/AUDIT_6_2026-11-12.md`](docs/AUDIT_6_2026-11-12.md)): every requirement and
+  resource mapped to code and evidence; findings A-63 to A-68.
+  * **The whole pipeline in one notebook:**
+    [`notebooks/NEXUS_Alpha_End_to_End.ipynb`](notebooks/NEXUS_Alpha_End_to_End.ipynb) (open it in Colab, A100). It
+    contains every step with its code inline:
+    * labels, splits and indicators re-derived;
+    * logistic regression with a global-minimum certificate;
+    * LightGBM and the multimodal fusion network with training and validation curves;
+    * ConvNeXt fine-tuned on charts;
+    * calibration, all metrics with confusion matrices, bootstrap, placebo and Holm, and the model comparison;
+    * the risk engine, RAG and the forward-test chains.
+  * **Dashboard:**
+    * double-click `RUN_DASHBOARD.cmd`;
+    * the new **Compare 1-5** tab;
+    * entry, stop and targets drawn with a reason card in every trade view.
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
   * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
     checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
@@ -128,9 +143,11 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `src/nexus_alpha/` | package: seal, data, indicators, targets, splits, CV, NLP, rules, fusion, calibration, evaluation, trading, RAG, explainability, inference |
 | `app/streamlit_app.py` | dashboard: Mission Control (`app/mission_control.py`, `app/globe_view.py`, `app/ui.py`), Trade Desk with a price chart of the plan, forecast with return ranges, charts, news, SEC, indicators, explanation, trade planner, diagnostics, backtest v1/v1.1 with equity and drawdown curves, knowledge base, configuration, audit figures; theme in `.streamlit/config.toml` |
 | `scripts/` | audits, data builds, experiments E01-E10, RAG build and evaluation, verification (parity, quantile coverage), report compilers (`make_results.py`, `audit_report.py`), pipeline orchestrator |
-| `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | Colab front end (Drive persistence, Colab Secrets, run profiles) |
+| `notebooks/NEXUS_Alpha_End_to_End.ipynb` | **the presentation notebook**: the whole pipeline with the code inline (built by `scripts/colab/make_end_to_end_notebook.py`; inputs staged by `scripts/colab/stage_notebook_inputs.py`) |
+| `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb`, `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | one-pass Colab reproduction of E22/E23/E25; Colab front end (Drive persistence, Colab Secrets, run profiles) |
+| `RUN_DASHBOARD.cmd` | double-click to open the dashboard at `http://localhost:8501` |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 156 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, fundamentals (point in time, share basis, vendor data contract), forward-test runner |
+| `tests/` | 169 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |
 

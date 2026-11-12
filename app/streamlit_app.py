@@ -112,13 +112,15 @@ if go:
             st.error(f"Analysis failed: {type(e).__name__}: {e}")
 
 res = st.session_state.get("res")
-all_tabs = st.tabs(["Mission Control", "Trade Desk", "A Forecast", "B Charts", "C News", "D SEC", "E Indicators",
-                    "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting", "J Knowledge base",
-                    "K Configuration", "L Audit", "M LLM committee", "N Options"])
-with all_tabs[14]:
+all_tabs = st.tabs(["Mission Control", "Trade Desk", "Compare 1-5", "A Forecast", "B Charts", "C News", "D SEC",
+                    "E Indicators", "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting",
+                    "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options"])
+RISK_DEFAULTS = dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
+                     allow_short=allow_short, cost_scenario=cost_sc)
+with all_tabs[15]:
     import committee_tab  # noqa: E402
     committee_tab.render(universe())
-with all_tabs[15]:
+with all_tabs[16]:
     import options_tab  # noqa: E402
     options_tab.render(universe())
 with all_tabs[0]:
@@ -126,10 +128,11 @@ with all_tabs[0]:
     mission_control.render()
 with all_tabs[1]:
     import trade_desk_tab  # noqa: E402  (app/ is on sys.path when Streamlit runs this script)
-    trade_desk_tab.render(predictor if bundle_ok else None, universe(),
-                          dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
-                               allow_short=allow_short, cost_scenario=cost_sc))
-tabs = all_tabs[2:]
+    trade_desk_tab.render(predictor if bundle_ok else None, universe(), RISK_DEFAULTS)
+with all_tabs[2]:
+    import compare_tab  # noqa: E402
+    compare_tab.render(universe(), predictor if bundle_ok else None, RISK_DEFAULTS)
+tabs = all_tabs[3:]
 
 with tabs[0]:
     st.header("Forecast overview")
@@ -243,13 +246,16 @@ with tabs[6]:
         h = st.selectbox("Horizon", HZ, index=2)
         p = res.trade_plans[h]
         st.subheader(p.decision)
-        st.write(p.reasons)
-        if p.decision in ("LONG", "SHORT"):
+        import plan_view as PV  # noqa: E402
+        import trade_desk_tab  # noqa: E402
+        try:
+            daily = trade_desk_tab._bars_for_check(tick, mode, asof)["D"]
+        except Exception:  # noqa: BLE001  (the chart is optional; the reason card is the record)
+            daily = None
+        PV.explainer(res, h, RiskConfig(**RISK_DEFAULTS), daily, key="planner")
+        with st.expander("Full plan record (risk engine output)"):
             st.dataframe(pd.Series({k: v for k, v in p.model_dump().items() if v is not None and k not in ("reasons",)},
                                    dtype=object), width="stretch")
-        elif p.setup_family:
-            st.caption(f"A {p.setup_family} setup exists, but a gate failed (see reasons). Levels are not shown for "
-                       "rejected plans to avoid implying a trade.")
 
 with tabs[7]:
     st.header("Model diagnostics and experiments")

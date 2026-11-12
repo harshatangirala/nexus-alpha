@@ -3,7 +3,31 @@
 Colab is optional: everything in this repository ran on the owner's CPU. It is useful for re-running the heavy stages away
 from that PC, or for the GPU-only extensions registered in the notebook (section 13).
 
-## One pass: `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb` (recommended)
+There are two notebooks:
+* **`NEXUS_Alpha_End_to_End.ipynb`**: the presentation copy, with the code of every step inline (below).
+* **`NEXUS_Alpha_Colab_RunAll.ipynb`**: the reproduction run, which checks the committed E22/E23/E25 numbers.
+
+## The presentation notebook: `notebooks/NEXUS_Alpha_End_to_End.ipynb` (audit 6)
+
+1. On the PC (once): `python -I scripts/colab/stage_notebook_inputs.py`. It writes about 600 MB to
+   `MyDrive/antigravity_workspace/nexus_artifacts/notebook/`:
+   * the sample frame;
+   * the chart-embedding components, fitted on training rows;
+   * the news, SEC and rule features;
+   * the saved predictions of the documented runs;
+   * the knowledge base.
+
+   It is private (book text). Wait until Google Drive for desktop has synced it.
+2. In Colab: File > Open notebook > GitHub, then enter `harshatangirala/nexus-alpha` and pick the notebook.
+   Runtime > Change runtime type: A100 GPU, High-RAM. Then Runtime > Run all and allow the Drive mount.
+3. About 30-45 minutes on an A100. The first code cell has `QUICK = False`; `True` is a few-minute smoke test.
+
+It trains the logistic regression (with its global-minimum certificate), LightGBM, the fusion network and a fine-tuned
+ConvNeXt itself, with their loss curves, then evaluates every model, including the frozen models' saved predictions.
+Daily bars are read with a date filter, so nothing from the sealed period is loaded. The same cells run on this PC
+with `python -I scripts/colab/run_notebook_locally.py --quick`, which saves every figure for inspection.
+
+## One pass: `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb` (reproduction)
 
 1. On the PC: `python scripts/colab/stage_for_drive.py --go`, then wait until Google Drive for desktop shows it as synced.
 2. In Colab: open the run-all notebook (from GitHub), **Runtime -> Run all**. A CPU runtime is enough; no secret is needed.

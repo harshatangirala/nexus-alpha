@@ -24,5 +24,6 @@ def test_app_runs_an_analysis():
     assert "res" in at.session_state
     res = at.session_state["res"]
     assert set(res.forecasts) == {"1D", "2D", "5D", "10D", "20D", "1M"}
-    assert len(at.tabs) == 16 and at.tabs[0].label == "Mission Control" and at.tabs[1].label == "Trade Desk"
-    assert at.tabs[14].label == "M LLM committee" and at.tabs[15].label == "N Options"
+    assert len(at.tabs) == 17 and at.tabs[0].label == "Mission Control" and at.tabs[1].label == "Trade Desk"
+    assert at.tabs[2].label == "Compare 1-5"
+    assert at.tabs[15].label == "M LLM committee" and at.tabs[16].label == "N Options"

@@ -23,9 +23,30 @@ Stages skip existing outputs. The full local run took several hours on a laptop 
 
 ## 3. Run the app
 
+**Easiest:** double-click `RUN_DASHBOARD.cmd` in the repository folder. It starts the dashboard and opens
+`http://localhost:8501` in the browser; close its window to stop it. The same from a terminal:
+
 ```powershell
 .venv\Scripts\streamlit run app\streamlit_app.py
 ```
+**Compare 1-5** (third tab): pick up to five stocks and a logged forward-test session. Everything the nightly run
+logged appears at once:
+* price paths and drawdowns;
+* v1.1/v2 probabilities, return ranges and the lean across horizons;
+* a risk-versus-rank map, a factor radar, correlations, a scoreboard of every frozen model and option-implied
+  volatility.
+
+"Run the full model and trade plans" then scores each stock live and draws its plan with the reasons.
+
+**Levels and reasons.** The Trade Desk, the Trade planner and Compare draw each plan on the price chart with a reason
+card. The card covers:
+* the entry, stop and target rules with their rulebook ids;
+* the weekly regime, daily setup and hourly trigger;
+* the indicators, the model's probabilities, news, filings and book citations.
+
+When the risk engine says NO_TRADE, the setup's own levels are drawn dashed and marked CONDITIONAL, with the gates
+that failed. The decision itself is unchanged.
+
 Sidebar: pick a ticker from the 500-stock universe, a mode and, in historical mode, an as-of session (2004 to 2022; later dates are sealed). Optionally paste 1-7 articles with their publication time (UTC) and upload screenshots (shown only; never parsed for prices). Set the paper risk settings and press **Run analysis**.
 
 * **Historical mode** uses the sealed TriFrame bars. Dates before 2016 are in-sample for the model, 2017-2019 were used for selection and calibration, 2020-2022 is the development test.

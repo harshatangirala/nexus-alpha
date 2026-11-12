@@ -7,6 +7,8 @@ if not exist artifacts\logs mkdir artifacts\logs
 rem Owner-held key file paths (FRED for v2 context) from a git-ignored local file, if present
 if exist scripts\shadow\local_env.cmd call scripts\shadow\local_env.cmd
 echo ==== %DATE% %TIME% ==== >> artifacts\logs\shadow_daily.log
+rem A-63 (D-052): keep Windows out of idle sleep while this batch runs; the helper exits when the batch ends
+start "" /b .venv\Scripts\python.exe -B scripts\shadow\keep_awake.py --watch-parent
 rem Preflight: Yahoo reachable? (exit 10 = already completed today, 2 = unreachable after about 90 minutes)
 .venv\Scripts\python.exe -B scripts\shadow\preflight.py >> artifacts\logs\shadow_daily.log 2>&1
 if errorlevel 10 exit /b 0

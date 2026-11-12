@@ -45,6 +45,9 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | App | Mission Control tab, mission-control theme, Plotly charts, Trade Desk plan chart | done | `app/mission_control.py`, `tests/test_dashboard.py` |
 | App | TradingAgents LLM committee (live, on demand, logged; E27 forward scoring) | done | `src/nexus_alpha/llm/committee.py`, app tab M, `tests/test_committee.py` |
 | App + forward test | OpenBB option chains (tab N) and the nightly implied-volatility snapshot for E26 | done | `scripts/openbb/options_chains.py`, `src/nexus_alpha/options.py`, `scripts/shadow/iv_snapshot.py`, `tests/test_options.py`, `tests/test_iv_benchmark.py` |
+| App | Compare 1-5 tab; plan explainer (reason card, CONDITIONAL levels) in the Trade Desk, Trade planner and Compare; missed sessions on Mission Control; `RUN_DASHBOARD.cmd` | done | `app/compare_tab.py`, `app/plan_view.py`, `src/nexus_alpha/compare.py`, `src/nexus_alpha/trading/explain_plan.py`, `tests/test_compare_and_reasons.py`, audit 6 |
+| 9 | End-to-end presentation notebook (code inline; GPU fusion and fine-tuning sections) | done; Colab run by the owner | `notebooks/NEXUS_Alpha_End_to_End.ipynb`, `scripts/colab/make_end_to_end_notebook.py`, `scripts/colab/run_notebook_locally.py` |
+| Forward test | Incident 2026-11-11/12: session 2026-11-10 missed, 2026-11-11 made up; keep-awake helper; session-keyed done marker | done; owner task settings pending | D-052, A-63, A-64, `scripts/shadow/owner_fix_task.ps1` |
 | — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order

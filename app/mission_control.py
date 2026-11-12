@@ -92,8 +92,19 @@ def _chain(root: Path, version: str) -> pd.DataFrame:
     return pd.read_csv(p) if p.exists() else pd.DataFrame(columns=["asof_session", "n_rows", "late_rows", "run_utc"])
 
 
+def missed_sessions(logged: set[str], first: str, now: pd.Timestamp | None = None) -> list[str]:
+    """Sessions from the model's first log whose decision time has passed with nothing logged (D-052: a gap is shown,
+    never hidden; a missed session is not back-filled)."""
+    from nexus_alpha import shadow as SH
+    from nexus_alpha.data.calendar import sessions
+    now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
+    s = sessions()
+    s = s[(s >= pd.Timestamp(first)) & (s <= SH.expected_asof(now))]
+    return [str(d.date()) for d in s if str(d.date()) not in logged and SH.decision_utc_for(d) < now]
+
+
 def forward_status(root: Path = ROOT) -> pd.DataFrame:
-    """One row per frozen model: sessions logged, rows, late rows, chain check, matured dates and progress."""
+    """One row per frozen model: sessions logged and missed, rows, late rows, chain check, matured dates and progress."""
     from nexus_alpha import shadow as SH
     rows = []
     for v in VERSIONS:
@@ -104,10 +115,12 @@ def forward_status(root: Path = ROOT) -> pd.DataFrame:
             s = json.loads(summ.read_text(encoding="utf-8"))
             matured = max([int(h.get("n_dates", 0)) for h in s.get("by_horizon", {}).values()] or [0])
         probs = SH.verify_chain(v) if root == ROOT else []
+        logged = set(c.asof_session.astype(str)) if len(c) else set()
         rows.append({"model": v, "sessions": int(c.asof_session.nunique()) if len(c) else 0,
                      "last_session": str(c.asof_session.max()) if len(c) else "-",
                      "rows": int(pd.to_numeric(c.n_rows, errors="coerce").sum()) if len(c) else 0,
                      "late_rows": int(pd.to_numeric(c.late_rows, errors="coerce").sum()) if len(c) else 0,
+                     "missed": missed_sessions(logged, min(logged)) if logged else [],
                      "chain_intact": not probs, "matured_dates": matured,
                      "last_run_utc": str(c.run_utc.max()) if len(c) else "-"})
     return pd.DataFrame(rows)
@@ -136,7 +149,7 @@ def holdout_status(root: Path = ROOT) -> str:
     return "opened (see the access log)" if log.exists() and log.stat().st_size > 0 else "sealed, never opened"
 
 
-def colab_status() -> str:
+def colab_status(root: Path = ROOT) -> str:
     drive = Path("G:/My Drive/antigravity_workspace/colab_results")
     runs = sorted(drive.glob("*/COLAB_RESULTS.json")) if drive.exists() else []
     if runs:
@@ -145,6 +158,11 @@ def colab_status() -> str:
             return f"Colab: {r.get('verdict', '?')} ({runs[-1].parent.name})"
         except Exception:  # noqa: BLE001
             return f"Colab: result unreadable ({runs[-1].parent.name})"
+    recorded = sorted((root / "reports" / "verification").glob("colab_reproduction_*.md"))
+    if recorded:                                       # the owner's Colab result, recorded in the repository
+        txt = recorded[-1].read_text(encoding="utf-8")
+        verdict = "REPRODUCED" if "verdict: **REPRODUCED**" in txt else "see the record"
+        return f"Colab: {verdict} ({recorded[-1].stem.removeprefix('colab_reproduction_')}; E22, E23, E25)"
     return "Colab: not run yet (PC rehearsal 2026-11-07: REPRODUCED)"
 
 
@@ -183,6 +201,9 @@ def _forward_panel(fs: pd.DataFrame) -> None:
     for r in fs.itertuples():
         ok = UI.tag("CHAIN OK", UI.GOOD) if r.chain_intact else UI.tag("CHAIN BROKEN", UI.BAD)
         late = "" if r.late_rows == 0 else f' · <span style="color:{UI.WARN}">{r.late_rows} late rows (never scored)</span>'
+        if len(r.missed):
+            late += (f' · <span style="color:{UI.WARN}">missed {len(r.missed)}: '
+                     f'{html.escape(", ".join(r.missed))} (not back-filled)</span>')
         bars = (UI.progress(r.matured_dates, FIRST_INTERVAL_DATES, f"{r.matured_dates} matured dates",
                             f"first interval at {FIRST_INTERVAL_DATES}")
                 + UI.progress(r.sessions, CRITERION_SESSIONS, f"{r.sessions} sessions logged",

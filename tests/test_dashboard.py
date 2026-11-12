@@ -37,6 +37,24 @@ def test_kpis_and_forward_status_read_the_repository():
     fs = MC.forward_status()
     assert list(fs.model) == MC.VERSIONS
     assert fs.chain_intact.all() and (fs.sessions >= 1).all()
+    assert "missed" in fs and all(isinstance(m, list) for m in fs.missed)
+
+
+def test_colab_status_reads_the_recorded_reproduction():
+    s = MC.colab_status()
+    assert s.startswith("Colab: ") and "not run yet" not in s      # the owner's 2026-11-11 run is recorded
+
+
+def test_missed_sessions_counts_only_passed_decision_times():
+    logged = {"2026-11-05", "2026-11-06", "2026-11-09", "2026-11-11"}
+    # 12 Nov 2026, 15:00 IST (09:30 UTC): 2026-11-10's decision time (11 Nov 14:00 UTC) has passed; 2026-11-11's has not
+    assert MC.missed_sessions(logged, "2026-11-05", pd.Timestamp("2026-11-12 09:30", tz="UTC")) == ["2026-11-10"]
+    # before 2026-11-11 is logged and before its decision time, it is pending, not missed
+    assert MC.missed_sessions(logged - {"2026-11-11"}, "2026-11-05",
+                              pd.Timestamp("2026-11-12 09:30", tz="UTC")) == ["2026-11-10"]
+    # after its decision time an unlogged session counts as missed
+    assert MC.missed_sessions(logged - {"2026-11-11"}, "2026-11-05",
+                              pd.Timestamp("2026-11-12 14:30", tz="UTC")) == ["2026-11-10", "2026-11-11"]
 
 
 def test_universe_points_group_by_state_or_country():

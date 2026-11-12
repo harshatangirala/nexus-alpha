@@ -139,3 +139,41 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
   `shadow/committee/`, hash-chained like the forecasts. `committee_score.py` scores them nightly.
 * **Effect on the other models.** Both steps are non-fatal, run after every model has logged, and do not count
   towards the done marker.
+
+## Incident on 2026-11-11/12 (D-052, A-63)
+
+* **What happened.**
+  * **11 Nov.** The laptop uses Modern Standby. The 07:00 IST run for session 2026-11-10 was missed while it slept
+    (no wake timer). Task Scheduler started it when the laptop woke at 13:58. The run wrote its header line 10
+    seconds after the wake and then nothing more: every step failed before printing.
+  * **12 Nov.** At 09:09 a Windows Update restart (System event 1074) ended the next attempt with 0xC0000142. Its
+    processes could not start while the session was shutting down.
+  * After the restart the task could not run until the owner logged on: it runs only while the user is logged on.
+* **Session 2026-11-10 is missed.** Its decision time (09:00 New York on 11 Nov = 19:30 IST) passed with nothing
+  logged. It is not back-filled: a late file would be flagged and never scored. Mission Control now shows each
+  model's missed sessions (`missed_sessions` in `app/mission_control.py`).
+* **Make-up of session 2026-11-11.** The unchanged nightly runner ran from 14:32 IST on 12 Nov, wrapped by
+  `scripts/shadow/keep_awake.py` so the laptop could not idle into standby. It finished at 16:25 IST, before the
+  decision time (19:30 IST):
+  * v1.1 logged 497 stocks x 6 horizons;
+  * v2 logged 497 x 23;
+  * market_e19 logged its SPY read;
+  * v3_fund logged 497 x 9;
+  * v3_alpha logged 497 x 7.
+
+  No row is late and every chain is intact. The option snapshot (E26) covered 362 of 500 stocks. The nightly commit
+  `1117150` reached GitHub at about 16:25 IST, before the decision time. Only `shadow/` was committed and pushed, as
+  every night.
+* **Changes (infrastructure only; no forecast is affected).**
+  * `run_daily.cmd` starts the keep-awake helper, which holds off idle sleep while the batch runs and exits when it
+    ends.
+  * The done marker is keyed by the as-of session, not the local date (A-64). An extra trigger after midnight can no
+    longer make the 07:00 run skip a session. That makes extra triggers safe.
+* **Owner actions** (the assistant does not change scheduled tasks). Run `scripts\shadow\owner_fix_task.ps1` in an
+  administrator PowerShell. It:
+  * turns on the wake timer and allows wake timers in the power plan;
+  * runs a missed start as soon as possible, on battery too;
+  * adds log-on and unlock triggers;
+  * can switch the task to "run whether user is logged on or not".
+
+  Keep the laptop plugged in and asleep, not shut down, overnight.

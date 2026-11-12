@@ -1,6 +1,31 @@
 {
  "chain_intact": true,
- "snapshots_used": 0,
+ "snapshots_used": 1,
  "notes": [],
- "results": {}
+ "results": {
+  "v1.1|5D": {
+   "rows": 0,
+   "sessions": 0,
+   "move_rate": null,
+   "decision": "insufficient: 0 scored sessions (needs 120)"
+  },
+  "v1.1|20D": {
+   "rows": 0,
+   "sessions": 0,
+   "move_rate": null,
+   "decision": "insufficient: 0 scored sessions (needs 120)"
+  },
+  "v2|5D": {
+   "rows": 0,
+   "sessions": 0,
+   "move_rate": null,
+   "decision": "insufficient: 0 scored sessions (needs 120)"
+  },
+  "v2|20D": {
+   "rows": 0,
+   "sessions": 0,
+   "move_rate": null,
+   "decision": "insufficient: 0 scored sessions (needs 120)"
+  }
+ }
 }

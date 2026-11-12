@@ -1,0 +1,2 @@
+run_utc,asof_session,file,file_sha256,n_rows,n_failed,late_rows,prev_hash,row_hash
+2026-11-12T10:54:06+00:00,2026-11-11,2026-11-11.json,8b1e121839738c748351672230006cc994a73316472a17a365e5238510f79caf,362,138,0,GENESIS,18e871f685cad633ecf0550bce9709aa1a47a414195c3f1ffaebe02d0e0e73f7

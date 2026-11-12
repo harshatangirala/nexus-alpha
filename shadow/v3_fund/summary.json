@@ -1,28 +1,50 @@
 {
   "version": "v3_fund",
-  "scored_rows": 498,
+  "scored_rows": 1987,
   "first_asof": "2026-11-06",
-  "last_asof": "2026-11-06",
+  "last_asof": "2026-11-09",
   "by_horizon": {
     "1D": {
-      "n": 498,
-      "n_dates": 1,
-      "log_loss": 1.0514291237146158,
-      "log_loss_prior": 1.044243101199683,
-      "gain_vs_prior": -0.007186022514932722,
-      "auroc_up_vs_down": 0.5262958280657396,
-      "hit_rate_argmax": 0.46184738955823296,
+      "n": 994,
+      "n_dates": 2,
+      "log_loss": 0.9895949789523801,
+      "log_loss_prior": 1.0045812424879614,
+      "gain_vs_prior": 0.014986263535581301,
+      "auroc_up_vs_down": 0.5534366197183098,
+      "hit_rate_argmax": 0.5392354124748491,
       "class_freq": [
-        0.07028112449799197,
-        0.4759036144578313,
-        0.4538152610441767
+        0.1006036217303823,
+        0.5422535211267606,
+        0.35714285714285715
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
-        "dates": 1,
-        "mean_rank_ic": 0.08409461885273635,
-        "mean_quintile_spread_gross": -0.0013691054469293605,
+        "dates": 2,
+        "mean_rank_ic": 0.07591862969188219,
+        "mean_quintile_spread_gross": 5.5312618084101765e-05,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "2D": {
+      "n": 993,
+      "n_dates": 2,
+      "log_loss": 0.9638627696560065,
+      "log_loss_prior": 1.0001218697188563,
+      "gain_vs_prior": 0.036259100062849825,
+      "auroc_up_vs_down": 0.6079072532699168,
+      "hit_rate_argmax": 0.5720040281973817,
+      "class_freq": [
+        0.11681772406847936,
+        0.5619335347432024,
+        0.32124874118831825
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 2,
+        "mean_rank_ic": 0.18707919411225116,
+        "mean_quintile_spread_gross": 0.017811881569400424,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     }

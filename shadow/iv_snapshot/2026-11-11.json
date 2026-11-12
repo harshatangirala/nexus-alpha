@@ -1,0 +1,15 @@
+{
+ "asof_session": "2026-11-11",
+ "snapshot_started_utc": "2026-11-12T10:35:53+00:00",
+ "snapshot_utc": "2026-11-12T10:54:06+00:00",
+ "decision_utc": "2026-11-12T14:00:00+00:00",
+ "late": false,
+ "tickers_requested": 500,
+ "tickers_with_chain": 362,
+ "tickers_with_iv30": 362,
+ "fallback_parser": [],
+ "chains_sha256": "7ac2a15c6fa90ab2367aec5256dac2027a5867430a5f6ba8e05c47225d6a23bf",
+ "summary_sha256": "02b3ed97577562f30c56be2c5af44b56334f9a3f89da6071d86cb6ea42996608",
+ "source": "CBOE delayed quotes via OpenBB 5.0.0 (openbb_cboe); data kept private",
+ "definitions": "nexus_alpha.options (E26 pre-registration)"
+}

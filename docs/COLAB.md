@@ -9,18 +9,29 @@ There are two notebooks:
 
 ## The presentation notebook: `notebooks/NEXUS_Alpha_End_to_End.ipynb` (audit 6)
 
-1. On the PC (once): `python -I scripts/colab/stage_notebook_inputs.py`. It writes about 600 MB to
+1. On the PC (once): `python -I scripts/colab/stage_notebook_inputs.py`. It writes about 1 GB to
    `MyDrive/antigravity_workspace/nexus_artifacts/notebook/`:
    * the sample frame;
    * the chart-embedding components, fitted on training rows;
    * the news, SEC and rule features;
+   * the language inputs of sections 8A-8C (E28): the cleaned text and ChronoBERT vectors of 68,853 SEC filings, the
+     SEC price-impact expert's table (labels whose exit is before 2019 only), and the FinBERT, ChronoBERT and expert
+     blocks per sample;
    * the saved predictions of the documented runs;
    * the knowledge base.
 
    It is private (book text). Wait until Google Drive for desktop has synced it.
 2. In Colab: File > Open notebook > GitHub, then enter `harshatangirala/nexus-alpha` and pick the notebook.
-   Runtime > Change runtime type: A100 GPU, High-RAM. Then Runtime > Run all and allow the Drive mount.
-3. About 30-45 minutes on an A100. The first code cell has `QUICK = False`; `True` is a few-minute smoke test.
+   Runtime > Change runtime type: A100 GPU (or L4), High-RAM. Then Runtime > Run all and allow the Drive mount.
+3. Run time:
+   * **A100:** about 45-60 minutes.
+   * **L4:** works unchanged, roughly 1.5-2 times slower. bfloat16 is supported, so section 8A's ChronoBERT
+     re-encoding of all 68,853 filings takes minutes.
+   * **T4:** works; it uses float16 instead of bfloat16.
+   * **CPU only:** runs, but sections 8, 8A, 8C and 10 shrink. 8A re-encodes a random 400 filings to check parity, and
+     10 fine-tunes on a few thousand charts. Expect a few hours.
+
+   The first code cell has `QUICK = False`; `True` is a short smoke test.
 
 It trains the logistic regression (with its global-minimum certificate), LightGBM, the fusion network and a fine-tuned
 ConvNeXt itself, with their loss curves, then evaluates every model, including the frozen models' saved predictions.

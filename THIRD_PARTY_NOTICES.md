@@ -18,6 +18,15 @@ software, provided its copyright notice and permission notice are included; the 
 repository, and in `src/nexus_alpha/kronos/vendor/LICENSE` for the vendored Kronos files. The software is provided
 "as is", without warranty of any kind.
 
+## Pretrained models used unchanged (downloaded from Hugging Face, not redistributed)
+
+| Model | Licence | Use |
+|---|---|---|
+| ChronoBERT v1, 2010 cutoff (`manelalab/chrono-bert-v1-20101231`, revision 1520cf2) | MIT | Filing vectors of the `sec_tx` block (E28) and the dashboard's filing explorer |
+| FinBERT (`ProsusAI/finbert`, revision 0bc2ac1) | see its model card | Headline tone and embeddings (E16; the `news_tx` block of E28) |
+| ConvNeXt-Tiny (`timm/convnext_tiny.in12k_ft_in1k`) | Apache-2.0 | Chart embeddings (all fusion models) and the notebook's fine-tuning section |
+| BGE small (`BAAI/bge-small-en-v1.5`) | MIT | Dense retrieval in the knowledge base |
+
 ## Separate programs in their own environments (not redistributed)
 
 | Project | Licence | Use |

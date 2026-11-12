@@ -114,7 +114,8 @@ if go:
 res = st.session_state.get("res")
 all_tabs = st.tabs(["Mission Control", "Trade Desk", "Compare 1-5", "A Forecast", "B Charts", "C News", "D SEC",
                     "E Indicators", "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting",
-                    "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options"])
+                    "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options",
+                    "O Vision + NLP"])
 RISK_DEFAULTS = dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
                      allow_short=allow_short, cost_scenario=cost_sc)
 with all_tabs[15]:
@@ -123,6 +124,9 @@ with all_tabs[15]:
 with all_tabs[16]:
     import options_tab  # noqa: E402
     options_tab.render(universe())
+with all_tabs[17]:
+    import vision_nlp_tab  # noqa: E402
+    vision_nlp_tab.render(universe())
 with all_tabs[0]:
     import mission_control  # noqa: E402
     mission_control.render()
@@ -208,6 +212,16 @@ with tabs[3]:
         missing = [m for m in res.confluence.get("missing_information", []) if "SEC" in m]
         for m in missing:
             st.warning(m)
+        from nexus_alpha import language_view as LV
+        tl = LV.filing_timeline(res.instrument.symbol, res.instrument.asof_session)
+        if not tl.empty:
+            st.subheader("SEC price-impact expert: what each filing was expected to do (E28)")
+            st.dataframe(tl.tail(12).iloc[::-1].rename(columns={"available_utc": "public (UTC)",
+                         "p_move_h1": "P(move) 1 session", "p_move_h5": "P(move) 5 sessions",
+                         "lean_h1": "P(up)-P(down) 1", "lean_h5": "P(up)-P(down) 5"}).drop(columns="event_type"),
+                         width="stretch")
+            st.caption("Filings up to the analysis date only. The expert says whether a filing moves a stock, "
+                       "not which way (tab O).")
 
 with tabs[4]:
     st.header("Indicators and market context")

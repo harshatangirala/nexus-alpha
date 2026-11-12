@@ -48,6 +48,9 @@ This notebook holds the code of every step, with a short explanation above each 
 | 6 | Baselines | class prior; multinomial logistic regression with a **global-minimum certificate** |
 | 7 | LightGBM | gradient boosting per horizon, **training and validation loss curves**, feature importance |
 | 8 | Fusion neural network (GPU) | charts + indicators + news + SEC, gated fusion, 3 seeds, **loss curves** |
+| 8A | Language branch (GPU) | ChronoBERT, a transformer with a 2010 text cutoff, reads 68,853 SEC filings; parity with the documented vectors |
+| 8B | SEC price-impact expert | the SEC study's own labels turned into a model: does a filing move the price? |
+| 8C | Vision + NLP fusion (E28) | one network over charts, indicators, news and filings; the pre-registered keep test, placebo, gates |
 | 9 | Optimisation | convexity, seeds, the loss landscape: what "reaching the global minimum" means here |
 | 10 | Fine-tuning (GPU) | ImageNet ConvNeXt-Tiny fine-tuned on rendered chart images, **loss curves** |
 | 11 | Calibration | temperature scaling, reliability diagrams, ECE |
@@ -71,14 +74,15 @@ Research and paper trading only. Nothing here is investment advice, and no order
 md(r"""
 ## How to run it
 
-**On Colab Pro+ (recommended).** Runtime > Change runtime type > **A100 GPU** (or L4/T4), High-RAM on. Then
-Runtime > Run all. About 30-45 minutes on an A100; the GPU sections (8 and 10) are the only ones that need it, and
-they fall back to a smaller CPU run without one.
+**On Colab Pro+ (recommended).** Runtime > Change runtime type > **A100 GPU** or **L4 GPU** (T4 also works), High-RAM
+on. Then Runtime > Run all. About 45-60 minutes on an A100 and roughly 1.5-2 times that on an L4. The GPU sections are
+8, 8A, 8C and 10; without a GPU they run smaller versions (8A checks 400 filings instead of all 68,853), and the
+whole notebook takes a few hours on a CPU.
 
 **Inputs (on your Google Drive, under `MyDrive/antigravity_workspace/`):**
-* `nexus_artifacts/notebook/`: the compact input set staged by `scripts/colab/stage_notebook_inputs.py` (about 600 MB):
-  the sample frame, chart-embedding components, news/SEC/rule features, saved predictions of the documented runs and
-  the knowledge base. **Keep this folder private:** the knowledge base contains book text.
+* `nexus_artifacts/notebook/`: the compact input set staged by `scripts/colab/stage_notebook_inputs.py` (about 1 GB):
+  the sample frame, chart-embedding components, news/SEC/rule features, the language inputs of sections 8A-8C (SEC
+  filing text and vectors, the SEC expert's table), saved predictions of the documented runs and the knowledge base. **Keep this folder private:** the knowledge base contains book text.
 * `us_stocks_ohlcv/final/1day/`: daily bars, read only up to 2022-12-30 (needed by sections 5 and 10).
 
 The public repository (code, documented metrics and forward-test logs) is cloned in section 1.
@@ -633,8 +637,10 @@ def fusion_loss(logits, quant, y, z, qw=0.2):
     pin = (torch.maximum(qs * d, (qs - 1) * d) * zm[..., None]).sum() / (zm.sum().clamp(min=1) * 3)
     return ce + qw * pin, ce
 
-def to_dev(ix):
-    return ({n: torch.from_numpy(blocks[n][ix]).to(DEVICE) for n in NAMES}, torch.from_numpy(MASK[ix]).to(DEVICE),
+def to_dev(ix, B=None):
+    # B = (blocks, names, mask) of another block set (section 8C); default: this section's six blocks
+    bl, nm, mk = B or (blocks, NAMES, MASK)
+    return ({n: torch.from_numpy(bl[n][ix]).to(DEVICE) for n in nm}, torch.from_numpy(mk[ix]).to(DEVICE),
             torch.from_numpy(Y[ix]).to(DEVICE), torch.from_numpy(ZV[ix]).to(DEVICE))
 
 @torch.no_grad()
@@ -648,19 +654,20 @@ def eval_ce(model, data, bs=8192):
     return tot / max(n, 1)
 
 @torch.no_grad()
-def predict_probs(model, ix, bs=8192):
-    model.eval(); xs, m, _, _ = to_dev(ix); out = []
+def predict_probs(model, ix, bs=8192, B=None):
+    model.eval(); xs, m, _, _ = to_dev(ix, B); out = []
     for i in range(0, len(m), bs):
         lg, _, _ = model({k: v[i:i + bs] for k, v in xs.items()}, m[i:i + bs])
         out.append(lg.softmax(-1).float().cpu().numpy())
     return np.concatenate(out)
 
-def train_fusion(seed, epochs=30, bs=1024, lr=3e-4, wd=1e-4, p_drop=0.3, mod_drop=0.15, patience=4):
+def train_fusion(seed, epochs=30, bs=1024, lr=3e-4, wd=1e-4, p_drop=0.3, mod_drop=0.15, patience=4, B=None):
     torch.manual_seed(seed); g = torch.Generator(device="cpu").manual_seed(seed)
-    model = GatedFusion({n: blocks[n].shape[1] for n in NAMES}, p=p_drop).to(DEVICE)
+    bl, nm, _ = B or (blocks, NAMES, MASK)
+    model = GatedFusion({n: bl[n].shape[1] for n in nm}, p=p_drop).to(DEVICE)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)
-    tr, inn, va = to_dev(TR), to_dev(INN), to_dev(VAL)
+    tr, inn, va = to_dev(TR, B), to_dev(INN, B), to_dev(VAL, B)
     hist, best, best_state, bad = [], 1e9, None, 0
     for ep in range(epochs):
         model.train(); perm = torch.randperm(len(TR), generator=g).to(DEVICE); run, nb = 0.0, 0
@@ -712,6 +719,14 @@ gw = pd.Series(gates.float().mean(0).cpu().numpy(), index=NAMES)
 fig, ax = plt.subplots(figsize=(6, 2.6)); gw.plot.bar(ax=ax, color="#d62728")
 ax.set_title("mean gate weight per block, valid rows (model diagnostic)"); plt.tight_layout(); plt.show()
 """)
+
+# ---------------------------------------------------------------------------------------------------------- language
+import sys  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import nb_sections_nlp  # noqa: E402  (sections 8A-8C: language branch, SEC expert, vision + NLP fusion)
+
+nb_sections_nlp.add(md, code)
 
 # ---------------------------------------------------------------------------------------------------------- optimisation
 md(r"""
@@ -1016,7 +1031,8 @@ for name, P in PRED.items():
                           **metrics(P[ix, j], YE[ix, j], RETE[ix, j], DATES[ix])})
 TABLE = pd.DataFrame(TABLE)
 LABEL = {"prior": "class prior", "logistic": "logistic (trained here)", "lgbm": "LightGBM (trained here)",
-         "fusion": "fusion network (trained here)", "fusion_cal": "fusion network, calibrated (trained here)"}
+         "fusion": "fusion network (trained here)", "fusion_cal": "fusion network, calibrated (trained here)",
+         "fusion_mm": "vision + NLP fusion network (trained here)"}
 mean_ll = TABLE.pivot_table(index="model", columns="split", values="log loss", aggfunc="mean").sort_values("test")
 mean_ll.index = [LABEL.get(i, i) for i in mean_ll.index]
 display(Markdown("**Mean log loss over the six horizons (lower is better)**")); display(mean_ll.style.format("{:.5f}"))

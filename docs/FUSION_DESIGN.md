@@ -11,6 +11,9 @@ Implemented in `nexus_alpha/multimodal/` (`fusion.py`, `dataset.py`, `trainer.py
 | `news` | 75 (64 SVD + tone + counts, recency, match specificity, precision) | 1 if at least one article was available in the 5-day window |
 | `sec` | 91 (17 structured + 2 × (32 SVD + 4 tone + present flag)) | 1 if the sample is inside SEC coverage |
 | `rules` | 21 one-hot rule features (regime, setups, candles, triggers) | always 1; used only in ablation 17 |
+| `news_tx` (E28) | 20 (FinBERT tone mean/min/max, negative share, 16 PCA components of the headline embeddings) | 1 if at least one headline was available |
+| `sec_tx` (E28) | 66 (ChronoBERT-2010 vectors of the latest 8-K and 10-Q/10-K, 32 PCA components each, plus two flags) | 1 if either filing exists |
+| `sec_impact` (E28) | 9 (the SEC price-impact expert's P(move) and P(up) - P(down) at 1 and 5 sessions for the latest filing, its age and type; the 30-day maximum and count) | 1 if a filing became public within 14 days |
 
 All scalers and PCA are fitted on training rows; masked blocks are zero-filled and cannot influence the output (tested for every variant by feeding garbage into a masked block).
 
@@ -35,3 +38,18 @@ Variant chosen by mean validation log loss over the six horizons (ties within 0.
 ## Not done (registered)
 
 Horizon embeddings with a joint head, return-regression point heads beyond the quantiles, end-to-end fine-tuning of the chart backbone through the fusion loss, shared-vs-separate backbones per timeframe, Optuna search of fusion hyperparameters (one fixed configuration was used to keep the search count small and honest).
+## The language branch (E28, D-053)
+
+The three `*_tx`/`sec_impact` blocks turn the fusion into one vision + language network. They are built by
+`scripts/data/build_sec_tx_features.py` and `scripts/data/build_sec_impact_features.py` (FinBERT features from E16).
+`multimodal.dataset.build(..., modalities)` assembles them like every other block: standardised on training rows where
+present, zero-filled and flagged where absent. `load_tables(nlp=True)` joins them.
+
+* **Encoder choice.** ChronoBERT with a 2010-12-31 cutoff (`nexus_alpha.nlp.transformer_text`) is chronologically
+  consistent: it never read text from the inner, validation or test years. A filing encoder pretrained on later
+  filings (SEC-BERT, to 2019) would carry look-ahead.
+* **SEC study labels.** The price-impact expert (`nexus_alpha.nlp.sec_impact`) learns the SEC study's `T_trade`
+  labels from its event features. Events before 2016 are predicted out of fold, so a NEXUS training row never sees a
+  prediction fitted on its own event.
+* **Test.** Pre-registered keep test against the six-block network and a within-date placebo: `docs/V3_RESEARCH.md`
+  (E28).

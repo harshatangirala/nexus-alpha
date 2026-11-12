@@ -12,6 +12,9 @@ The notebook trains and evaluates in the open, so it needs data, not scripts. Th
   E01 structured baselines, E02 image probes, E03 fusion ablations and variants, E06 seeds and loss landscape,
   E08 = frozen v1.1; and E14 = frozen v2 on its own rows;
 * the RAG knowledge base (chunks, dense vectors, manifest). The books are private: keep this folder private.
+* the language inputs of sections 8A-8C (E28, D-053), under `nlp/` and `features/`: the cleaned text and ChronoBERT
+  vectors of the 68,853 encoded filings, the PCA, the SEC price-impact expert's table (event features and labels whose
+  exit is before 2019 only), its documented predictions, and the per-sample news_tx, sec_tx and sec_impact blocks.
 
 Nothing from the sealed 2023+ period is in any of these files (the s500 frame ends 2022-12-01).
 
@@ -47,6 +50,7 @@ RUNS = {
     "e06": "20261106T005012_e06_optimization_fa42d8",
     "e08": "20261106T020411_e08_final_model_5c4327",
     "e14": "20261106T142918_e14_blend_freeze_v2_3298d4",
+    "e28": "PENDING",
 }
 E01 = ["prior", "momentum_lr", "lgbm_structured", "lgbm_struct_x33"]
 E02 = ["img_lr__resnet18_random_s0__WDH", "img_lr__resnet18__WDH", "img_lr__convnext_tiny__WDH",
@@ -57,6 +61,7 @@ E03 = ["a04_img_WDH", "a05_num", "a06_img_num", "a07_news", "a08_sec", "a12_img_
 E06 = ["best_seed7", "best_seed11", "best_seed23", "best_seed42", "best_seed101", "best_seed_ensemble",
        "num_seed_ensemble", "lr_0.0003", "lr_0.001", "lr_0.003"]
 E08 = ["final_deployed_calibrated", "final_for_backtest"]
+E28 = ["BASE", "MM", "PLACEBO", "BASE_news_tx", "BASE_sec_tx", "BASE_sec_impact", "text_only", "vision_only"]
 
 
 def sha256(p: Path) -> str:
@@ -76,6 +81,38 @@ def image_block(out: Path, fr: pd.DataFrame) -> dict:
     return {"backbone": "convnext_tiny (ImageNet, frozen)", "k_per_view": 64, "views": ["W", "D", "H"],
             "row_order": "samples/s500_frame.parquet", "fit_rows": "block == train (2003-2015)",
             "n_fit_rows": int(len(train_rows)), "explained_variance": vp.explained()}
+
+
+def nlp_block(out: Path) -> dict:
+    """Inputs of the language sections. Filings are public SEC text; the study masked firm names."""
+    import pyarrow.parquet as pq
+    from nexus_alpha.data import sec as S
+    from nexus_alpha.nlp import sec_impact as SI
+    from nexus_alpha.nlp import transformer_text as TT
+    feat = paths.ARTIFACTS / "features"
+    (out / "nlp").mkdir(parents=True, exist_ok=True)
+    for name in ("finbert_features", "sec_tx_features", "sec_impact_features"):
+        shutil.copy2(feat / f"{name}.parquet", out / "features" / f"{name}.parquet")
+    ev = S.load_events(dev_only=True)
+    first = ev.set_index("event_id").item_list.map(lambda l: next((i for i in (l or []) if i != "9.01"), None))
+    m = pd.read_parquet(feat / "sec_tx" / "events.parquet")
+    assert pd.to_datetime(m.available_utc, utc=True).max() < pd.Timestamp("2023-01-03", tz="UTC")
+    m["item_main"] = first.reindex(m.event_id).to_numpy()
+    m.to_parquet(out / "nlp" / "sec_tx_events.parquet", index=False)
+    shutil.copy2(feat / "sec_tx" / "event_emb.npy", out / "nlp" / "sec_tx_event_emb.npy")
+    shutil.copy2(feat / "sec_tx_pca.npz", out / "nlp" / "sec_tx_pca.npz")
+    path = next((paths.SEC_FULL500_RUN / "S09").glob("*/event_text.parquet"))
+    txt = pq.read_table(path, filters=[("event_id", "in", m.event_id.tolist())]).to_pandas().set_index("event_id").text
+    texts = pd.DataFrame({"event_id": m.event_id, "text": [TT.clean_filing_text(t) for t in txt.reindex(m.event_id)]})
+    texts.to_parquet(out / "nlp" / "filing_texts.parquet", index=False, compression="zstd")
+    tab, cols = SI.load_table(ev)
+    tab[cols] = tab[cols].astype(np.float32)
+    keep = cols + ["ticker", "event_type", "available_utc"] + [f"{k}_h{h}" for h in SI.HORIZONS for k in ("y", "exit")]
+    tab[keep].to_parquet(out / "nlp" / "sec_expert_table.parquet", compression="zstd")
+    shutil.copy2(feat / "sec_impact" / "meta.json", out / "nlp" / "sec_expert_meta.json")
+    shutil.copy2(feat / "sec_impact" / "event_predictions.parquet", out / "nlp" / "sec_impact_event_predictions.parquet")
+    return {"filings_encoded": len(m), "encoder": f"{TT.MODEL}@{TT.REVISION}", "expert_events": len(tab),
+            "expert_label_exits_before": str(SI.LABEL_READ_BEFORE.date())}
 
 
 def main() -> None:
@@ -101,7 +138,7 @@ def main() -> None:
     rows = fr.loc[ev, ["sample_id", "ticker", "asof_date", "block"]].reset_index(drop=True)
     rows.to_parquet(out / "predictions" / "rows_eval.parquet", index=False)
     idx = np.flatnonzero(ev)
-    for run, names in (("e03", E03), ("e06", E06), ("e08", E08)):
+    for run, names in (("e03", E03), ("e06", E06), ("e08", E08), ("e28", E28)):
         for n in names:
             src = PRED / RUNS[run] / f"{n}__probs.npy"
             if src.exists():
@@ -120,6 +157,8 @@ def main() -> None:
             np.load(PRED / RUNS["e14"] / "probs_calibrated.npy").astype(np.float16))
     for f in ("chunks.parquet", "dense_bge_small.npy", "manifest.json"):
         shutil.copy2(paths.ARTIFACTS / "rag" / f, out / "rag" / f)
+    meta["nlp"] = nlp_block(out)
+    print(f"language inputs done ({time.time() - t0:.0f}s)", flush=True)
     files = sorted(p for p in out.rglob("*") if p.is_file() and p.name != "manifest_notebook.json")
     meta["files"] = {str(p.relative_to(out)).replace("\\", "/"): {"bytes": p.stat().st_size, "sha256": sha256(p)}
                      for p in files}

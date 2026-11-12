@@ -26,6 +26,8 @@ forward test that no development step could see. An integration is useful only i
 | vasturiano/globe.gl | MIT | WebGL globe | Mission Control globe: company addresses and Global Macro Database country data (pinned 2.46.2) | done |
 | arwes/arwes | MIT | Framed sci-fi UI language | Recreated in CSS (`app/ui.py`, `.streamlit/config.toml`) | done |
 | magicuidesign/magicui | MIT | Animated components | NumberTicker, Marquee and AnimatedBeam behaviour, re-written in plain HTML/CSS/JS | done |
+| manelalab/chrono-bert-v1-20101231 (Hugging Face) | MIT | A chronologically consistent language model (He, Lv, Manela and Wu, 2025): pretrained only on text before 2011, so it cannot leak the evaluation years | `src/nexus_alpha/nlp/transformer_text.py` (revision pinned); encodes 68,853 SEC filings for the `sec_tx` block; dashboard tab O; notebook section 8A. Tested as **E28** | done |
+| SEC filings price-impact study (the owner's project) | own | 190,947 point-in-time filing events, their text and the price-impact labels | Read only: events and text since v1 (`data/sec.py`); from E28 also its `T_trade` labels, learned by the SEC price-impact expert (`nlp/sec_impact.py`, without `meta_year` and the accounting families, review findings N1/N2) | done |
 | koala73/worldmonitor | AGPL-3.0 | A situational-awareness layout around a globe | Layout reference only. AGPL code cannot be copied into this repository | done |
 | hal9ai/awesome-dataviz, sjfricke/awesome-webgl | lists | Library choice | Plotly and deck.gl (pydeck) were already installed; globe.gl is the WebGL globe | done |
 

@@ -27,6 +27,7 @@ the selection data. Placebo sets are counted, because they are evaluated the sam
 | E24 | Kronos zero-shot | 2017-18 (contaminated) | 1 configuration x 6 horizons x 2 endpoints | 12 | necessary condition not met |
 | E25 | Qlib Alpha158 | 2017-18 | 4 sets x 2 models x 9 horizons x 2 endpoints | 144 | kept on rank IC, v3_alpha frozen (5D-1Y) |
 | **Selection trials since v2 (E11-E25)** | | | | **<= 665** | |
+| E28 | Vision + NLP fusion (FinBERT news, ChronoBERT filings, SEC price-impact expert) | 2017-18 | 1 eligible comparison (MM vs BASE, guarded by a placebo) + 6 descriptive configurations, 3 seeds each | 8 | see `docs/V3_RESEARCH.md` (E28 results) |
 | E26 | NEXUS vs implied volatility | forward only | 2 models x 2 horizons x 2 endpoints, Holm across endpoint 2 (D-051) | 8 | running from 2026-11-10 |
 | E27 | LLM committee | forward only | descriptive | - | running, on demand |
 | Forward criteria | v3_fund, v3_alpha vs ranker_v3 | forward only | 2 candidates x 2 conditions, Holm across candidates (D-051) | 2 | after 120 sessions |

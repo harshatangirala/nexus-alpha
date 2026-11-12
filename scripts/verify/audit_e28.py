@@ -88,6 +88,14 @@ def main() -> int:
     check("expert labels: no exit on or after 2019-01-01 was read", mx < pd.Timestamp("2019-01-01", tz="UTC"), str(mx))
     check("expert features: no year or accounting family",
           not [c for c in cols if c == "meta_year" or c.startswith(("acc_", "sue_", "ear_"))], f"{len(cols)} features")
+    # the features the STORED expert was trained on (its meta.json), checked by type: a timestamp read as a number is
+    # calendar time (audit 7, D-054); names alone missed three of them
+    import pyarrow.parquet as pq
+    used = json.loads((FEAT / "sec_impact" / "meta.json").read_text(encoding="utf-8"))["features"]
+    sch = pq.read_schema(SI._stage("S09", "features.parquet"))
+    non_num = [c for c in used if not str(sch.field(c).type).startswith(("double", "float", "int", "uint", "bool"))]
+    check("stored expert used only numeric, non-time features", not non_num and used == cols,
+          f"{len(used)} features; non-numeric: {non_num}")
     pred = pd.read_parquet(FEAT / "sec_impact" / "event_predictions.parquet")
     sif = pd.read_parquet(FEAT / "sec_impact_features.parquet")
     bad = 0

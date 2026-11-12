@@ -4,7 +4,7 @@ Imported by make_end_to_end_notebook.py, which places these cells after section 
 """
 from __future__ import annotations
 
-E28_RUN = "PENDING"          # set to the E28 run folder under experiments/ once the documented run has finished
+E28_RUN = "20261113T025828_e28_vision_nlp_fusion_b1f899"   # the documented E28 run under experiments/ (pinned)
 
 
 def add(md, code, e28_run: str = E28_RUN) -> None:
@@ -27,7 +27,10 @@ encoded. The vector is the masked mean of the last layer, 768 numbers.
 
 **Reproducibility.** The documented run (E28) encoded these filings on the project PC's CPU. This cell re-encodes them
 on the GPU and checks that the vectors match. Every filing is re-encoded on a GPU (a few minutes on an A100 or L4);
-a random 400 on a CPU, and 1,000 (GPU) or 300 (CPU) in QUICK mode. bfloat16 on a GPU gives cosine above 0.99, not bit-identical vectors.
+a random 400 on a CPU, and 1,000 (GPU) or 300 (CPU) in QUICK mode. The check is the cosine after removing the
+pre-2016 mean vector (raw mean-pooled vectors of unrelated filings already have cosine near 0.99). bfloat16 on a GPU
+does not give bit-identical vectors; on 48 filings, bfloat16 against the stored float32 vectors gave a median centred
+cosine of 0.9998 (minimum 0.973). The cell requires a median above 0.99.
 """)
     code(r"""
 NLP = NB / "nlp"
@@ -73,10 +76,13 @@ SEL = np.sort(rng.choice(has_text, n_enc, replace=False)) if n_enc < len(has_tex
 t0 = time.time()
 E_NEW = chrono_encode(TXT.iloc[SEL].tolist())
 dt = time.time() - t0
-ref = E_REF[SEL].astype(np.float32)
-COS = (E_NEW * ref).sum(1) / (np.linalg.norm(E_NEW, axis=1) * np.linalg.norm(ref, axis=1))
-print(f"encoded {len(SEL):,} filings on {DEVICE} in {dt:.0f} s ({len(SEL) / dt:.0f} per second); cosine with the "
-      f"stored vectors: median {np.median(COS):.5f}, 1st percentile {np.quantile(COS, .01):.5f}")
+MU_TX = np.load(NLP / "sec_tx_pca.npz", allow_pickle=True)["mean"].astype(np.float32)
+# cosine after removing the pre-2016 mean: raw mean-pooled BERT vectors all point the same way (cosine ~0.99 between
+# unrelated filings), so only the centred cosine is a real parity test
+a, b = E_NEW - MU_TX, E_REF[SEL].astype(np.float32) - MU_TX
+COS = (a * b).sum(1) / (np.linalg.norm(a, axis=1) * np.linalg.norm(b, axis=1))
+print(f"encoded {len(SEL):,} filings on {DEVICE} in {dt:.0f} s ({len(SEL) / dt:.0f} per second); centred cosine with "
+      f"the stored vectors: median {np.median(COS):.5f}, 1st percentile {np.quantile(COS, .01):.5f}")
 assert np.median(COS) > 0.99, "the re-encoding does not reproduce the stored vectors"
 """)
     code(r"""
@@ -101,11 +107,11 @@ plt.tight_layout(); plt.show()
 
 q = int(np.flatnonzero(OKV & (EVM.item_main == "2.02").to_numpy() & (EVM.available_utc.dt.year == 2018).to_numpy())[0])
 past = np.flatnonzero(OKV & (EVM.available_utc < EVM.available_utc.iloc[q]).to_numpy())      # only earlier filings
-V = E_REF[past].astype(np.float32); qv = E_REF[q].astype(np.float32)
+V = E_REF[past].astype(np.float32) - MU_TX; qv = E_REF[q].astype(np.float32) - MU_TX
 sim = V @ qv / (np.linalg.norm(V, axis=1) * np.linalg.norm(qv))
 nn_ix = past[np.argsort(-sim)[:3]]
 display(Markdown(f"**Nearest earlier filings to an 8-K results filing of {EVM.available_utc.iloc[q].date()}** "
-                 "(cosine of the ChronoBERT vectors; firm names are masked in the SEC study's text)"))
+                 "(cosine of the centred ChronoBERT vectors; firm names are masked in the SEC study's text)"))
 display(pd.DataFrame({"filing": [KIND[q]] + list(KIND[nn_ix]),
                       "date": [str(EVM.available_utc.iloc[i].date()) for i in [q] + list(nn_ix)],
                       "cosine": [1.0] + [float(s) for s in np.sort(sim)[::-1][:3]],

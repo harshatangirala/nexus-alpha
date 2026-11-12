@@ -6,8 +6,10 @@ learns that mapping on the study's own features and turns it into point-in-time 
 * Labels: S08 `T_trade` `label3` (0 down, 1 sideways, 2 up; entry at the first tradable price after the decision
   time) at horizons 1 and 5. Only labels whose exit is before LABEL_READ_BEFORE are ever read from disk, so no label
   near or inside the sealed period is loaded.
-* Features: S09 event features without `meta_year` (review finding N2) and without the accounting families (finding
-  N1: their availability rule is wrong before 2009; D-077 superseded them).
+* Features: S09 event features without `meta_year` (review finding N2), without the accounting families (finding
+  N1: their availability rule is wrong before 2009; D-077 superseded them) and without the `_avail_*` columns. Those
+  are availability TIMESTAMPS, so as numbers they are calendar time, a proxy for `meta_year`; the first E28 run used
+  three of them by mistake (audit 7, D-054). `load_table` refuses any non-numeric feature.
 * Model: LightGBM multiclass with fixed parameters; fitted on events available before 2016 whose h5 exit is before 2016;
   trees chosen by early stopping on 2016 events. Events before 2016 get out-of-fold predictions from year-block folds
   (same tree count, a 30-day gap at each fold edge), so no NEXUS training row sees a prediction fitted on its own event.
@@ -18,6 +20,7 @@ import glob
 
 import numpy as np
 import pandas as pd
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 from .. import paths
@@ -29,8 +32,8 @@ ES_BEFORE = pd.Timestamp("2017-01-01", tz="UTC")
 LABEL_READ_BEFORE = pd.Timestamp("2019-01-01")
 FOLDS = ((2000, 2002), (2003, 2005), (2006, 2008), (2009, 2011), (2012, 2015))
 GAP = pd.Timedelta(days=30)
-EXCLUDE_PREFIX = ("acc_", "sue_", "ear_")
-EXCLUDE = ("meta_year", "_avail_accounting", "_avail_ear", "event_id")
+EXCLUDE_PREFIX = ("acc_", "sue_", "ear_", "_avail_")       # _avail_*: timestamps = calendar time (D-054)
+EXCLUDE = ("meta_year", "event_id")
 PARAMS = dict(objective="multiclass", num_class=3, learning_rate=0.05, num_leaves=31, feature_fraction=0.8,
               bagging_fraction=0.8, bagging_freq=1, min_data_in_leaf=200, deterministic=True, force_row_wise=True,
               seed=11, verbose=-1)
@@ -56,7 +59,12 @@ def load_table(ev: pd.DataFrame | None = None) -> tuple[pd.DataFrame, list[str]]
     """One row per development event: features, available_utc, event_type and the h1/h5 labels (NaN when not read)."""
     ev = S.load_events(dev_only=True) if ev is None else ev
     fpath = _stage("S09", "features.parquet")
-    cols = feature_columns(pq.read_schema(fpath).names)
+    schema = pq.read_schema(fpath)
+    cols = feature_columns(schema.names)
+    bad = [c for c in cols if not pa.types.is_integer(schema.field(c).type) and not pa.types.is_floating(schema.field(c).type)
+           and not pa.types.is_boolean(schema.field(c).type)]
+    if bad:                                   # a timestamp or string read as a number would carry calendar time or ids
+        raise TypeError(f"non-numeric expert features: {bad}")
     X = pq.read_table(fpath, columns=["event_id"] + cols,
                       filters=[("event_id", "in", ev.event_id.tolist())]).to_pandas().set_index("event_id")
     t = pq.read_table(_stage("S08", "targets.parquet"),

@@ -14,7 +14,7 @@ import pandas as pd
 
 from . import paths
 
-E28_RUN = "PENDING"                    # experiments/ folder of the documented E28 run, pinned (never "the newest")
+E28_RUN = "20261113T025828_e28_vision_nlp_fusion_b1f899"   # experiments/ folder of the documented E28 run, pinned (never "the newest")
 FEAT = paths.ARTIFACTS / "features"
 GROUP = {"img_W": "vision", "img_D": "vision", "img_H": "vision", "num": "indicators", "news": "language",
          "sec": "language", "news_tx": "language", "sec_tx": "language", "sec_impact": "language", "rules": "indicators"}
@@ -90,6 +90,14 @@ def filing_timeline(ticker: str, asof: str | pd.Timestamp | None = None) -> pd.D
 
 
 @lru_cache(maxsize=1)
+def _centre() -> np.ndarray | float:
+    """Mean ChronoBERT vector of the pre-2016 filings (the PCA centre). Mean-pooled BERT vectors share one dominant
+    direction (median cosine to the mean is about 0.99), so similarity is measured after removing it."""
+    p = FEAT / "sec_tx_pca.npz"
+    return np.load(p)["mean"].astype(np.float32) if p.exists() else 0.0
+
+
+@lru_cache(maxsize=1)
 def _vectors():
     m = FEAT / "sec_tx" / "events.parquet"
     v = FEAT / "sec_tx" / "event_emb.npy"
@@ -99,6 +107,7 @@ def _vectors():
     meta["available_utc"] = pd.to_datetime(meta.available_utc, utc=True)
     E = np.load(v).astype(np.float32)
     ok = np.isfinite(E).all(1)
+    E = E - _centre()
     E[~ok] = 0
     norm = np.linalg.norm(E, axis=1)
     norm[norm == 0] = 1
@@ -163,7 +172,8 @@ def _labels() -> pd.DataFrame | None:
 
 
 def encode_text(text: str) -> np.ndarray | None:
-    """ChronoBERT vector of any text, cleaned and truncated exactly as the filings were (CPU, under a second)."""
+    """ChronoBERT vector of any text, cleaned and truncated exactly as the filings were (CPU; the first call loads the
+    model, which can take a minute)."""
     from .nlp import transformer_text as TT
     t = TT.clean_filing_text(text)
     if not t:
@@ -179,7 +189,8 @@ def analogues(vec: np.ndarray, k: int = 12) -> tuple[pd.DataFrame, dict]:
     if v is None or vec is None:
         return pd.DataFrame(), {}
     meta, E, ok = v
-    q = vec / (np.linalg.norm(vec) or 1.0)
+    q = vec - _centre()
+    q = q / (np.linalg.norm(q) or 1.0)
     sim = E @ q
     sim[~ok] = -np.inf
     top = np.argsort(-sim)[:k]

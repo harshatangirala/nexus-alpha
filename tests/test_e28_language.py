@@ -41,8 +41,9 @@ def test_encoder_is_the_chronologically_consistent_one_pinned_by_revision():
 
 def test_expert_features_leave_out_year_and_accounting_families():
     names = ["px_ret_1", "meta_year", "meta_month", "acc_roa", "sue_last", "ear_last", "_avail_accounting", "_avail_ear",
-             "lm_negative", "event_id", "_avail_price"]
-    assert SI.feature_columns(names) == ["px_ret_1", "meta_month", "lm_negative", "_avail_price"]
+             "lm_negative", "event_id", "_avail_price", "_avail_lexical"]
+    # _avail_* are availability timestamps: as numbers they are calendar time, a meta_year proxy (D-054)
+    assert SI.feature_columns(names) == ["px_ret_1", "meta_month", "lm_negative"]
 
 
 def test_expert_reads_no_label_near_the_seal():
@@ -145,6 +146,20 @@ def test_dashboard_language_view_is_point_in_time(monkeypatch):
     monkeypatch.setattr(LV, "event_predictions", lambda: preds.reset_index())
     tl = LV.filing_timeline("aaa", "2016-12-31")
     assert list(tl.kind) == ["8-K"]                                     # the 2017 10-Q is after the as-of date
+
+
+def test_analogue_search_removes_the_common_direction(monkeypatch):
+    from nexus_alpha import language_view as LV
+    mu = np.array([10.0, 10.0, 0.0], np.float32)                 # the shared direction of mean-pooled vectors
+    meta = pd.DataFrame({"event_id": ["x", "y"], "ticker": ["AAA", "BBB"], "event_type": ["8K", "8K"],
+                         "available_utc": pd.to_datetime(["2015-01-05", "2016-03-01"], utc=True)})
+    E = np.array([[1, 0, 0], [0, 0, 1]], np.float32)             # already centred and normalised, as _vectors returns
+    monkeypatch.setattr(LV, "_centre", lambda: mu)
+    monkeypatch.setattr(LV, "_vectors", lambda: (meta, E, np.ones(2, bool)))
+    monkeypatch.setattr(LV, "event_predictions", lambda: None)
+    monkeypatch.setattr(LV, "_labels", lambda: None)
+    out, s = LV.analogues(mu + np.array([0, 0, 0.1], np.float32), k=1)   # raw cosine would favour "x"
+    assert list(out.event_id) == ["y"] and np.isclose(s["mean_cosine"], 1.0)
 
 
 def test_dashboard_tables_from_a_metrics_record():

@@ -127,7 +127,8 @@ all_tabs = st.tabs([":material/radar: Mission Control", ":material/candlestick_c
                     ":material/lightbulb: F Explain", ":material/gavel: G Trade planner", ":material/analytics: H Model diagnostics",
                     ":material/history: I Backtesting", ":material/menu_book: J Knowledge base", ":material/tune: K Configuration",
                     ":material/fact_check: L Audit", ":material/groups: M LLM committee", ":material/ssid_chart: N Options",
-                    ":material/neurology: O Vision + NLP"])
+                    ":material/neurology: O Vision + NLP",
+                    ":material/account_balance: P Fundamentals"])
 RISK_DEFAULTS = dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
                      allow_short=allow_short, cost_scenario=cost_sc)
 with all_tabs[16]:
@@ -139,6 +140,9 @@ with all_tabs[17]:
 with all_tabs[18]:
     import vision_nlp_tab  # noqa: E402
     vision_nlp_tab.render(universe())
+with all_tabs[19]:
+    import fundamentals_tab  # noqa: E402
+    fundamentals_tab.render(universe())
 with all_tabs[0]:
     import mission_control  # noqa: E402
     mission_control.render()

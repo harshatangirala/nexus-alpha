@@ -57,6 +57,13 @@ def one(args) -> dict | None:
             return None
         r = d.iloc[-1].to_dict()
         r.update({"ticker": ticker, "latest_filing": f.filed.max(), "bar_date": bar.date.iloc[0]})
+        try:            # E30 / D-060: extended metrics, display only; prefixed x_ so no frozen input column can change
+            from nexus_alpha.fundamentals import extended as XF
+            m = s.iloc[[-1]].reset_index(drop=True).assign(
+                **{k: [r.get(k, float("nan"))] for k in ("market_cap", "enterprise_value", "pe", "eps_growth")})
+            r.update({f"x_{k}": v for k, v in XF.metrics(m).iloc[0].items()})
+        except Exception as e:  # noqa: BLE001  (the base row must survive)
+            r["x_error"] = f"{type(e).__name__}: {e}"[:120]
         return r
     except Exception as e:  # one stock must not stop the cross-section
         return {"ticker": ticker, "error": f"{type(e).__name__}: {e}"[:200]}
@@ -106,6 +113,16 @@ def main() -> None:
     P = P.merge(BF.industry_table(), on="ticker", how="left")
     P = pd.concat([P, BF.industry_ranks(P, rank_cols)], axis=1)
     P["fund_present"] = P[RATIOS].notna().any(axis=1).astype(float)
+    try:                # E30 composites across tonight's universe (x_ prefix; read by the dashboard only)
+        from nexus_alpha.fundamentals import extended as XF
+        base = P.set_index("ticker")
+        xcols = [c for c in base.columns if c.startswith("x_") and c != "x_error"]
+        feed = base.drop(columns=xcols + (["x_error"] if "x_error" in base else [])).join(
+            base[xcols].rename(columns=lambda c: c[2:]))
+        cs = XF.cross_section(feed, sic2=base["sic2"] if "sic2" in base else None)
+        P = P.merge(cs.add_prefix("x_").reset_index(), on="ticker", how="left")
+    except Exception as e:  # noqa: BLE001
+        print(f"extended composites skipped: {type(e).__name__}: {e}", flush=True)
     P["built_utc"] = pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds")
     P.to_parquet(paths.artifact(*OUT), index=False)
     stale_bars = int((P.bar_date < P.bar_date.max()).sum())

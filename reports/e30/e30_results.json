@@ -1,0 +1,296 @@
+{
+ "registered": "docs/E30_PREREGISTRATION.md",
+ "decision": "D-060",
+ "signal_dates": 164,
+ "first": "2009-04-30",
+ "last": "2022-11-30",
+ "horizon_sessions": 20,
+ "block_months": 6,
+ "n_boot": 10000,
+ "seed": 30,
+ "primary": {
+  "value_composite": {
+   "mean_ic": 0.0020583073770558315,
+   "ic_sd": 0.15385093159143007,
+   "months": 151,
+   "ci95": [
+    -0.021478463141995186,
+    0.024553452060061695
+   ],
+   "share_positive_months": 0.4900662251655629,
+   "p_one_sided": 0.443,
+   "mean_ic_industry_neutral": 0.004300390304748849,
+   "mean_ic_size_removed": 0.0019447950507525287,
+   "mean_q5_minus_q1_20d": 0.00042746165246689986,
+   "mean_stocks_per_month": 700.3246753246754,
+   "subperiods": {
+    "2005-2011": -0.018012020511481847,
+    "2012-2016": 0.010237707828613439,
+    "2017-2022": 0.0007997514711022659
+   },
+   "published": 1992,
+   "mean_ic_after_publication": 0.0020583073770558302,
+   "mean_ic_up_to_publication": null,
+   "p_holm": 0.8444,
+   "replicates": false
+  },
+  "quality_composite": {
+   "mean_ic": 0.009052070617125067,
+   "ic_sd": 0.10401806089739551,
+   "months": 149,
+   "ci95": [
+    -0.008028972022719103,
+    0.026107484748274585
+   ],
+   "share_positive_months": 0.5503355704697986,
+   "p_one_sided": 0.1464,
+   "mean_ic_industry_neutral": 0.004310714514717979,
+   "mean_ic_size_removed": 0.0065100746598206775,
+   "mean_q5_minus_q1_20d": -0.0022103794723269876,
+   "mean_stocks_per_month": 704.8516129032258,
+   "subperiods": {
+    "2005-2011": 0.03933582250901004,
+    "2012-2016": 0.002296283483584603,
+    "2017-2022": 0.0070836156024560335
+   },
+   "published": 2013,
+   "mean_ic_after_publication": 0.005136144285228283,
+   "mean_ic_up_to_publication": 0.019028359129338306,
+   "p_holm": 0.43920000000000003,
+   "replicates": false
+  },
+  "gross_profitability_rank": {
+   "mean_ic": 0.01821911573924916,
+   "ic_sd": 0.11419756162500946,
+   "months": 151,
+   "ci95": [
+    -0.002928940723811659,
+    0.04124762009627924
+   ],
+   "share_positive_months": 0.5298013245033113,
+   "p_one_sided": 0.0515,
+   "mean_ic_industry_neutral": 0.004778129065446533,
+   "mean_ic_size_removed": 0.016877296702310862,
+   "mean_q5_minus_q1_20d": 0.0034557057855436803,
+   "mean_stocks_per_month": 450.35064935064935,
+   "subperiods": {
+    "2005-2011": 0.05078407744343544,
+    "2012-2016": 0.0058011916880905704,
+    "2017-2022": 0.019539907415105355
+   },
+   "published": 2010,
+   "mean_ic_after_publication": 0.021016940879870338,
+   "mean_ic_up_to_publication": -0.03179200864935435,
+   "p_holm": 0.2575,
+   "replicates": false
+  },
+  "magic_formula": {
+   "mean_ic": 0.010417631706169318,
+   "ic_sd": 0.10572886785588556,
+   "months": 151,
+   "ci95": [
+    -0.00649067578687498,
+    0.02709194063961465
+   ],
+   "share_positive_months": 0.543046357615894,
+   "p_one_sided": 0.0993,
+   "mean_ic_industry_neutral": 0.004938508750732541,
+   "mean_ic_size_removed": 0.009515528312879815,
+   "mean_q5_minus_q1_20d": -0.004543914686100683,
+   "mean_stocks_per_month": 478.07142857142856,
+   "subperiods": {
+    "2005-2011": 0.011726578730582813,
+    "2012-2016": 0.008735103365759556,
+    "2017-2022": 0.011470769170061092
+   },
+   "published": 2005,
+   "mean_ic_after_publication": 0.010417631706169321,
+   "mean_ic_up_to_publication": null,
+   "p_holm": 0.3972,
+   "replicates": false
+  },
+  "piotroski_rank": {
+   "mean_ic": 0.013742133998399469,
+   "ic_sd": 0.09577136552116762,
+   "months": 148,
+   "ci95": [
+    -0.0005957254213571721,
+    0.026746019682506953
+   ],
+   "share_positive_months": 0.581081081081081,
+   "p_one_sided": 0.0401,
+   "mean_ic_industry_neutral": 0.007788978111864345,
+   "mean_ic_size_removed": 0.013915268276728756,
+   "mean_q5_minus_q1_20d": -0.0026285345903330733,
+   "mean_stocks_per_month": 707.1806451612903,
+   "subperiods": {
+    "2005-2011": 0.03203814560004071,
+    "2012-2016": 0.005107044261970896,
+    "2017-2022": 0.016658657758368674
+   },
+   "published": 2000,
+   "mean_ic_after_publication": 0.013742133998399466,
+   "mean_ic_up_to_publication": null,
+   "p_holm": 0.24059999999999998,
+   "replicates": false
+  },
+  "beneish_safety_rank": {
+   "mean_ic": 0.0016706514761122857,
+   "ic_sd": 0.08112620717789569,
+   "months": 137,
+   "ci95": [
+    -0.012523041435400764,
+    0.015760076762725048
+   ],
+   "share_positive_months": 0.5328467153284672,
+   "p_one_sided": 0.4222,
+   "mean_ic_industry_neutral": -0.0006399031097839525,
+   "mean_ic_size_removed": 0.0015754539222265238,
+   "mean_q5_minus_q1_20d": 0.0027251109219524157,
+   "mean_stocks_per_month": 300.04545454545456,
+   "subperiods": {
+    "2005-2011": 0.029347238554589608,
+    "2012-2016": -0.006233029954153262,
+    "2017-2022": 0.006010952368296355
+   },
+   "published": 1999,
+   "mean_ic_after_publication": 0.0016706514761122865,
+   "mean_ic_up_to_publication": null,
+   "p_holm": 0.8444,
+   "replicates": false
+  }
+ },
+ "descriptive": {
+  "quality_profitability": {
+   "mean_ic": 0.02091364855517025,
+   "ic_sd": 0.1344747886868796,
+   "months": 151,
+   "ci95": [
+    -0.0013184360001633855,
+    0.04212812547167657
+   ],
+   "share_positive_months": 0.5562913907284768,
+   "p_one_sided": 0.0375,
+   "mean_ic_industry_neutral": 0.011588882331110903,
+   "mean_ic_size_removed": 0.02037539056241936,
+   "mean_q5_minus_q1_20d": -0.0001779209629586842,
+   "mean_stocks_per_month": 716.5806451612904,
+   "subperiods": {
+    "2005-2011": 0.08040086046370828,
+    "2012-2016": -0.0026172374356592597,
+    "2017-2022": 0.024041943221071803
+   }
+  },
+  "quality_growth": {
+   "mean_ic": -0.011451219933392697,
+   "ic_sd": 0.07075192775855697,
+   "months": 148,
+   "ci95": [
+    -0.022135615588740113,
+    0.000870281211414715
+   ],
+   "share_positive_months": 0.4527027027027027,
+   "p_one_sided": 0.9644,
+   "mean_ic_industry_neutral": -0.003958516740159164,
+   "mean_ic_size_removed": -0.014949190426807481,
+   "mean_q5_minus_q1_20d": -0.003152434099904798,
+   "mean_stocks_per_month": 700.5032258064516,
+   "subperiods": {
+    "2005-2011": -0.04248073238401126,
+    "2012-2016": 0.004853054779210485,
+    "2017-2022": -0.01779987868121911
+   }
+  },
+  "quality_safety": {
+   "mean_ic": 0.009365992655681938,
+   "ic_sd": 0.0901971971938138,
+   "months": 147,
+   "ci95": [
+    -0.007986848077260827,
+    0.025037536876361073
+   ],
+   "share_positive_months": 0.54421768707483,
+   "p_one_sided": 0.156,
+   "mean_ic_industry_neutral": -0.002938317537103497,
+   "mean_ic_size_removed": 0.010928834135833267,
+   "mean_q5_minus_q1_20d": 9.813758493222741e-06,
+   "mean_stocks_per_month": 430.4220779220779,
+   "subperiods": {
+    "2005-2011": 0.055887806198177445,
+    "2012-2016": -0.00014018763474679005,
+    "2017-2022": 0.006915595483087509
+   }
+  },
+  "montier_safety": {
+   "mean_ic": -0.009848738639766656,
+   "ic_sd": 0.0636481759935489,
+   "months": 148,
+   "ci95": [
+    -0.018431034599419967,
+    0.0017690746078209759
+   ],
+   "share_positive_months": 0.4594594594594595,
+   "p_one_sided": 0.94,
+   "mean_ic_industry_neutral": -0.006351170066937289,
+   "mean_ic_size_removed": -0.01606913361992106,
+   "mean_q5_minus_q1_20d": -0.0002486726562307112,
+   "mean_stocks_per_month": 529.7161290322581,
+   "subperiods": {
+    "2005-2011": -0.025263522386791002,
+    "2012-2016": 0.0024901358923146277,
+    "2017-2022": -0.016585092840125288
+   }
+  }
+ },
+ "composite_correlation": {
+  "value_composite": {
+   "value_composite": 1.0,
+   "quality_composite": -0.105,
+   "gross_profitability_rank": -0.13,
+   "magic_formula": 0.486,
+   "piotroski_rank": 0.036,
+   "beneish_safety_rank": 0.025
+  },
+  "quality_composite": {
+   "value_composite": -0.105,
+   "quality_composite": 1.0,
+   "gross_profitability_rank": 0.567,
+   "magic_formula": 0.365,
+   "piotroski_rank": 0.545,
+   "beneish_safety_rank": 0.353
+  },
+  "gross_profitability_rank": {
+   "value_composite": -0.13,
+   "quality_composite": 0.567,
+   "gross_profitability_rank": 1.0,
+   "magic_formula": 0.287,
+   "piotroski_rank": 0.214,
+   "beneish_safety_rank": 0.066
+  },
+  "magic_formula": {
+   "value_composite": 0.486,
+   "quality_composite": 0.365,
+   "gross_profitability_rank": 0.287,
+   "magic_formula": 1.0,
+   "piotroski_rank": 0.431,
+   "beneish_safety_rank": -0.081
+  },
+  "piotroski_rank": {
+   "value_composite": 0.036,
+   "quality_composite": 0.545,
+   "gross_profitability_rank": 0.214,
+   "magic_formula": 0.431,
+   "piotroski_rank": 1.0,
+   "beneish_safety_rank": 0.029
+  },
+  "beneish_safety_rank": {
+   "value_composite": 0.025,
+   "quality_composite": 0.353,
+   "gross_profitability_rank": 0.066,
+   "magic_formula": -0.081,
+   "piotroski_rank": 0.029,
+   "beneish_safety_rank": 1.0
+  }
+ },
+ "runtime_s": 61
+}

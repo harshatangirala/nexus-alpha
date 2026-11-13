@@ -41,3 +41,4 @@ One line per run, appended automatically by `nexus_alpha.experiments.Run`. Faile
 | `20261110T171026_v3_alpha_refit_a14783` | v3_alpha_refit | local-cpu | COMPLETED | 183.3 s | v3_alpha refitted on 2003-2018: bundle 20261110T171026_v3_alpha_refit_a14783 |
 | `20261113T025828_e28_vision_nlp_fusion_b1f899` | e28_vision_nlp_fusion | local-cpu | COMPLETED | 2957.5 s | NOT KEPT: MM vs BASE -0.00030 [-0.00082,+0.00024]; MM vs PLACEBO +0.00023 [+0.00004,+0.00042]; test MM vs BASE +0.00106 |
 | `20261113T035556_e28_vision_nlp_fusion_b1f899` | e28_vision_nlp_fusion | local-cpu | COMPLETED | 2610.5 s | NOT KEPT: MM vs BASE -0.00029 [-0.00082,+0.00025]; MM vs PLACEBO +0.00023 [+0.00003,+0.00040]; test MM vs BASE +0.00108 |
+| `20261114T015829_e31_recency_refit_b419ba` | e31_recency_refit | local-cpu | COMPLETED | 791.0 s | v1.2 recipe refit to 2021-11-30, calibrated on 2022; bundle 20261114T015829_e31_recency_refit_b419ba |

@@ -22,6 +22,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import skin as SK
+
 import paste_image as PI
 import ui as UI
 from nexus_alpha import text_time as TX
@@ -406,7 +408,7 @@ def _detail(t: str, rec: dict, h: str | None, risk) -> None:
 
 # ------------------------------------------------------------------------------------------------ page
 def render(predictor, universe: list[str], risk_defaults: dict) -> None:
-    st.header("Desk 1-5: your screenshots and texts, one to five stocks")
+    SK.banner("Desk 1-5", "Your screenshots and texts, one to five stocks", "Each stock gets a card, a chronology and a full read.")
     UI.frame("how this desk reads your inputs", "Bars decide; texts are timed; nothing reads the future",
              '<div class="nx-note" style="font-size:.88rem">The frozen v1.1 model renders its own weekly, daily and '
              "hourly charts from real bars and reads every company-news article that was public before the decision "
@@ -461,7 +463,7 @@ def render(predictor, universe: list[str], risk_defaults: dict) -> None:
     out, h = got["out"], got["h"]
     hh = h or "5D"
 
-    st.subheader("1. The board")
+    SK.section("1. The board")
     cols = st.columns(len(out))
     for i, (col, (t, rec)) in enumerate(zip(cols, out.items())):
         with col:
@@ -471,7 +473,7 @@ def render(predictor, universe: list[str], risk_defaults: dict) -> None:
                "weak evidence. What held out of sample is whether a stock moves (sideways AUROC 0.58-0.61) and the "
                "cross-sectional ranking (rank IC 0.02-0.03).")
     if any("res" in r for r in out.values()):
-        st.subheader("2. Side by side")
+        SK.section("2. Side by side")
         left, right = st.columns(2)
         with left:
             _prob_chart(out, hh)
@@ -494,7 +496,7 @@ def render(predictor, universe: list[str], risk_defaults: dict) -> None:
                    "on 2020-22 (D-057: so far no horizon of v1.1 qualifies), an edge of at least 0.10, "
                    "weekly permission, a daily setup, an hourly trigger, a stop beyond the setup's invalidation and a "
                    "net reward-to-risk of at least 1.5. NO_TRADE lists the first gate that failed.")
-        st.subheader("3. Chronology: every text against the decision time")
+        SK.section("3. Chronology: every text against the decision time")
         ch = _timeline(out)
         if len(ch):
             n_in = int((ch.status == "model input (news branch)").sum())
@@ -502,7 +504,7 @@ def render(predictor, universe: list[str], risk_defaults: dict) -> None:
             st.caption(f"{len(ch)} texts: {n_in} read by the model, {n_ex} excluded (after the decision time, older "
                        "than the 5-day window, or undated), the rest context. Times you typed in your zone are converted "
                        "to UTC; a date without a time counts from the end of that day (US Pacific), as in training.")
-    st.subheader("4. Each stock in detail")
+    SK.section("4. Each stock in detail")
     dtabs = st.tabs(list(out))
     for tab, (t, rec) in zip(dtabs, out.items()):
         with tab:

@@ -8,6 +8,8 @@ import pandas as pd
 import plotly.graph_objects as pgo
 import streamlit as st
 
+import skin as SK
+
 import ui as UI
 from nexus_alpha import envs, options as O, paths, shadow as SH
 
@@ -55,10 +57,11 @@ def _snapshot_status() -> str:
 
 
 def render(tickers: list[str]) -> None:
-    st.header("Options market view (OpenBB · CBOE delayed quotes)")
-    st.caption("The options market prices the size of future moves, the one thing the models predict well. This view "
-               "shows that price next to the model's own range. The forward benchmark E26 tests whether the model adds "
-               "anything beyond it. Context only: it never changes a forecast.")
+    SK.banner("Options", "What the options market prices", "Implied volatility next to the model's own range. Context only.")
+    with SK.fold("About this view", "info"):
+        st.caption("The options market prices the size of future moves, the one thing the models predict well. This view "
+                   "shows that price next to the model's own range. The forward benchmark E26 tests whether the model adds "
+                   "anything beyond it. Context only: it never changes a forecast.")
     if envs.env_python("openbb") is None:
         st.info("OpenBB is not installed (artifacts/envs/openbb).")
         return
@@ -94,5 +97,5 @@ def render(tickers: list[str]) -> None:
                                          hovertemplate="%{x} days: %{y:.1%}<extra></extra>"))
             fig.update_layout(xaxis_title="days to expiry", yaxis=dict(title="ATM implied volatility", tickformat=".0%"))
             UI.plot(fig, height=320)
-    st.subheader("Forward benchmark (E26)")
+    SK.section("Forward benchmark (E26)")
     st.caption(_snapshot_status())

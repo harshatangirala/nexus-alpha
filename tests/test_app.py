@@ -26,7 +26,9 @@ def test_app_runs_an_analysis():
     assert set(res.forecasts) == {"1D", "2D", "5D", "10D", "20D", "1M"}
     # at.tabs also lists nested tabs (Desk 1-5 has one inputs tab per stock): check the 19 top-level tabs in order
     nested = {"Macro and market (shared)"}
-    top = [t.label for t in at.tabs if not t.label.endswith(" inputs") and t.label not in nested]
+    import re
+    strip = lambda label: re.sub(r"^:material/\w+:\s*", "", label)      # tab labels carry an icon prefix
+    top = [strip(t.label) for t in at.tabs if not t.label.endswith(" inputs") and t.label not in nested]
     assert top == ["Mission Control", "Trade Desk", "Compare 1-5", "Desk 1-5", "A Forecast", "B Charts", "C News", "D SEC",
                    "E Indicators", "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting",
                    "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options", "O Vision + NLP"]

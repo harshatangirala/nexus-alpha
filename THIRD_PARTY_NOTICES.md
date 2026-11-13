@@ -10,8 +10,8 @@ What NEXUS Alpha takes from other projects, and how. Integration rules: `docs/DE
 | Microsoft Qlib (`microsoft/qlib`) | MIT, Copyright (c) Microsoft Corporation | The Alpha158 feature definitions (`qlib/contrib/data/loader.py`, `Alpha158DL`) and the semantics of its operators (`qlib/data/ops.py`, `qlib/data/_libs/rolling.pyx`), re-implemented; no Qlib source file is copied. pyqlib 0.9.7 runs only in a separate environment, to verify parity | `src/nexus_alpha/indicators/alpha158.py`, `scripts/verify/alpha158_qlib_parity.py` |
 | Kronos (`shiyu-coder/Kronos`) | MIT, Copyright (c) 2025 ShiYu | Model code, vendored at a pinned commit | `src/nexus_alpha/kronos/vendor/` (its own `LICENSE` and `VENDORED.md`) |
 | claude-trading-skills (`tradermonty/claude-trading-skills`) | MIT | The rally tracker, vendored unchanged | `src/nexus_alpha/rules/vendor/` |
-| Magic UI (`magicuidesign/magicui`) | MIT, Copyright (c) Magic UI | The behaviour of NumberTicker, Marquee and AnimatedBeam, re-written in plain HTML/CSS/JS (no React, no source copied) | `app/ui.py` |
-| Arwes (`arwes/arwes`) | MIT, Copyright (c) 2014-2024 Romel Perez | The framed-panel design language (corner brackets, thin luminous lines), recreated in CSS | `app/ui.py`, `.streamlit/config.toml` |
+| Magic UI (`magicuidesign/magicui`) | MIT, Copyright (c) Magic UI | The behaviour of NumberTicker, Marquee, AnimatedBeam, BorderBeam, OrbitingCircles and shimmering text, re-written in plain HTML/CSS/JS (no React, no source copied) | `app/ui.py`, `app/skin.py` |
+| Arwes (`arwes/arwes`) | MIT, Copyright (c) 2014-2024 Romel Perez | The framed-panel design language (corner brackets, thin luminous lines), recreated in CSS | `app/ui.py`, `app/skin.py` (dot-grid page background), `.streamlit/config.toml` |
 
 The MIT licence of each project above grants permission to use, copy, modify, merge, publish and distribute the
 software, provided its copyright notice and permission notice are included; the full texts are in each project's

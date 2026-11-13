@@ -87,7 +87,8 @@ def macro_by_country(label: str) -> tuple[dict, str]:
     return out, (f"{int(years.mode().iloc[0])}" if len(years) else "n/a")
 
 
-def render_globe(points: list[dict], macro: dict, label: str, height: int = 540) -> None:
+def render_globe(points: list[dict], macro: dict, label: str, height: int = 540, arcs: bool = False,
+                 spin: bool = True) -> None:
     _, _, stops, unit = MACRO[label]
     vals = np.array([v[0] for v in macro.values()]) if macro else np.array([0.0])
     lo, hi = (float(np.nanpercentile(vals, 10)), float(np.nanpercentile(vals, 90))) if len(vals) > 3 else (0.0, 1.0)
@@ -95,6 +96,8 @@ def render_globe(points: list[dict], macro: dict, label: str, height: int = 540)
         m = max(abs(lo), abs(hi))
         lo, hi = -m, m
     nmax = max([p["n"] for p in points] or [1])
+    beams = [{"sLat": NEW_YORK[0], "sLng": NEW_YORK[1], "eLat": p["lat"], "eLng": p["lng"], "n": p["n"]}
+             for p in points if abs(p["lat"] - NEW_YORK[0]) + abs(p["lng"] - NEW_YORK[1]) > 1.0] if arcs else []
     doc = f"""<style>{UI._BASE_CSS}
 #g {{ width: 100%; height: {height}px; }}
 .lg {{ position: absolute; left: 12px; bottom: 12px; font-family: {UI.FONT_MONO}; font-size: 11px; color: {UI.MUTED};
@@ -113,7 +116,7 @@ def render_globe(points: list[dict], macro: dict, label: str, height: int = 540)
 <script src="{GLOBE_JS}"></script>
 <script>
 (() => {{
-  const MACRO = {UI.json_script(macro)}, PTS = {UI.json_script(points)}, NMAX = {nmax};
+  const MACRO = {UI.json_script(macro)}, PTS = {UI.json_script(points)}, NMAX = {nmax}, BEAMS = {UI.json_script(beams)};
   const LO = {lo}, HI = {hi}, STOPS = {UI.json_script(stops)};
   const el = document.getElementById('g');
   if (typeof Globe === 'undefined') {{
@@ -138,9 +141,13 @@ def render_globe(points: list[dict], macro: dict, label: str, height: int = 540)
     .pointColor(() => '{UI.ACCENT}')
     .pointLabel(d => `<div class="tt"><b>${{d.label}}</b><br>${{d.n}} stock${{d.n > 1 ? 's' : ''}}<br>${{d.tickers}}</div>`)
     .ringsData([{{lat: {NEW_YORK[0]}, lng: {NEW_YORK[1]}}}]).ringColor(() => t => `rgba(63,208,224,${{1 - t}})`)
-    .ringMaxRadius(6).ringPropagationSpeed(2.2).ringRepeatPeriod(reduce ? 0 : 1300);
+    .ringMaxRadius(6).ringPropagationSpeed(2.2).ringRepeatPeriod(reduce ? 0 : 1300)
+    .arcsData(BEAMS).arcStartLat('sLat').arcStartLng('sLng').arcEndLat('eLat').arcEndLng('eLng')
+    .arcColor(() => ['rgba(63,208,224,.95)', 'rgba(155,140,255,.85)']).arcAltitudeAutoScale(0.45)
+    .arcStroke(d => 0.18 + 0.5 * Math.sqrt(d.n / NMAX)).arcDashLength(0.35).arcDashGap(0.25)
+    .arcDashAnimateTime(reduce ? 0 : 2800);
   G.pointOfView({{lat: 33, lng: -88, altitude: 2.05}});
-  G.controls().autoRotate = !reduce; G.controls().autoRotateSpeed = 0.28;
+  G.controls().autoRotate = {str(spin).lower()} && !reduce; G.controls().autoRotateSpeed = 0.28;
   fetch('{COUNTRIES}').then(r => r.json()).then(geo => {{
     G.polygonsData(geo.features.filter(f => f.properties.ISO_A2 !== 'AQ'))
       .polygonAltitude(0.006).polygonsTransitionDuration(600)

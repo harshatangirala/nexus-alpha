@@ -6,6 +6,8 @@ import json
 import pandas as pd
 import streamlit as st
 
+import skin as SK
+
 import ui as UI
 from nexus_alpha import shadow as SH
 from nexus_alpha.llm import committee as C
@@ -34,11 +36,12 @@ def _v11_lean(ticker: str, asof: str) -> float | None:
 
 
 def render(tickers: list[str]) -> None:
-    st.header("LLM committee (TradingAgents)")
-    st.caption("A multi-agent language-model committee: analysts, a bull/bear debate, a trader, a risk team and a "
-               "portfolio manager, ending in a five-tier rating. Live and on demand only, on your Gemini key. It never "
-               "changes a forecast or the risk engine, and it is never scored on history: its language model has read "
-               "about those years (D-020). Every run is logged publicly and scored forward (E27).")
+    SK.banner("LLM committee", "A panel of AI analysts argues it out", "Unvalidated and logged for forward scoring (E27).")
+    with SK.fold("About this view", "info"):
+        st.caption("A multi-agent language-model committee: analysts, a bull/bear debate, a trader, a risk team and a "
+                   "portfolio manager, ending in a five-tier rating. Live and on demand only, on your Gemini key. It never "
+                   "changes a forecast or the risk engine, and it is never scored on history: its language model has read "
+                   "about those years (D-020). Every run is logged publicly and scored forward (E27).")
     ok, why = C.available()
     if not ok:
         st.info(why)
@@ -87,7 +90,7 @@ def render(tickers: list[str]) -> None:
             if text:
                 with st.expander(label, expanded=key == "final_trade_decision"):
                     st.markdown(text)
-    st.subheader("Logged runs (public record, E27)")
+    SK.section("Logged runs (public record, E27)")
     h = C.history()
     if len(h):
         st.dataframe(h[["run_id", "ticker", "asof_session", "rating", "late", "llm_calls", "analysts"]],

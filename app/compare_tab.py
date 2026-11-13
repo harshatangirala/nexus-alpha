@@ -11,6 +11,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+
+import skin as SK
 from plotly.subplots import make_subplots
 
 import ui as UI
@@ -282,10 +284,11 @@ def _full_analysis(predictor, picks, risk_defaults, hz) -> None:
 
 
 def render(universe: list[str], predictor=None, risk_defaults: dict | None = None) -> None:
-    st.header("Compare 1-5 stocks")
-    st.caption("Side by side: price paths, drawdowns, the frozen models' probabilities and ranks for the latest "
-               "forward-test session, return ranges, a factor profile, correlations and option-implied volatility. "
-               "Then, on demand, the full model with trade plans and their reasons. Research only; no orders.")
+    SK.banner("Compare", "Up to five stocks, side by side", "Logged forecasts, risk, options and fundamentals on one board.")
+    with SK.fold("About this view", "info"):
+        st.caption("Side by side: price paths, drawdowns, the frozen models' probabilities and ranks for the latest "
+                   "forward-test session, return ranges, a factor profile, correlations and option-implied volatility. "
+                   "Then, on demand, the full model with trade plans and their reasons. Research only; no orders.")
     sess = C.sessions("v1.1")
     if not sess:
         st.warning("No forward-test session has been logged yet.")
@@ -318,18 +321,18 @@ def render(universe: list[str], predictor=None, risk_defaults: dict | None = Non
     with right:
         _radar(C.factor_profile(session, picks), picks)
     _corr(bars)
-    st.subheader("Scoreboard (logged forecasts, session " + session + ")")
+    SK.section("Scoreboard (logged forecasts, session " + session + ")")
     sb = _scoreboard(fc, session, picks)
     if not sb.empty:
         fmt = {c: ("{:.0f}" if "pct" in c else "{:.2f}") for c in sb.columns}
         st.dataframe(sb.style.format(fmt, na_rep="-").background_gradient(
             cmap="viridis", subset=[c for c in sb.columns if "pct" in c], vmin=0, vmax=100), width="stretch")
-    st.subheader("Risk statistics (cached Yahoo bars)")
+    SK.section("Risk statistics (cached Yahoo bars)")
     if not stats.empty:
         pct = [c for c in stats.columns if c not in ("as of", "close")]
         st.dataframe(stats.style.format({c: "{:+.1%}" if "return" in c or "change" in c or "drawdown" in c else "{:.1%}"
                                          for c in pct} | {"close": "{:,.2f}"}), width="stretch")
-    st.subheader("Options market view")
+    SK.section("Options market view")
     _options(session, picks, stats)
-    st.subheader("Full model, trade plans and reasons")
+    SK.section("Full model, trade plans and reasons")
     _full_analysis(predictor, picks, risk_defaults or {}, hz)

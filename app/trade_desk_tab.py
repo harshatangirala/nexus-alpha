@@ -13,6 +13,8 @@ import datetime as dt
 import pandas as pd
 import streamlit as st
 
+import skin as SK
+
 from nexus_alpha import text_time as TX
 from nexus_alpha import trade_desk as TD
 from nexus_alpha.llm import gemini as GM
@@ -48,7 +50,7 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     if v2 is None:
         st.caption("v2 (all swing lengths, 3M/6M/1Y) appears here once its bundle is built (E14).")
         return
-    st.subheader("2b. v2 model (exact horizon)")
+    SK.section("2b. v2 model (exact horizon)")
     status = "FROZEN" if _v2_frozen(v2.meta["bundle_id"]) else "NOT YET FROZEN (research build; not in the forward test)"
     choice = TD.choose_horizon(trade, swing_days=swing, long_term=lt, available=HORIZONS_V2)
     with st.spinner("Scoring v2..."):
@@ -341,7 +343,7 @@ JOURNAL = "journal/paper_trades.csv"
 def _discipline_section(plan, ticker: str) -> None:
     """Pre-trade discipline gate + drawdown circuit breaker + sizing (tools adapted from MIT skills; D-034)."""
     from nexus_alpha import paths, trade_tools as TT
-    st.subheader("7. Trade discipline (paper trading; nothing is ever sent to a broker)")
+    SK.section("7. Trade discipline (paper trading; nothing is ever sent to a broker)")
     jp = paths.ARTIFACTS / JOURNAL
     journal = pd.read_csv(jp) if jp.exists() else pd.DataFrame(columns=["exit_utc", "ticker", "pnl"])
     acct = st.number_input("Paper account size ($)", 1_000.0, 1e9, 100_000.0, step=1_000.0, key="desk_acct")
@@ -406,7 +408,7 @@ def _e22_note() -> str:
 def _fundamentals_section(tick, mode, asof) -> None:
     import numpy as np
     from nexus_alpha.fundamentals import service as FS
-    st.subheader("4c. Fundamental analysis (SEC XBRL, point in time)")
+    SK.section("4c. Fundamental analysis (SEC XBRL, point in time)")
     d = _fund_data(tick, mode, str(pd.Timestamp(asof).date()) if mode == "historical" else str(pd.Timestamp.now().date()))
     if not d or d.get("error"):
         st.info(f"Fundamentals unavailable for {tick}: {(d or {}).get('error', 'no XBRL facts')}")
@@ -540,7 +542,7 @@ def _kronos_status() -> str:
 
 def _kronos_section(tick, mode, asof) -> None:
     import numpy as np
-    st.subheader("4d. Kronos foundation-model paths (zero-shot, analysis only)")
+    SK.section("4d. Kronos foundation-model paths (zero-shot, analysis only)")
     st.caption("Kronos (MIT, AAAI 2026) samples future daily candles from the last 400 bars. Its pre-training data "
                "includes US daily stock bars from 2000 to June 2024, so before July 2024 any output can reflect memory "
                "of what happened. It is never an input of the NEXUS models. " + _kronos_status())
@@ -580,9 +582,10 @@ def _kronos_section(tick, mode, asof) -> None:
 
 
 def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
-    st.header("Trade Desk")
-    st.caption("Pick the trade, add up to three chart screenshots (weekly, daily, hourly) and 1-10 texts. The model uses "
-               "real bars for the confirmed ticker; screenshots are checked against those bars, not read as inputs.")
+    SK.banner("Trade Desk", "Pick a trade, get a plan", "Real bars, your texts and screenshots, a deterministic risk engine. Paper only.")
+    with SK.fold("About this view", "info"):
+        st.caption("Pick the trade, add up to three chart screenshots (weekly, daily, hourly) and 1-10 texts. The model uses "
+                   "real bars for the confirmed ticker; screenshots are checked against those bars, not read as inputs.")
     if predictor is None:
         st.error("No inference bundle loaded.")
         return
@@ -598,7 +601,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         trade = c[0].radio("Trade type", ["Intraday", "Swing", "Long-term"], horizontal=True, key="desk_trade")
         swing = c[1].slider("Swing: trading days in the trade", 2, 20, 5, key="desk_swing")
         lt = c[2].select_slider("Long-term horizon", options=list(TD.LONG_TERM), value="4 weeks", key="desk_lt")
-        st.subheader("Chart screenshots")
+        SK.section("Chart screenshots")
         slots = {}
         cs = st.columns(3)
         for col, (k, lab) in zip(cs, (("W", "Weekly (1W)"), ("D", "Daily (1D)"), ("H", "Hourly (1H)"))):
@@ -609,7 +612,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
                 cc = st.columns(4)
                 manual[k] = {f: cc[i].number_input(f"{k} {f}", value=0.0, format="%.4f", key=f"desk_{k}_{f}")
                              for i, f in enumerate(("open", "high", "low", "close"))}
-        st.subheader("Texts")
+        SK.section("Texts")
         texts = []
         for i in range(int(n_txt)):
             with st.expander(f"Text {i + 1}", expanded=i == 0):
@@ -638,7 +641,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     texts = (texts + [{"kind": x["kind"], "headline": x["headline"], "text": x["text"], "time_known": True,
                        "published_utc": x["published_utc"], "source": x["source"]} for x in picked])[:10]
     choice = TD.choose_horizon(trade, swing_days=swing, long_term=lt)
-    st.subheader("1. What the model is asked")
+    SK.section("1. What the model is asked")
     st.write(f"**{choice.label}**. Model horizon: **{choice.served_by or 'none'}** - {choice.note}.")
     risk = RiskConfig(**risk_defaults)
     company_news = [t for t in texts if t["kind"] == "company news"]
@@ -647,9 +650,12 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
                                 articles=company_news, risk=risk, explain=False)
     h = choice.served_by
     bars_all = None
-    st.subheader("2. Model forecast")
+    SK.section("2. Model forecast")
     if h is None:
         st.warning("No frozen model covers this horizon yet. Showing all available horizons for context only.")
+    SK.prob_rings({k: (f.down_probability, f.sideways_probability, f.up_probability)
+                   for k, f in res.forecasts.items()})
+    SK.pills([("DOWN", "#FF6B6B"), ("SIDEWAYS", SK.SIDE), ("UP", "#3DDC97")] + ([(f"asked: {h}", "#3FD0E0")] if h else []))
     rows = []
     for k, f in res.forecasts.items():
         rows.append({"horizon": k, "P(up)": f.up_probability, "P(sideways)": f.sideways_probability,
@@ -665,16 +671,18 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     if h is not None:
         f = res.forecasts[h]
         p = res.trade_plans[h]
-        c = st.columns(4)
-        c[0].metric("Lean", "UP" if f.up_probability > f.down_probability else "DOWN",
-                    f"{(f.up_probability - f.down_probability):+.3f} (up - down)")
-        c[1].metric("Direction skill at this horizon",
-                    "NOT validated" if not f.direction_skill_validated
-                    else "validated (not checked out of sample)" if f.direction_skill_replicated is None
-                    else "validated + replicated" if f.direction_skill_replicated else "validated, NOT replicated")
-        c[2].metric("Risk engine decision", p.decision)
-        c[3].metric("Return range q10..q90", "-" if f.return_q10 is None else f"{f.return_q10:+.1%} .. {f.return_q90:+.1%}")
-        st.subheader("3. Trade plan (deterministic risk engine): levels and the reasons for them")
+        lean = f.up_probability - f.down_probability
+        skill = ("NOT validated" if not f.direction_skill_validated
+                 else "validated (not checked out of sample)" if f.direction_skill_replicated is None
+                 else "validated + replicated" if f.direction_skill_replicated else "validated, NOT replicated")
+        SK.tiles([{"label": "Lean (up - down)", "value": "UP" if lean > 0 else "DOWN", "sub": f"{lean:+.3f}",
+                   "color": "#3DDC97" if lean > 0 else "#FF6B6B"},
+                  {"label": "Direction skill here", "value": skill.split(" (")[0], "sub": skill,
+                   "color": "#3DDC97" if skill == "validated + replicated" else "#F2B544" if f.direction_skill_validated else "#FF6B6B"},
+                  {"label": "Risk engine", "value": p.decision, "color": {"LONG": "#3DDC97", "SHORT": "#FF6B6B"}.get(p.decision, "#8098AE")},
+                  {"label": "Return range q10..q90",
+                   "value": "-" if f.return_q10 is None else f"{f.return_q10:+.1%} .. {f.return_q90:+.1%}", "color": "#9B8CFF"}])
+        SK.section("3. Trade plan (deterministic risk engine): levels and the reasons for them")
         import plan_view as PV
         try:
             bars_all = _bars_for_check(tick, mode, asof)
@@ -691,7 +699,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
 
     _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk)
 
-    st.subheader("4. Market and macro context (descriptive; not inputs of the frozen v1.1 model)")
+    SK.section("4. Market and macro context (descriptive; not inputs of the frozen v1.1 model)")
     try:
         dev = _dev_ctx()
         if mode == "live":
@@ -719,7 +727,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     _fundamentals_section(tick, mode, asof)
     _kronos_section(tick, mode, asof)
 
-    st.subheader("5. Screenshots checked against real bars")
+    SK.section("5. Screenshots checked against real bars")
     images = [(k, f.getvalue(), f.type or "image/png") for k, f in slots.items() if f is not None]
     llm = None
     if use_llm and GM.available() and (texts or images):
@@ -747,7 +755,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
     else:
         st.info("No screenshots supplied.")
 
-    st.subheader("6. Gemini read (live LLM, unvalidated, logged for forward scoring)")
+    SK.section("6. Gemini read (live LLM, unvalidated, logged for forward scoring)")
     if GM.available():
         st.caption(f"Gemini free tier: 20 requests per model per day (one request per analysis); used today: "
                    f"{GM.usage_today() or 'none'}")

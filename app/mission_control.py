@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import globe_view as GV
+import skin as SK
 import ui as UI
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -210,9 +211,16 @@ def _forward_panel(fs: pd.DataFrame) -> None:
                               f"criterion at {CRITERION_SESSIONS}"))
         rows.append(f'<div class="nx-row"><div><b>{html.escape(r.model)}</b><br><span class="nx-note">last '
                     f'{html.escape(r.last_session)} · {r.rows:,} rows{late}</span></div><div>{ok}</div><div>{bars}</div></div>')
-    UI.frame("Forward shadow test", "Logged before the next open, scored only after each horizon ends", "".join(rows),
-             "Each night's file is hash-chained (run time, file SHA-256, previous row). Editing any logged forecast "
-             "breaks the chain, and the scorer refuses a broken chain.")
+    SK.gauge_rings([{"caption": r.model, "frac": min(1.0, r.sessions / CRITERION_SESSIONS), "center": f"{r.sessions}",
+                     "sub": f"of {CRITERION_SESSIONS}", "color": UI.GOOD if r.chain_intact else UI.BAD}
+                    for r in fs.itertuples()])
+    SK.pills([(f"{r.model} · chain intact", UI.GOOD) if r.chain_intact else (f"{r.model} · CHAIN BROKEN", UI.BAD)
+              for r in fs.itertuples()]
+             + [(f"{r.model} · {len(r.missed)} missed", UI.WARN) for r in fs.itertuples() if len(r.missed)])
+    with SK.fold("Forward test details: sessions, rows, late rows and matured dates", "timeline"):
+        UI.frame("Forward shadow test", "Logged before the next open, scored only after each horizon ends", "".join(rows),
+                 "Each night's file is hash-chained (run time, file SHA-256, previous row). Editing any logged forecast "
+                 "breaks the chain, and the scorer refuses a broken chain.")
 
 
 def side_logs(root: Path = ROOT) -> dict:
@@ -241,7 +249,14 @@ def _status_panel(fs: pd.DataFrame, root: Path) -> None:
     body = "".join(f'<div class="nx-kv"><span>{html.escape(a)}</span><span>{html.escape(b)}</span></div>' for a, b in kv)
     if alerts:
         body += "".join(f'<div class="nx-note" style="color:{UI.WARN}">{html.escape(a)}</div>' for a in alerts)
-    UI.frame("System status", "Integrity checks", body)
+    SK.tiles([{"label": "Last nightly run", "value": str(last).replace("T", " ")[11:16] + " UTC", "sub": str(last)[:10],
+               "color": UI.ACCENT},
+              {"label": "SPC monitor", "value": "clear" if not alerts else f"{len(alerts)} alert", "color": UI.GOOD if not alerts else UI.WARN},
+              {"label": "Sealed 2023+ period", "value": "sealed" if holdout_status(root).startswith("sealed") else "OPENED",
+               "sub": holdout_status(root), "color": UI.ACCENT2 if holdout_status(root).startswith("sealed") else UI.BAD},
+              {"label": "Broker orders", "value": "none", "sub": "ever", "color": UI.GOOD}])
+    with SK.fold("System status: every integrity check", "verified_user"):
+        UI.frame("System status", "Integrity checks", body)
 
 
 SHORT = {  # chart labels (the ledger below carries the full wording)
@@ -320,11 +335,12 @@ def _evidence_board(e: dict | None) -> None:
         return out
     led = pd.DataFrame([{"verdict": c["verdict"].upper(), "claim": c["claim"], "period": c["period"], "value": fmt(c),
                          "note": c["note"], "source": f'{c["source"]} ({c["ref"]})'} for c in CLAIMS])
-    st.dataframe(led, hide_index=True, width="stretch", height=38 + 35 * len(led),
-                 column_config={"verdict": st.column_config.TextColumn(width="medium"),
-                                "claim": st.column_config.TextColumn(width="large")})
-    st.caption("2020-22 was read by TriFrame and re-scored several times here, so it is a historical diagnostic, not a "
-               "clean test. The forward test is the clean one.")
+    with SK.fold("The full evidence ledger: every claim, its number, period and source", "fact_check"):
+        st.dataframe(led, hide_index=True, width="stretch", height=38 + 35 * len(led),
+                     column_config={"verdict": st.column_config.TextColumn(width="medium"),
+                                    "claim": st.column_config.TextColumn(width="large")})
+        st.caption("2020-22 was read by TriFrame and re-scored several times here, so it is a historical diagnostic, not a "
+                   "clean test. The forward test is the clean one.")
 
 
 def _e25_panel(e: dict | None) -> None:
@@ -339,47 +355,53 @@ def _e25_panel(e: dict | None) -> None:
         return UI.tag("WEAK KEEP", UI.WARN) if v.get("weak_keep") else UI.tag("KEPT", UI.GOOD)
     chips = "".join(f'<div class="nx-kv"><span>{html.escape(k.replace("|", " · "))}</span><span>{verdict(v)}</span></div>'
                     for k, v in e["keep"].items())
-    UI.frame("Qlib benchmark (E25)", "Alpha158 factor library vs the 80 hand-built features (F0)", chips,
-             f"Run {e['run']}. Keep rule unchanged from E22/E23: a block is kept if either endpoint passes for a family "
-             "whose placebo (Alpha158 shuffled across stocks within each date) does not. The 2020-22 replication is "
-             "partial (evidence board above; docs/V3_RESEARCH.md, E25 results), so the forward test decides.")
-    period = {"valid": "2017-18", "test": "2020-22"}
-    rows = []
-    for ep, key in (("rank IC", "rank_ic_gain"), ("log loss", "logloss_gain")):
-        for k, v in e[key].items():
-            mdl, comp, split, grp = k.split("|")
-            rows.append({"family": "LightGBM" if mdl == "lgbm" else "logistic", "comparison": comp.replace("_vs_", " vs "),
-                         "period": period[split], "group": grp, "endpoint": ep, "gain": v["gain"],
-                         "95% interval": f'[{v["ci95"][0]:+.4f}, {v["ci95"][1]:+.4f}]',
-                         "_o": ({"intraday": 0, "swing": 1, "long": 2}[grp], split != "valid")})
-    d = pd.DataFrame(rows)
-    c = st.columns([3, 1])
-    with c[0]:
-        sel = st.segmented_control("Comparison", ["B_A158 vs B", "B_A158_placebo vs B", "B_A158 vs B_A158_placebo",
-                                                  "A158 vs B"], default="B_A158 vs B", key="mc_e25_comp")
-    with c[1]:
-        ep = st.segmented_control("Endpoint", ["rank IC", "log loss"], default="rank IC", key="mc_e25_ep")
-    show = d[(d.comparison == (sel or "B_A158 vs B")) & (d.endpoint == (ep or "rank IC"))]
-    show = show.sort_values(["family", "_o"]).drop(columns=["_o", "comparison", "endpoint"])
-    st.dataframe(show.style.format({"gain": "{:+.4f}"}), hide_index=True, width="stretch",
-                 height=38 + 35 * len(show))
-    q = e.get("qlib_style", {})
-    if q:
-        qr = []
-        for key, v in q.items():
-            h, name, mdl, split = key.split("|")
-            if mdl == "lgbm" and h in ("1D", "5D", "20D") and name in ("B", "B_A158", "A158"):
-                qr.append({"horizon": h, "set": name, "split": split, **{m: v[m] for m in ("IC", "ICIR", "RankIC", "RankICIR")}})
-        st.caption("Qlib-style report (LightGBM): IC and rank IC are daily cross-sectional correlations of p_up - p_down "
-                   "with the h-session return; ICIR = mean / standard deviation of the daily values. Qlib's own "
-                   "benchmarks use Chinese A-shares and a 1-day label, so their levels are not comparable.")
-        qd = pd.DataFrame(qr)
-        qd["_o"] = [({"valid": 0, "test": 1}[s], {"1D": 0, "5D": 1, "20D": 2}[h], {"B": 0, "B_A158": 1, "A158": 2}[n])
-                    for s, h, n in zip(qd.split, qd.horizon, qd["set"], strict=True)]
-        qd["split"] = qd.split.map({"valid": "2017-18", "test": "2020-22"})
-        qd = qd.sort_values("_o").drop(columns="_o").rename(columns={"split": "period"})
-        st.dataframe(qd.style.format({m: "{:+.4f}" for m in ("IC", "ICIR", "RankIC", "RankICIR")}), hide_index=True,
-                     width="stretch", height=38 + 35 * len(qd))
+    n_kept = sum(1 for v in e["keep"].values() if v["kept"])
+    SK.tiles([{"label": "Blocks tested", "value": str(len(e["keep"])), "color": UI.ACCENT},
+              {"label": "Kept", "value": str(n_kept), "color": UI.GOOD if n_kept else UI.MUTED},
+              {"label": "Not kept", "value": str(len(e["keep"]) - n_kept), "color": UI.BAD}])
+    with SK.fold("Which blocks were kept, and the rule used", "rule"):
+        UI.frame("Qlib benchmark (E25)", "Alpha158 factor library vs the 80 hand-built features (F0)", chips,
+                 f"Run {e['run']}. Keep rule unchanged from E22/E23: a block is kept if either endpoint passes for a family "
+                 "whose placebo (Alpha158 shuffled across stocks within each date) does not. The 2020-22 replication is "
+                 "partial (evidence board above; docs/V3_RESEARCH.md, E25 results), so the forward test decides.")
+    with SK.fold("Gains in detail: pick a comparison and an endpoint", "tune"):
+        period = {"valid": "2017-18", "test": "2020-22"}
+        rows = []
+        for ep, key in (("rank IC", "rank_ic_gain"), ("log loss", "logloss_gain")):
+            for k, v in e[key].items():
+                mdl, comp, split, grp = k.split("|")
+                rows.append({"family": "LightGBM" if mdl == "lgbm" else "logistic", "comparison": comp.replace("_vs_", " vs "),
+                             "period": period[split], "group": grp, "endpoint": ep, "gain": v["gain"],
+                             "95% interval": f'[{v["ci95"][0]:+.4f}, {v["ci95"][1]:+.4f}]',
+                             "_o": ({"intraday": 0, "swing": 1, "long": 2}[grp], split != "valid")})
+        d = pd.DataFrame(rows)
+        c = st.columns([3, 1])
+        with c[0]:
+            sel = st.segmented_control("Comparison", ["B_A158 vs B", "B_A158_placebo vs B", "B_A158 vs B_A158_placebo",
+                                                      "A158 vs B"], default="B_A158 vs B", key="mc_e25_comp")
+        with c[1]:
+            ep = st.segmented_control("Endpoint", ["rank IC", "log loss"], default="rank IC", key="mc_e25_ep")
+        show = d[(d.comparison == (sel or "B_A158 vs B")) & (d.endpoint == (ep or "rank IC"))]
+        show = show.sort_values(["family", "_o"]).drop(columns=["_o", "comparison", "endpoint"])
+        st.dataframe(show.style.format({"gain": "{:+.4f}"}), hide_index=True, width="stretch",
+                     height=38 + 35 * len(show))
+        q = e.get("qlib_style", {})
+        if q:
+            qr = []
+            for key, v in q.items():
+                h, name, mdl, split = key.split("|")
+                if mdl == "lgbm" and h in ("1D", "5D", "20D") and name in ("B", "B_A158", "A158"):
+                    qr.append({"horizon": h, "set": name, "split": split, **{m: v[m] for m in ("IC", "ICIR", "RankIC", "RankICIR")}})
+            st.caption("Qlib-style report (LightGBM): IC and rank IC are daily cross-sectional correlations of p_up - p_down "
+                       "with the h-session return; ICIR = mean / standard deviation of the daily values. Qlib's own "
+                       "benchmarks use Chinese A-shares and a 1-day label, so their levels are not comparable.")
+            qd = pd.DataFrame(qr)
+            qd["_o"] = [({"valid": 0, "test": 1}[s], {"1D": 0, "5D": 1, "20D": 2}[h], {"B": 0, "B_A158": 1, "A158": 2}[n])
+                        for s, h, n in zip(qd.split, qd.horizon, qd["set"], strict=True)]
+            qd["split"] = qd.split.map({"valid": "2017-18", "test": "2020-22"})
+            qd = qd.sort_values("_o").drop(columns="_o").rename(columns={"split": "period"})
+            st.dataframe(qd.style.format({m: "{:+.4f}" for m in ("IC", "ICIR", "RankIC", "RankICIR")}), hide_index=True,
+                         width="stretch", height=38 + 35 * len(qd))
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -395,13 +417,36 @@ def _globe_data(label: str):
 
 
 def _globe_panel() -> None:
-    c = st.columns([3, 1])
-    with c[1]:
-        label = st.radio("Country colour", list(GV.MACRO), key="mc_globe_var")
+    cc = st.columns([4, 1, 1], vertical_alignment="center")
+    label = cc[0].segmented_control("Country colour", list(GV.MACRO), default="Real GDP growth", key="mc_globe_var",
+                                    label_visibility="collapsed") or "Real GDP growth"
+    beams = cc[1].toggle("Forecast beams", value=True, key="mc_globe_beams",
+                         help="Light travelling from New York, where every forecast is stamped, to where each company is based")
+    spin = cc[2].toggle("Spin", value=True, key="mc_globe_spin")
     pts, counts, macro, year = _globe_data(label)
+    c = st.columns([3, 2])
     with c[0]:
-        GV.render_globe(pts, macro, label, height=520)
+        GV.render_globe(pts, macro, label, height=520, arcs=beams, spin=spin)
     with c[1]:
+        SK.tiles([{"label": "Companies placed", "value": str(counts["placed"]), "color": UI.ACCENT},
+                  {"label": "No address on file", "value": str(counts["unplaced"]), "color": UI.MUTED},
+                  {"label": "Countries with data", "value": str(len(macro)), "sub": f"mostly {year}", "color": UI.ACCENT2}])
+        top = pts[:10][::-1]
+        if top:
+            fig = go.Figure(go.Bar(x=[p["n"] for p in top], y=[p["label"] for p in top], orientation="h",
+                                   marker_color=UI.ACCENT, hovertemplate="%{y}: %{x} stocks<extra></extra>"))
+            fig.update_layout(title=dict(text="Where the stocks are based", font=dict(size=13, color=UI.MUTED)))
+            UI.plot(fig, height=300)
+        if macro:
+            items = sorted(macro.items(), key=lambda kv: kv[1][0])
+            ext = items[:5] + items[-5:]
+            unit = GV.MACRO[label][3]
+            fig = go.Figure(go.Bar(x=[v[0] for _, v in ext], y=[k for k, _ in ext], orientation="h",
+                                   marker_color=[UI.BAD if v[0] < 0 else UI.ACCENT2 for _, v in ext],
+                                   hovertemplate="%{y}: %{x:.1f}" + unit + "<extra></extra>"))
+            fig.update_layout(title=dict(text=f"{label}: five lowest and five highest ({unit})", font=dict(size=13, color=UI.MUTED)))
+            UI.plot(fig, height=300)
+    with SK.fold("About this globe, its data and its limits", "public"):
         st.markdown(f'<div class="nx-note">Columns: {counts["placed"]} of the forward-test companies by business '
                     f'address (SEC), at the state or country centre; {counts["unplaced"]} have no address on file. The '
                     f'universe is US-listed survivors, so it is concentrated in a few states.<br><br>Countries: Global '
@@ -428,20 +473,34 @@ def render() -> None:
              {"value": k["sessions"], "label": "forward sessions"}, {"value": k["experiments"], "label": "experiments run"},
              {"value": k["decisions"], "label": "logged decisions"}, {"value": k["tests"], "label": "test functions"}],
             tape(k, e))
+    SK.section("The system at a glance")
+    oc = st.columns([2, 3])
+    with oc[0]:
+        SK.orbit([("PX", "prices"), ("SEC", "filings"), ("NEWS", "news"), ("MACRO", "macro")],
+                 [("v1.1", "stocks"), ("v2", "stocks + sequence"), ("E19", "market read"), ("FUND", "v3_fund"),
+                  ("A158", "v3_alpha")], core="NEXUS", height=400)
+    with oc[1]:
+        SK.cards([{"head": "What works", "color": UI.GOOD,
+                   "bullets": ["Telling a quiet day from a big move", "Ranking stocks against each other",
+                               "A read on the market's 20-day direction", "Beats volatility-matched random books at 5D"]},
+                  {"head": "What does not", "color": UI.BAD,
+                   "bullets": ["Calling a stock up or down (chance)", "Charts add nothing once indicators are in",
+                               "No book is proven profitable after costs", "Gate 3 closed: direction did not replicate"]},
+                  {"head": "Still unknown", "color": UI.WARN,
+                   "bullets": [f"Forward test: {k['sessions']} of ~{CRITERION_SESSIONS} sessions",
+                               "E29a recalibration (from the logs)", "E29b live news branch (archive building)",
+                               "Whether the edge keeps shrinking"]}])
+        SK.pills([("research only", UI.ACCENT), ("paper trading", UI.ACCENT2), ("no broker, ever", UI.GOOD),
+                  ("sealed 2023+ never opened", UI.GOOD), ("hash-chained logs", UI.ACCENT)])
+    SK.section("Forward test: logged before the open, scored after the horizon ends")
     fs = _forward_status_cached()
-    c = st.columns([3, 2])
-    with c[0]:
-        _forward_panel(fs)
-    with c[1]:
-        _status_panel(fs, ROOT)
-    st.markdown('<div class="nx-kicker" style="margin-top:8px">Evidence board</div>', unsafe_allow_html=True)
-    st.markdown("#### What the evidence supports, and what it does not")
+    _forward_panel(fs)
+    _status_panel(fs, ROOT)
+    SK.section("Evidence board: what the evidence supports, and what it does not")
     _evidence_board(e)
-    st.markdown('<div class="nx-kicker" style="margin-top:8px">Data flow</div>', unsafe_allow_html=True)
-    st.markdown("#### From raw data to a logged forecast")
+    SK.section("Data flow: from raw data to a logged forecast")
     UI.pipeline_beam()
-    st.markdown('<div class="nx-kicker" style="margin-top:8px">Universe and world</div>', unsafe_allow_html=True)
-    st.markdown("#### Where the companies are, and the macro backdrop")
+    SK.section("Universe and world: where the companies are, and the macro backdrop")
     _globe_panel()
-    st.markdown('<div class="nx-kicker" style="margin-top:8px">External benchmark</div>', unsafe_allow_html=True)
+    SK.section("External benchmark: Qlib Alpha158")
     _e25_panel(e)

@@ -9,6 +9,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import skin as SK
+
 import ui as UI
 from nexus_alpha import language_view as LV
 
@@ -109,7 +111,7 @@ def _expert() -> None:
 
 
 def _explorer(universe: list[str]) -> None:
-    st.subheader("Filing explorer: what the language models read, stock by stock")
+    SK.section("Filing explorer: what the language models read, stock by stock")
     tickers = [t for t in universe if t] or ["AAPL"]
     c1, c2 = st.columns([1, 3])
     t = c1.selectbox("Stock", tickers, index=tickers.index("AAPL") if "AAPL" in tickers else 0, key="vn_ticker")
@@ -162,7 +164,7 @@ def _explorer(universe: list[str]) -> None:
 
 
 def _analogue_box() -> None:
-    st.subheader("Read any filing or news text with ChronoBERT")
+    SK.section("Read any filing or news text with ChronoBERT")
     st.caption("Paste the text of a new 8-K, an earnings release or a news story. It is cleaned and encoded exactly as "
                "the SEC filings were, then compared with every encoded filing. Descriptive evidence only: no "
                "probability or plan changes.")
@@ -192,9 +194,10 @@ def _analogue_box() -> None:
 
 
 def render(universe: list[str]) -> None:
-    st.header("Vision + NLP: one network that reads charts and language")
-    st.caption("Charts (three timeframes through a frozen ConvNeXt), 80 indicators, company news (TF-IDF and FinBERT) "
-               "and SEC filings (TF-IDF, ChronoBERT and the SEC price-impact expert) enter one gated fusion network.")
+    SK.banner("Vision + NLP", "One network that reads charts and language", "A diagnostic of what the fusion network reads. It decides nothing.")
+    with SK.fold("About this view", "info"):
+        st.caption("Charts (three timeframes through a frozen ConvNeXt), 80 indicators, company news (TF-IDF and FinBERT) "
+                   "and SEC filings (TF-IDF, ChronoBERT and the SEC price-impact expert) enter one gated fusion network.")
     m = LV.e28()
     if m is None:
         st.info("The documented E28 run is not in this copy of the repository yet.")

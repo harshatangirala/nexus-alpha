@@ -68,6 +68,9 @@ CSS = f"""
 
 def inject_css() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+    import skin                       # second layer: page skin, folding, ring/tile/orbit components
+    skin.inject()
+    skin.auto_fold()
 
 
 def tag(label: str, color: str) -> str:

@@ -54,7 +54,7 @@
  "market_e19": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 4,
+   "sessions": 5,
    "p_bar": 0.0,
    "ucl": 3e-06,
    "dpmo": 0.0,

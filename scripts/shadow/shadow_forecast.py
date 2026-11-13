@@ -92,7 +92,10 @@ def main() -> None:
         P = NexusPredictor(bdir)
     rows, failed, t0 = [], [], time.time()
     xrows = []                     # v2 only: tabular feature rows for the fundamentals ranker log (D-042)
-    deadline = {"utc": None}       # set from the first forecast's decision time
+    # A-81 (audit 7): the deadline is the decision time of the session the run must log (or of a newer session, if a
+    # forecast shows one). It used to be the EARLIEST decision time over the forecasts, so one stock with an older last
+    # bar (halted, or Yahoo lagging as on 2026-11-13, A-80) set a passed deadline and stopped the whole run.
+    deadline = {"utc": SH.decision_utc_for(SH.expected_asof()) - STOP_BEFORE_DECISION}
 
     def forecast(t: str) -> bool:
         try:
@@ -119,7 +122,7 @@ def main() -> None:
                       f.return_q90, f.direction_skill_validated) for h, f in r.forecasts.items()}
             rank = {}
         dec = SH.decision_utc_for(pd.Timestamp(asof_s))
-        if deadline["utc"] is None or dec - STOP_BEFORE_DECISION < deadline["utc"]:
+        if dec - STOP_BEFORE_DECISION > deadline["utc"]:
             deadline["utc"] = dec - STOP_BEFORE_DECISION
         for h, (pd_, ps, pu, q10, q50, q90, sk) in fc.items():
             rows.append({"asof_session": asof_s, "ticker": t, "horizon": h, "p_down": pd_, "p_side": ps, "p_up": pu,
@@ -130,7 +133,7 @@ def main() -> None:
         return True
 
     def past_deadline(extra_s: float = 0.0) -> bool:
-        return deadline["utc"] is not None and SH.now_utc() + pd.Timedelta(seconds=extra_s) > deadline["utc"]
+        return SH.now_utc() + pd.Timedelta(seconds=extra_s) > deadline["utc"]
 
     for i, t in enumerate(tickers):
         if past_deadline():
@@ -139,8 +142,8 @@ def main() -> None:
             break
         forecast(t)
         if not rows and len(failed) >= BREAKER_FAILS:
-            # audit 3: when Yahoo is unreachable every ticker fails slowly and no deadline is ever set; stop early so the
-            # day's next trigger can retry instead of running into the task's time limit
+            # audit 3: when Yahoo is unreachable every ticker fails slowly; stop early so the day's next trigger can
+            # retry instead of running into the task's time limit
             print(f"CIRCUIT BREAKER: the first {len(failed)} tickers all failed ({failed[0]['error'][:80]}); aborting",
                   flush=True)
             sys.exit(3)

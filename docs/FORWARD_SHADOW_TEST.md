@@ -63,9 +63,12 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
   * **Log:** `shadow/v3_fund/` with `rank_score`, scored by `shadow_score.py`. No trading engine uses it.
   * **Promotion:** the forward criterion in `docs/V3_RESEARCH.md` (20D rank IC above 0 and above `ranker_v3` after 120
     sessions).
-* **Preflight and circuit breaker (D-041).** Before forecasting, the task checks that Yahoo answers, waiting up to 90
-  minutes. A forecast run whose first 20 tickers all fail stops at once instead of running into the 3-hour task limit.
-  A done marker lets optional extra daily triggers re-run only an incomplete day.
+* **Preflight and circuit breaker (D-041, D-055).** Before forecasting, the task checks two things, waiting up to 90
+  minutes for both: Yahoo answers, and at least 6 of 8 liquid stocks already have the session the run must log. The
+  second check was added after the 13 Nov run (A-80), when SPY was current but stock downloads were a day behind.
+  A forecast run whose first 20 tickers all fail stops at once instead of running into the 3-hour task limit.
+  The run's deadline is the expected session's decision time, so one stale stock cannot stop it (A-81).
+  A done marker, keyed by session, lets the extra daily triggers re-run only an incomplete session.
 * **Runner tests.** `tests/test_shadow_runner.py` checks three things:
   * `run_daily.cmd` is byte-clean CRLF;
   * every script it references exists;

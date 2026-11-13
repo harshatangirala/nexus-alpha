@@ -79,7 +79,7 @@ def main() -> None:
         tickers = tickers[: a.limit]
     t0, rows, failed = time.time(), [], []
     batch = []
-    deadline = None
+    deadline = SH.decision_utc_for(SH.expected_asof()) - STOP_BEFORE_DECISION   # A-81: never a stale stock's
 
     def run_batch():
         nonlocal deadline
@@ -106,7 +106,7 @@ def main() -> None:
             continue
         asof = pd.Timestamp(d.date.iloc[k])
         dec = SH.decision_utc_for(asof)
-        deadline = dec - STOP_BEFORE_DECISION if deadline is None else min(deadline, dec - STOP_BEFORE_DECISION)
+        deadline = max(deadline, dec - STOP_BEFORE_DECISION)
         if SH.now_utc() > deadline:
             failed.extend({"ticker": x, "error": "not attempted: decision-time deadline"} for x in tickers[i:])
             break

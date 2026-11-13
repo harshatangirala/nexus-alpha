@@ -9,7 +9,13 @@ The marker is keyed by the as-of session the run must log (`shadow.expected_asof
 date, a trigger after midnight IST and before the US close would have marked the new day complete with the previous
 session, and the 07:00 run would then have skipped the new session.
 
-    python scripts/shadow/preflight.py            # exit 0 go, 10 session already completed, 2 Yahoo unreachable
+Audit 7 (A-80, 2026-11-13): reachable is not enough. At 07:00-07:16 IST on 2026-11-13 Yahoo answered, and SPY already
+had the 2026-11-12 bar, but stock daily downloads still ended on 2026-11-11. v1.1 and v2 forecast their first stock as
+of 2026-11-11, took that session's (passed) decision time as the deadline and stopped after one ticker; four of five
+models missed the session until a manual re-run. The probe now also requires that most of a basket of stocks,
+downloaded the way the forecaster downloads them, reach the expected session, and waits (same attempts) until they do.
+
+    python scripts/shadow/preflight.py            # exit 0 go, 10 session already completed, 2 Yahoo unreachable or stale
     python scripts/shadow/preflight.py --mark     # record that the expected session's run completed
 """
 from __future__ import annotations
@@ -39,22 +45,61 @@ def marker(session: str | None = None) -> Path:
     return LOGS / f"shadow_done_session_{session or expected_session()}.txt"
 
 
-def probe(timeout_s: float = 60.0) -> tuple[bool, str]:
+BASKET = ("AAPL", "MSFT", "JPM", "XOM", "JNJ", "PG", "HD", "CAT")   # liquid stocks of the universe, several sectors
+MIN_FRESH = 6
+
+
+def _last_bar(ticker: str):
+    """Last daily bar date of one stock, downloaded as the forecaster downloads it (yf.download, daily, unadjusted)."""
+    import yfinance as yf
+    d = yf.download(ticker, period="10d", interval="1d", auto_adjust=False, actions=False, progress=False,
+                    multi_level_index=False, threads=False)
+    if d is None or len(d) == 0:
+        return None
+    d = d.dropna(subset=["Open", "High", "Low", "Close", "Volume"])
+    if not len(d):
+        return None
+    i = pd.DatetimeIndex(d.index)
+    return (i.tz_localize(None) if i.tz is not None else i).normalize().max()
+
+
+def fresh(want: str, basket=BASKET, last_bar=_last_bar) -> tuple[bool, str]:
+    """True when at least MIN_FRESH stocks of the basket have a daily bar for the session `want` (A-80)."""
+    got = {}
+    for t in basket:
+        try:
+            got[t] = last_bar(t)
+        except Exception:  # one failed stock does not decide; the count does
+            got[t] = None
+    n = sum(1 for v in got.values() if v is not None and pd.Timestamp(v) >= pd.Timestamp(want))
+    stale = sorted(t for t, v in got.items() if v is None or pd.Timestamp(v) < pd.Timestamp(want))
+    ok = n >= min(MIN_FRESH, len(basket))
+    return ok, f"{n}/{len(basket)} stocks have session {want}" + ("" if ok else f"; behind: {stale}")
+
+
+def probe(timeout_s: float = 60.0, want: str | None = None) -> tuple[bool, str]:
     box: dict = {}
 
     def run():
         try:
             import yfinance as yf
             box["n"] = len(yf.Ticker("SPY").history(period="5d", auto_adjust=False, actions=False))
+            if box["n"] and want is not None:
+                box["fresh"] = fresh(want)
         except Exception as e:  # network down, DNS, rate limit
             box["e"] = repr(e)[:200]
 
     th = threading.Thread(target=run, daemon=True)
     th.start()
-    th.join(timeout_s)
+    th.join(timeout_s if want is None else timeout_s + 120)
     if th.is_alive():
         return False, "timeout"
-    return box.get("n", 0) > 0, box.get("e", "empty answer")
+    if not box.get("n"):
+        return False, box.get("e", "empty answer")
+    if want is not None:
+        ok, why = box.get("fresh", (False, box.get("e", "no freshness answer")))
+        return ok, f"reachable, but {why}" if not ok else why
+    return True, ""
 
 
 def main() -> None:
@@ -84,14 +129,16 @@ def main() -> None:
     if m.exists():
         print(f"preflight: this session's run already completed ({m.name}); nothing to do", flush=True)
         sys.exit(10)
+    want = expected_session()
     for i in range(a.attempts):
-        ok, err = probe()
+        ok, err = probe(want=want)
         if ok:
-            print(f"preflight: Yahoo reachable (attempt {i + 1})", flush=True)
+            print(f"preflight: Yahoo reachable and current (attempt {i + 1}; {err})", flush=True)
             return
         print(f"preflight: attempt {i + 1}/{a.attempts} failed: {err}", flush=True)
         time.sleep(a.pause)
-    print("PREFLIGHT FAILED: Yahoo unreachable; no forecast attempted (a later trigger today retries)", flush=True)
+    print(f"PREFLIGHT FAILED: Yahoo unreachable or without session {want}; no forecast attempted "
+          "(a later trigger today retries)", flush=True)
     sys.exit(2)
 
 

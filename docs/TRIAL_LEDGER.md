@@ -33,6 +33,7 @@ the selection data. Placebo sets are counted, because they are evaluated the sam
 | Audits 9-11 notebook revision and gate 3 replication (D-057) | Seed spreads, Holm, a volatility-matched null, a daily mark-to-market book, a pre-declared sqrt-time bracket; the frozen models' direction skill recomputed on 2020-22 | 2017-18 and 2020-22 | descriptive, plus a rule that can only close gates (never open one); no model fitted or selected | 0 | descriptive; gate 3 closed at every horizon |
 | E29 | v1.1 prior-shift recalibration (E29a); v1.1 with archived live news (E29b) | forward only | 2 tests, Holm across the two (D-058) | 2 | registered 2026-11-13; E29a scoring from the logs, E29b starts after its start condition |
 | E30 | Published fundamental composites (value, quality, gross profitability, magic formula, Piotroski, Beneish) | 2005-2022 monthly (includes 2017-18 and 2020-22) | 6 tests, Holm (D-060); definitions fixed by their authors, nothing fitted | 6 | registered 2026-11-14; result in docs/E30_RESULTS.md |
+| E31 | v1.1 recipe refit on 2003-2021, calibrated 2022 (v1.2) vs v1.1 | forward only | 1 test (D-062); recipe copied, nothing chosen | 1 | registered 2026-11-14 |
 | E26 | NEXUS vs implied volatility | forward only | 2 models x 2 horizons x 2 endpoints, Holm across endpoint 2 (D-051) | 8 | running from 2026-11-10 |
 | E27 | LLM committee | forward only | descriptive | - | running, on demand |
 | Forward criteria | v3_fund, v3_alpha vs ranker_v3 | forward only | 2 candidates x 2 conditions, Holm across candidates (D-051) | 2 | after 120 sessions |

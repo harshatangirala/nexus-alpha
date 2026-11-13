@@ -58,6 +58,8 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
 
   The log goes to `shadow/v1.1_news`, which has its own hash chain and is pushed before 09:00 New York. `scripts/shadow/e29_score.py` scores E29a and E29b every night. Both report progress only until their pre-registered conditions are met.
 
+* **v1.2 (E31, D-062).** The frozen v1.1 recipe refit on 2003 to 2021-11-30 and calibrated on 2022. Since session 2026-11-13 it is logged after every other log has been pushed, from the same cached bars, under `shadow/v1.2` with its own hash chain, scored by `shadow_score.py` and compared with v1.1 by `e31_score.py` (decision after 120 sessions). Its direction gate is closed: no out-of-sample period is left.
+
 ## Changes on 2026-11-07 (audit 3 and 4)
 
 * **A fourth frozen model, `v3_fund`** (D-042; E23 kept). It is LightGBM on the v1.1 numeric features plus

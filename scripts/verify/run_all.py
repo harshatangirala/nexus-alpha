@@ -3,7 +3,7 @@ the sealed scorer or a forward-test log, and it never reads the sealed 2023+ per
 
 Checks, each PASS or FAIL:
  1. test suite (pytest);
- 2. the five frozen bundles match their freeze records (SHA-256 of every file);
+ 2. every frozen bundle matches its freeze record (SHA-256 of every file);
  3. every forward-test hash chain is intact and every logged file unchanged;
  4. the sealed scorer's combined hash equals the value recorded in audits 3-4 (`32c7b3b7...`);
  5. no model reads calendar time (`time_proxy_scan.py`);
@@ -32,7 +32,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 PY = sys.executable
 SCORER_SHA256 = "32c7b3b73d3420bc8e8623f8e2fd4a29ba944568a93668c99b5d0ab87a7d9486"   # recorded before any sealed read
-FROZEN = ("v1.1", "v2", "market_e19", "v3_fund", "v3_alpha")
+FROZEN = tuple(sorted(p.stem for p in (REPO / "registry" / "frozen_models").glob("*.json")))   # every frozen record (audit 12)
 SECRET = r"AIza[0-9A-Za-z_-]{30}|sk-[A-Za-z0-9]{20}|hf_[A-Za-z0-9]{30}|ghp_[A-Za-z0-9]{30}|-----BEGIN [A-Z ]*PRIVATE KEY"
 
 
@@ -60,9 +60,10 @@ def c_frozen():
 
 def c_chains():
     from nexus_alpha import shadow as SH
-    probs = {v: SH.verify_chain(v) for v in FROZEN}
+    logs = sorted({*FROZEN, *(p.parent.name for p in SH.SHADOW_ROOT.glob("*/chain.csv"))})    # incl. v1.1_news (E29b)
+    probs = {v: SH.verify_chain(v) for v in logs}
     bad = {v: p for v, p in probs.items() if p}
-    n = sum(len(SH.chain_rows(v)) for v in FROZEN)
+    n = sum(len(SH.chain_rows(v)) for v in logs)
     return not bad, f"{n} chained files intact" if not bad else json.dumps(bad)[:300]
 
 

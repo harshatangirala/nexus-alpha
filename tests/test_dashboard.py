@@ -36,7 +36,12 @@ def test_kpis_and_forward_status_read_the_repository():
     assert k["decisions"] >= 46 and k["tests"] > 100 and k["experiments"] >= 20
     fs = MC.forward_status()
     assert list(fs.model) == MC.VERSIONS
-    assert fs.chain_intact.all() and (fs.sessions >= 1).all()
+    import json
+    import pandas as pd
+    frozen = {v: pd.Timestamp(json.loads((REPO / "registry" / "frozen_models" / f"{v}.json").read_text(encoding="utf-8"))
+                              ["frozen_utc"]) for v in fs.model}
+    new = fs.model.map(lambda v: pd.Timestamp.now(tz="UTC") - frozen[v] < pd.Timedelta(days=3))   # first log still pending
+    assert fs.chain_intact.all() and ((fs.sessions >= 1) | new).all()
     assert "missed" in fs and all(isinstance(m, list) for m in fs.missed)
 
 

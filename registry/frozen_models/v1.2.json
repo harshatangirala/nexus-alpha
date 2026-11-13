@@ -1,0 +1,79 @@
+{
+  "version": "v1.2",
+  "bundle_id": "20261114T015829_e31_recency_refit_b419ba",
+  "files": {
+    "bundle_meta.json": "fd6755ad0e5d0744226562e710e6a28c0205f892f48ce1ba8f758df10305816c",
+    "calibrators.pkl": "4302b1b1e2f022ec2312dc1f7aa423fef60c691f6fffc10794b4e02f1e7a0977",
+    "fusion.pt": "e4614e4c6ca33c1d5ab6290a85f6e55303d58195974eaa1c9e60a4dcf1786f83",
+    "fusion_seed101.pt": "e0a9d45dd7b0e57105b1808498c88374d62ff63803642e3d93cdea2aeb910894",
+    "fusion_seed11.pt": "8ef4d0bd10ec09cf7fafb12593af5bb866cc1c44f8deaf9e15d7a07bf001135e",
+    "fusion_seed23.pt": "45d50299379acace9f13a51b43a8db2dfedc8671628b0a90ff71fda778f9d328",
+    "fusion_seed42.pt": "4be8d77262f3388649174fd5b50fc169e79a41233649f2ac4d78df2db208e82d",
+    "fusion_seed7.pt": "e4614e4c6ca33c1d5ab6290a85f6e55303d58195974eaa1c9e60a4dcf1786f83",
+    "lgbm_10D.txt": "b20074701b0072f356acb841d048c36086bbc9eb4aedb2c99bf483d8ce714750",
+    "lgbm_1D.txt": "4ee4d9ff362debe8b913bbae3ca2f068560322f5b5d608e42851ae6a8b6868b5",
+    "lgbm_1M.txt": "6ff4a5901b7acd004ac615015df347131a8164016959533d934bbb47e13bc7da",
+    "lgbm_20D.txt": "f624ae1cda91b04292994e970c9257dfc1c74ad759945c55245de89ec5b80719",
+    "lgbm_2D.txt": "e6020e35309d52803d9a08f7dea73a653656825327e55553454f75f7397c54e3",
+    "lgbm_5D.txt": "66577a13421063658cf6ae8e5b9b50d4b6197763fc2a9de46d83b012892d5ea9",
+    "logistic.pkl": "173e557440bb1ce65a6ebb274c2bc9a230ccffabf32b5cf63f41f5d870bc364a",
+    "news_tfidf_svd.pkl": "3a14fa1c657026a48832e98956be8ec069f268687599bedced3a233875e39895",
+    "preprocessor.pkl": "2e51960fca285882db16a2d29a2a0fcb1d3607e5877f5a1e17f8c517faca8856",
+    "sec_tfidf_svd.pkl": "f5bdb1571b0286b8dfb206231a2159853121727438d69d637f02eba76a3469c9"
+  },
+  "frozen_utc": "2026-11-13T20:44:39+00:00",
+  "code_commit_at_freeze": "e90c6b59f454073f92ef3b0d93b55abeb37db155",
+  "recipe": "blend_l0.1_f0.6_g0.3",
+  "trained_through_block": "refit 2003-2021-11-30, calibrated 2022 (E31)",
+  "kind": "v1",
+  "label_version": "nexus-labels-v1",
+  "horizons": {
+    "1D": 1,
+    "2D": 2,
+    "5D": 5,
+    "10D": 10,
+    "20D": 20,
+    "1M": 21
+  },
+  "decision_rule": "09:00 New York on session t+1; entry at the t+1 open; exit at the t+h close",
+  "train_class_prior_blocks": [
+    "train",
+    "inner",
+    "valid",
+    "calib",
+    "test"
+  ],
+  "train_class_prior": {
+    "1D": [
+      0.2532452164593985,
+      0.48301591908727587,
+      0.2637388644533256
+    ],
+    "2D": [
+      0.2611087543816562,
+      0.45383464689990843,
+      0.2850565987184353
+    ],
+    "5D": [
+      0.2615151041550381,
+      0.43026189466163567,
+      0.30822300118332624
+    ],
+    "10D": [
+      0.25610306101944674,
+      0.42276005269150907,
+      0.3211368862890442
+    ],
+    "20D": [
+      0.25145906360936837,
+      0.4090959833887785,
+      0.3394449530018531
+    ],
+    "1M": [
+      0.25126171271359793,
+      0.4056864163785942,
+      0.34305187090780787
+    ]
+  },
+  "note": "E31 (D-062): v1.1 recipe refit on 2003 to 2021-11-30, calibrated on 2022; direction gate closed; forward test only"
+}

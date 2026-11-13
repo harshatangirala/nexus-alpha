@@ -54,3 +54,10 @@ rem archive so tonight's headlines count; pushed long before 09:00 New York; a f
 .venv\Scripts\python.exe -B scripts\shadow\news_on_forecast.py >> artifacts\logs\shadow_daily.log 2>&1
 git add shadow\v1.1_news >> artifacts\logs\shadow_daily.log 2>&1
 git diff --cached --quiet -- shadow\v1.1_news || (git -c user.name="Krishna Harsha Tangirala" -c user.email="70001399+harshatangirala@users.noreply.github.com" commit -q -m "Forward test: E29b news-on log of %DATE%" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- shadow\v1.1_news >> artifacts\logs\shadow_daily.log 2>&1 && git push -q origin HEAD >> artifacts\logs\shadow_daily.log 2>&1)
+rem E31 (D-062): v1.2 = v1.1's recipe refit to 2021 and calibrated on 2022, forecast from the same cached bars, scored,
+rem and compared with v1.1; own hash chain and own commit, after every other log is pushed; non-fatal
+.venv\Scripts\python.exe -B scripts\shadow\shadow_forecast.py --version v1.2 >> artifacts\logs\shadow_daily.log 2>&1
+.venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version v1.2 >> artifacts\logs\shadow_daily.log 2>&1
+.venv\Scripts\python.exe -B scripts\shadow\e31_score.py >> artifacts\logs\shadow_daily.log 2>&1
+git add shadow\v1.2 >> artifacts\logs\shadow_daily.log 2>&1
+git diff --cached --quiet -- shadow\v1.2 || (git -c user.name="Krishna Harsha Tangirala" -c user.email="70001399+harshatangirala@users.noreply.github.com" commit -q -m "Forward test: E31 v1.2 log of %DATE%" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- shadow\v1.2 >> artifacts\logs\shadow_daily.log 2>&1 && git push -q origin HEAD >> artifacts\logs\shadow_daily.log 2>&1)

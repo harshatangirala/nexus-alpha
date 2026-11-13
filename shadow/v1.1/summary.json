@@ -1,21 +1,21 @@
 {
   "version": "v1.1",
-  "scored_rows": 2977,
+  "scored_rows": 3969,
   "first_asof": "2026-11-05",
-  "last_asof": "2026-11-09",
+  "last_asof": "2026-11-11",
   "by_horizon": {
     "1D": {
-      "n": 1489,
-      "n_dates": 3,
-      "log_loss": 0.9890617378818779,
-      "log_loss_prior": 1.0098082273617723,
-      "gain_vs_prior": 0.020746489479894437,
-      "auroc_up_vs_down": 0.4929079616036138,
-      "hit_rate_argmax": 0.5419744795164539,
+      "n": 1986,
+      "n_dates": 4,
+      "log_loss": 1.013851541716974,
+      "log_loss_prior": 1.0234650671675842,
+      "gain_vs_prior": 0.009613525450610227,
+      "auroc_up_vs_down": 0.3876579932540124,
+      "hit_rate_argmax": 0.5241691842900302,
       "class_freq": [
-        0.11752854264607118,
-        0.5426460711887172,
-        0.3398253861652116
+        0.19687814702920442,
+        0.5251762336354482,
+        0.27794561933534745
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
@@ -32,6 +32,22 @@
         0.1028225806451613,
         0.46975806451612906,
         0.4274193548387097
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet"
+    },
+    "5D": {
+      "n": 495,
+      "n_dates": 1,
+      "log_loss": 1.006673337288963,
+      "log_loss_prior": 1.0382321423383571,
+      "gain_vs_prior": 0.031558805049394234,
+      "auroc_up_vs_down": 0.6855582109935131,
+      "hit_rate_argmax": 0.49696969696969695,
+      "class_freq": [
+        0.11717171717171718,
+        0.47474747474747475,
+        0.4080808080808081
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"

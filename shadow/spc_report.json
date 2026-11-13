@@ -2,21 +2,25 @@
  "v1.1": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 4,
-   "p_bar": 0.0055,
-   "ucl": 0.015422474489763126,
-   "dpmo": 5500.0,
+   "sessions": 5,
+   "p_bar": 0.0056,
+   "ucl": 0.015611769074444337,
+   "dpmo": 5600.0,
    "out_of_control": []
   },
   "late_rows_total": 0,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
     "n": 3,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "5D": {
+    "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -24,17 +28,17 @@
  "v2": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 4,
-   "p_bar": 0.0045,
-   "ucl": 0.01347972716734757,
-   "dpmo": 4500.0,
+   "sessions": 5,
+   "p_bar": 0.0048,
+   "ucl": 0.014072824812321215,
+   "dpmo": 4800.0,
    "out_of_control": []
   },
   "late_rows_total": 0,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
@@ -42,10 +46,14 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "3D": {
-    "n": 2,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "4D": {
+    "n": 2,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "5D": {
     "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
@@ -66,10 +74,10 @@
  "v3_fund": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 3,
-   "p_bar": 0.005333333333333333,
-   "ucl": 0.015105129483478915,
-   "dpmo": 5333.333333333333,
+   "sessions": 4,
+   "p_bar": 0.0055,
+   "ucl": 0.015422474489763126,
+   "dpmo": 5500.0,
    "out_of_control": []
   },
   "late_rows_total": 0,
@@ -78,7 +86,7 @@
   ],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 2,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
@@ -90,10 +98,10 @@
  "v3_alpha": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 2,
-   "p_bar": 0.007,
-   "ucl": 0.01818561576311291,
-   "dpmo": 7000.0,
+   "sessions": 3,
+   "p_bar": 0.006666666666666667,
+   "ucl": 0.01758454191783161,
+   "dpmo": 6666.666666666667,
    "out_of_control": []
   },
   "late_rows_total": 0,

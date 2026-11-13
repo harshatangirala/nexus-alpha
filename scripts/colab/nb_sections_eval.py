@@ -656,7 +656,8 @@ def md_table(obj, max_rows=400):
         df.columns = [" / ".join(map(str, c)) for c in df.columns]
     df = df.reset_index()
     df.columns = [" / ".join(map(str, c)) if isinstance(c, tuple) else str(c) for c in df.columns]
-    lines = ["| " + " | ".join(df.columns) + " |", "|" + "---|" * len(df.columns)]
+    # A-109: a "|" inside a column name (e.g. "|s| >= 0.10") would split the header and shift every column
+    lines = ["| " + " | ".join(c.replace("|", "\\|") for c in df.columns) + " |", "|" + "---|" * len(df.columns)]
     for _, r in df.head(max_rows).iterrows():
         lines.append("| " + " | ".join(_cell(v) for v in r.to_numpy()) + " |")
     if len(df) > max_rows:

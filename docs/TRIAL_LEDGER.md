@@ -31,6 +31,7 @@ the selection data. Placebo sets are counted, because they are evaluated the sam
 | **Selection trials on 2017-18 including E28** | | | | **<= 681** | |
 | Audit 8 notebook sections 13A, 16A | Vision vs NLP vs indicators (7 input sets, every metric); one fixed entry / stop-loss / exit rule on each set's forecasts | 2017-18 and 2020-22 | descriptive: reported, nothing selected or frozen from them (D-056) | 0 | descriptive |
 | Audits 9-11 notebook revision and gate 3 replication (D-057) | Seed spreads, Holm, a volatility-matched null, a daily mark-to-market book, a pre-declared sqrt-time bracket; the frozen models' direction skill recomputed on 2020-22 | 2017-18 and 2020-22 | descriptive, plus a rule that can only close gates (never open one); no model fitted or selected | 0 | descriptive; gate 3 closed at every horizon |
+| E29 | v1.1 prior-shift recalibration (E29a); v1.1 with archived live news (E29b) | forward only | 2 tests, Holm across the two (D-058) | 2 | registered 2026-11-13; E29a scoring from the logs, E29b starts after its start condition |
 | E26 | NEXUS vs implied volatility | forward only | 2 models x 2 horizons x 2 endpoints, Holm across endpoint 2 (D-051) | 8 | running from 2026-11-10 |
 | E27 | LLM committee | forward only | descriptive | - | running, on demand |
 | Forward criteria | v3_fund, v3_alpha vs ranker_v3 | forward only | 2 candidates x 2 conditions, Holm across candidates (D-051) | 2 | after 120 sessions |

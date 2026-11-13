@@ -44,3 +44,6 @@ rem Public timestamp: commit and push ONLY the forward-test logs (shadow/), neve
 git add shadow >> artifacts\logs\shadow_daily.log 2>&1
 git diff --cached --quiet -- shadow || (git -c user.name="Krishna Harsha Tangirala" -c user.email="70001399+harshatangirala@users.noreply.github.com" commit -q -m "Forward test: logs of %DATE%" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- shadow >> artifacts\logs\shadow_daily.log 2>&1 && git push -q origin HEAD >> artifacts\logs\shadow_daily.log 2>&1)
 if "%FOK%"=="1" .venv\Scripts\python.exe -B scripts\shadow\preflight.py --mark >> artifacts\logs\shadow_daily.log 2>&1
+rem Audit 11 (D-059): live headline archive for a later forward test of the text branch (E29b). Runs last, after the
+rem push and the done marker, so it can never delay a forecast; git-ignored output (artifacts\live_news); non-fatal
+.venv\Scripts\python.exe -B scripts\shadow\news_snapshot.py >> artifacts\logs\shadow_daily.log 2>&1

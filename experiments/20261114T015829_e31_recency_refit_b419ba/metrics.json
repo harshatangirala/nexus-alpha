@@ -1,0 +1,168 @@
+{
+ "refit_rows": 211515,
+ "calibration_rows": 11334,
+ "calibration": {
+  "1D": "temperature",
+  "2D": "temperature",
+  "5D": "none",
+  "10D": "none",
+  "20D": "none",
+  "1M": "none"
+ },
+ "descriptive": {
+  "1D": {
+   "calibration_year_log_loss_raw": 1.0501712169734216,
+   "calibration_year_log_loss_calibrated": 1.0479302648124618,
+   "class_share_2019": [
+    2473,
+    5595,
+    2774
+   ],
+   "class_share_2022": [
+    3004,
+    5271,
+    3059
+   ]
+  },
+  "2D": {
+   "calibration_year_log_loss_raw": 1.0746347850994507,
+   "calibration_year_log_loss_calibrated": 1.0711843085321686,
+   "class_share_2019": [
+    2545,
+    5158,
+    3139
+   ],
+   "class_share_2022": [
+    3276,
+    4808,
+    3250
+   ]
+  },
+  "5D": {
+   "calibration_year_log_loss_raw": 1.0820677537402603,
+   "calibration_year_log_loss_calibrated": 1.0820677537402603,
+   "class_share_2019": [
+    2525,
+    4802,
+    3515
+   ],
+   "class_share_2022": [
+    3406,
+    4653,
+    3275
+   ]
+  },
+  "10D": {
+   "calibration_year_log_loss_raw": 1.0949296022788328,
+   "calibration_year_log_loss_calibrated": 1.0949296022788328,
+   "class_share_2019": [
+    2517,
+    4678,
+    3647
+   ],
+   "class_share_2022": [
+    3576,
+    4584,
+    3174
+   ]
+  },
+  "20D": {
+   "calibration_year_log_loss_raw": 1.1042362429032466,
+   "calibration_year_log_loss_calibrated": 1.1042362429032466,
+   "class_share_2019": [
+    2403,
+    4441,
+    3998
+   ],
+   "class_share_2022": [
+    3819,
+    4485,
+    3030
+   ]
+  },
+  "1M": {
+   "calibration_year_log_loss_raw": 1.107753225593939,
+   "calibration_year_log_loss_calibrated": 1.107753225593939,
+   "class_share_2019": [
+    2390,
+    4455,
+    3997
+   ],
+   "class_share_2022": [
+    3852,
+    4381,
+    3058
+   ]
+  }
+ },
+ "components": {
+  "lgbm_weight": 0.1,
+  "fusion_weight": 0.6,
+  "logistic_weight": 0.3,
+  "fusion_modalities": [
+   "img_W",
+   "img_D",
+   "img_H",
+   "num",
+   "news",
+   "sec"
+  ],
+  "fusion_seeds": [
+   {
+    "file": "fusion_seed7.pt",
+    "seed": 7,
+    "epochs": 17
+   },
+   {
+    "file": "fusion_seed11.pt",
+    "seed": 11,
+    "epochs": 14
+   },
+   {
+    "file": "fusion_seed23.pt",
+    "seed": 23,
+    "epochs": 7
+   },
+   {
+    "file": "fusion_seed42.pt",
+    "seed": 42,
+    "epochs": 11
+   },
+   {
+    "file": "fusion_seed101.pt",
+    "seed": 101,
+    "epochs": 21
+   }
+  ],
+  "lgbm": {
+   "1D": {
+    "file": "lgbm_1D.txt",
+    "rounds": 471
+   },
+   "2D": {
+    "file": "lgbm_2D.txt",
+    "rounds": 473
+   },
+   "5D": {
+    "file": "lgbm_5D.txt",
+    "rounds": 300
+   },
+   "10D": {
+    "file": "lgbm_10D.txt",
+    "rounds": 172
+   },
+   "20D": {
+    "file": "lgbm_20D.txt",
+    "rounds": 127
+   },
+   "1M": {
+    "file": "lgbm_1M.txt",
+    "rounds": 52
+   }
+  },
+  "logistic": {
+   "file": "logistic.pkl",
+   "lambda": 0.001
+  }
+ }
+}

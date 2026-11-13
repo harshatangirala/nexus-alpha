@@ -54,6 +54,15 @@ def latest_bundle() -> Path | None:
     return c[-1] if c else None
 
 
+def training_span(meta: dict) -> tuple[str, str, str]:
+    """(training years, last training date, calibration year) of a bundle, from its trained_through_block."""
+    tb = meta.get("trained_through_block", "")
+    if "refit 2003-2021" in tb:                       # E31 v1.2 (D-062)
+        return "2003-2021", "2021-11-30", "2022"
+    if "refit 2003-2018" in tb:                       # v1.1
+        return "2003-2018", "2018-12-31", "2019"
+    return "2003-2015", "2015-12-31", "2019"
+
 class Bundle:
     """Loads an inference bundle. v1 bundles hold one fusion model; v1.1 bundles (E08) may hold several fusion seeds
     (averaged), one LightGBM per horizon on the raw numeric features, and a blend weight; calibration is applied last."""
@@ -347,16 +356,20 @@ class NexusPredictor:
             if k >= len(daily) or daily.date.iloc[k] != a:
                 raise ValueError(f"{a.date()} is not a trading session for {ticker}")
             block = assign_blocks(pd.Series([a])).iloc[0]
-            refit = "refit 2003-2018" in self.b.meta.get("trained_through_block", "")
-            insample = ("train", "inner", "valid", None) if refit else ("train", None)
-            span = "2003-2018" if refit else "2003-2015"
+            span, through, cal_year = training_span(self.b.meta)
+            if span == "2003-2021":            # E31 v1.2: everything to 2021-11-30 is in-sample, 2022 is its calibration year
+                insample_here = a <= pd.Timestamp(through)
+            else:
+                insample_here = block in (("train", "inner", "valid", None) if span == "2003-2018" else ("train", None))
+            cal_here = span == "2003-2021" and a.year == int(cal_year)
             limitations.append(f"Historical as-of date in block '{block or 'outside the development blocks'}'"
-                               + (f": IN-SAMPLE for the model (trained on {span})." if block in insample else "."))
+                               + (f": IN-SAMPLE for the model (trained on {span})." if insample_here else
+                                  f": the model's CALIBRATION year ({cal_year})." if cal_here else "."))
         elif mode == "live":
             daily, hourly = fetch_live(ticker)
             k = len(daily) - 1
-            span = "2003-2018" if "refit 2003-2018" in self.b.meta.get("trained_through_block", "") else "2003-2015"
-            limitations.append(f"Live forecast: the model was trained on {span} data, calibrated on 2019; it has not been "
+            span, _, cal_year = training_span(self.b.meta)
+            limitations.append(f"Live forecast: the model was trained on {span} data, calibrated on {cal_year}; it has not been "
                                "validated on post-2022 data. Live bars come from Yahoo Finance and can differ slightly between requests.")
         else:
             raise ValueError("mode must be 'historical' or 'live'")
@@ -478,6 +491,6 @@ class NexusPredictor:
             model=ModelInfo(architecture_version=self.b.meta.get("architecture_version", ARCHITECTURE_VERSION),
                             checkpoint_ids=[self.b.meta["bundle_id"], self.b.pre.backbone, self.b.meta.get("recipe", "fusion")],
                             calibration_status="calibrated", bundle_id=self.b.meta["bundle_id"],
-                            trained_through="2018-12-31" if "refit 2003-2018" in self.b.meta.get("trained_through_block", "") else "2015-12-31"),
+                            trained_through=training_span(self.b.meta)[1]),
             forecasts=forecasts, evidence=evidence, confluence=confluence, trade_plans=plans, limitations=limitations)
         return res

@@ -166,6 +166,9 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     * E29a and E29b are scored every night;
     * the E29b news-on pass logs the frozen v1.1 with the archived headlines under `shadow/v1.1_news`, with its own
       hash chain.
+  * **E31 (D-062): v1.2 = v1.1's exact recipe refit to 2021-11-30 and calibrated on 2022**, frozen under a new name
+    and logged nightly next to v1.1. Nothing chosen; judged only forward (log loss vs v1.1 after 120 sessions;
+    [`docs/E31_PREREGISTRATION.md`](docs/E31_PREREGISTRATION.md)). Direction gate closed: no out-of-sample period is left.
   * **Findings A-112..A-116:**
     * XBRL tag coverage (deferred: it would change a frozen model's inputs);
     * the single-machine runner (owner script ready).

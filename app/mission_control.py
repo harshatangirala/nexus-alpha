@@ -20,7 +20,7 @@ import skin as SK
 import ui as UI
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSIONS = ["v1.1", "v2", "market_e19", "v3_fund", "v3_alpha"]
+VERSIONS = ["v1.1", "v2", "market_e19", "v3_fund", "v3_alpha", "v1.2"]      # v1.2: E31 recency refit (D-062)
 FIRST_INTERVAL_DATES = 20        # FORWARD_SHADOW_TEST.md: a first 1D interval after about 20 matured dates
 CRITERION_SESSIONS = 120         # V3_RESEARCH.md: forward criteria after 120 scored sessions
 

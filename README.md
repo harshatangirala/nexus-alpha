@@ -153,6 +153,22 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     the live headline archive runs nightly (D-059).
   * **Notebook 13A/16A/20 hardened (A-90..A-104):** in-sample rows flagged, a volatility-matched null,
     honest p-values, gross and net R, a daily mark-to-market Sharpe ratio, five seeds with seed spreads, Holm.
+* **Audit 12 (2026-11-14): fundamentals and the text branch.**
+  * **Extended fundamentals** (`fundamentals/extended.py`): Beneish M-score, Montier C-score, Novy-Marx gross
+    profitability, Greenblatt's magic formula, QMJ-style quality, PEG, EV/EBIT, DuPont, DSO/DIO, quick and cash
+    ratios. These come on top of the 31 ratios and 7 multiples (P/E, EV/EBITDA, ...) that already existed.
+  * **E30 (D-060): pre-registered, one shot, nothing fitted.** No published composite ranks 20-session returns after
+    Holm, over 164 monthly point-in-time cross-sections from 2009 to 2022 ([`docs/E30_RESULTS.md`](docs/E30_RESULTS.md)).
+    Fundamentals are shown as description and risk flags, not as signals.
+  * **New dashboard tab, P Fundamentals:** valuation tiles, score rings, a percentile radar, Beneish drivers, the
+    point-in-time history, industry peers and the E30 result.
+  * **E29 now operational (A-113, D-061):**
+    * E29a and E29b are scored every night;
+    * the E29b news-on pass logs the frozen v1.1 with the archived headlines under `shadow/v1.1_news`, with its own
+      hash chain.
+  * **Findings A-112..A-116:**
+    * XBRL tag coverage (deferred: it would change a frozen model's inputs);
+    * the single-machine runner (owner script ready).
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
   * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
     checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
@@ -186,7 +202,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb`, `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | one-pass Colab reproduction of E22/E23/E25; Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `RUN_DASHBOARD.cmd` | double-click to open the dashboard at `http://localhost:8501` |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 239 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash), text time zones and the news window, the paste component and Desk 1-5 |
+| `tests/` | 248 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash), text time zones and the news window, the paste component and Desk 1-5 |
 | `scripts/verify/run_all.py` | one-command, read-only audit of the whole project: tests, frozen-model hashes, forward-test chains, the sealed scorer's hash, no calendar time in any model input, secrets, the dependency lock, the notebook build and this README's test count; `--full` adds the E28 audit (audit 7) |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |

@@ -101,7 +101,7 @@ def main() -> None:
         except Exception as e:  # noqa: BLE001
             failed.append({"ticker": t, "error": repr(e)[:200]})
             continue
-        if str(r.instrument.asof_session) != str(asof.date()):
+        if pd.Timestamp(str(r.instrument.asof_session)).date() != asof.date():     # audit 12 second pass: compare dates
             failed.append({"ticker": t, "error": f"last bar {r.instrument.asof_session}, expected {asof.date()}"})
             continue
         used = sum(1 for n in (r.evidence.get("news") or []) if n.get("used"))

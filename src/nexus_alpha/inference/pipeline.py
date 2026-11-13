@@ -32,6 +32,7 @@ from ..rules import batch as RB
 from ..seal import SEAL_DATE
 from ..splits import assign_blocks
 from ..targets import HORIZONS
+from ..trading import skill_evidence as SE
 from ..trading.plan import RiskConfig, plan_trade
 from .schema import HorizonForecast, InferenceResult, Instrument, ModelInfo
 
@@ -372,6 +373,7 @@ class NexusPredictor:
         x, mask, missing, evidence, trip, emb = self._inputs(ticker, daily, hourly, k, decision_utc, articles, sec_ctx)
         P, Q = self.b.probs(x, mask)
         skill = self.b.meta.get("direction_skill", {})
+        model_name = SE.model_of_bundle(self.b.meta.get("bundle_id"))      # "v1.1" for the frozen bundle (D-057)
         # Return range from the quantile heads (volatility-scaled z, so multiply by sigma_t * sqrt(h)); shown only for
         # horizons whose 10-90% band covered 0.80 +/- 0.08 on validation (scripts/verify/quantile_coverage.py).
         qcov = self.b.meta.get("quantile_coverage", {})
@@ -388,7 +390,8 @@ class NexusPredictor:
                                            return_q10=float(Q[j, 0] * scale) if show_q else None,
                                            return_q90=float(Q[j, 2] * scale) if show_q else None,
                                            uncertainty=float(-(p * np.log(np.clip(p, 1e-12, 1))).sum() / np.log(3)),
-                                           direction_skill_validated=bool(skill.get(h, {}).get("validated", False)))
+                                           direction_skill_validated=bool(skill.get(h, {}).get("validated", False)),
+                                           direction_skill_replicated=SE.replicated(model_name, h))
         # rule events and indicator evidence
         ev = RB.evaluate_ticker(ticker, [asof_date], daily=daily, hourly=hourly).iloc[0]
         setups = json.loads(ev.setups_json)
@@ -441,14 +444,19 @@ class NexusPredictor:
                       "summary": (f"Calibrated 5D probabilities: UP {p5.up_probability:.2f}, DOWN {p5.down_probability:.2f}, "
                                   f"SIDEWAYS {p5.sideways_probability:.2f}. "
                                   + ("Direction skill at 5D is NOT validated, so the lean is informational only."
-                                     if not p5.direction_skill_validated else "Direction skill at 5D passed validation."))}
+                                     if not p5.direction_skill_validated else
+                                     ("Direction skill at 5D passed validation (2017-18) and replicated on 2020-22."
+                                      if p5.direction_skill_replicated else
+                                      "Direction skill at 5D passed validation (2017-18) but did not replicate on 2020-22, "
+                                      "so the lean is informational only (D-057).")))}
         plans = {}
         for j, (h, n) in enumerate(HORIZONS.items()):
             f = forecasts[h]
+            gate_open, gate_reason = SE.direction_gate(model_name, h, bool(f.direction_skill_validated))
             plans[h] = plan_trade(h, n, {"up": f.up_probability, "down": f.down_probability, "side": f.sideways_probability},
-                                  calibrated=True, skill_validated=bool(f.direction_skill_validated), levels_available=True,
+                                  calibrated=True, skill_validated=gate_open, levels_available=True,
                                   weekly=weekly, setups=setups, trigger_by_side=trig, atr=float(ev.atr14),
-                                  close=float(ev.close), risk=risk, data_gate_reasons=data_reasons)
+                                  close=float(ev.close), risk=risk, data_gate_reasons=data_reasons, skill_reason=gate_reason)
         if any(p.decision in ("LONG", "SHORT") for p in plans.values()):
             rb = paths.REPO_ROOT / "reports" / "backtest"
             bt, tag = (rb / "e04_backtest_v1.1.json", "E04 v1.1") if (rb / "e04_backtest_v1.1.json").exists()                 else (rb / "e04_backtest.json", "E04 v1")

@@ -51,7 +51,7 @@ skill of the size seen on validation (AUROC 0.52-0.54) needs on the order of a y
 * **Bars.** The bars fetched in one New York evening are cached and shared by v1.1 and v2, so both forecast from identical inputs.
 * **Keys.** The task reads the paths of the owner's key files from the git-ignored `scripts/shadow/local_env.cmd`. v2's FRED context needs it (audit A-27).
 * **Public timestamps.** After scoring, the task commits **only `shadow/`** and pushes it to the public repository. That fixes a public time for each forecast before its outcome is known.
-* **No news.** In live mode the news modality is always missing for both stock models: there is no live news feed, and texts reach the models only through the Trade Desk.
+* **No news.** In live mode the news modality is always missing for both stock models: there is no live news feed, and texts reach the models only through the Trade Desk. Since audit 11 `scripts/shadow/news_snapshot.py` can archive live Yahoo headlines with the time this machine saw them (git-ignored `artifacts/live_news/`), so that a later, pre-registered forward test of the text branch has point-in-time inputs; it is not part of the nightly run unless the owner adds it.
 
 ## Changes on 2026-11-07 (audit 3 and 4)
 

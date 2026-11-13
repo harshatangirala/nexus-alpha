@@ -56,6 +56,7 @@
 | `calibration/scalers.py` | temperature and vector scaling with method choice on the calibration block |
 | `evaluation/metrics.py`, `evaluation/stats.py` | all metrics; month-block bootstrap, Holm, Newey-West, PSR/DSR, PBO |
 | `trading/costs.py`, `plan.py`, `backtest.py` | cost scenarios, deterministic planner, event-driven simulator and portfolio |
+| `trading/skill_evidence.py` | gate 3's replication evidence (D-057): the frozen models' 2020-2022 up-vs-down AUROC intervals; the dashboard trades a direction only where the 2017-18 flag is set and the 2020-22 interval lies above 0.5 |
 | `rag/ingest.py`, `retrieval.py`, `explain.py` | page-provenance ingestion, six retrieval methods, citations |
 | `explainability/attribution.py` | leave-one-modality-out and chart-occlusion diagnostics |
 | `inference/schema.py`, `inference/pipeline.py` | typed output contract; end-to-end prediction (historical and live) |

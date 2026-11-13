@@ -24,7 +24,7 @@ There are two notebooks:
 2. In Colab: File > Open notebook > GitHub, then enter `harshatangirala/nexus-alpha` and pick the notebook.
    Runtime > Change runtime type: A100 GPU (or L4), High-RAM. Then Runtime > Run all and allow the Drive mount.
 3. Run time:
-   * **A100:** about 45-60 minutes.
+   * **A100:** about 50-65 minutes (41 minutes before audits 9-11 added five seeds to 13A).
    * **L4:** works unchanged, roughly 1.5-2 times slower. bfloat16 is supported, so section 8A's ChronoBERT
      re-encoding of all 68,853 filings takes minutes.
    * **T4:** works; it uses float16 instead of bfloat16.

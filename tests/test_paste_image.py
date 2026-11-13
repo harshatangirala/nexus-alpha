@@ -20,6 +20,14 @@ def test_decode_accepts_only_image_data_urls():
     assert PI.decode({"data": "data:image/jpeg;base64," + base64.b64encode(PNG).decode(), "mime": "image/png"}) is None
 
 
+def test_decode_refuses_oversized_payloads_before_decoding():
+    # A-102: a crafted component message can skip the browser's 8 MB check; the server refuses it without decoding
+    import paste_image as PI
+    big = "data:image/png;base64," + "A" * (PI.MAX_BYTES * 4 // 3 + 4096)
+    assert PI.decode({"data": big, "mime": "image/png"}) is None
+    assert PI.decode({"data": 123, "mime": "image/png"}) is None                                   # not a string
+
+
 def test_component_page_implements_the_protocol():
     page = (REPO / "app" / "components" / "paste_image" / "index.html").read_text(encoding="utf-8")
     for needle in ("streamlit:componentReady", "streamlit:setComponentValue", "streamlit:setFrameHeight",

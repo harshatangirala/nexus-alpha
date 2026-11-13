@@ -164,6 +164,7 @@ with tabs[0]:
         df = pd.DataFrame({h: {"UP": f.up_probability, "SIDEWAYS": f.sideways_probability, "DOWN": f.down_probability,
                                "predicted": f.predicted_direction, "uncertainty (normalised entropy)": f.uncertainty,
                                "direction skill validated": f.direction_skill_validated,
+                               "replicated 2020-22": f.direction_skill_replicated,
                                "median return": f.expected_return, "return q10": f.return_q10, "return q90": f.return_q90}
                            for h, f in res.forecasts.items()}).T
         st.dataframe(df, width="stretch")

@@ -41,7 +41,8 @@ class HorizonForecast(BaseModel):
     return_q10: Optional[float] = None
     return_q90: Optional[float] = None
     uncertainty: Optional[float] = None
-    direction_skill_validated: Optional[bool] = None
+    direction_skill_validated: Optional[bool] = None       # the frozen 2017-18 flag (unchanged meaning)
+    direction_skill_replicated: Optional[bool] = None      # same statistic on 2020-2022 above 0.5 (D-057); None = unknown
 
     @model_validator(mode="after")
     def _probs(self):

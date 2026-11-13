@@ -6,7 +6,9 @@ Gate order (first failure decides; every reason is reported):
      give NO_SIGNAL for numeric plans
   2  calibrated forecast available for the horizon
   3  directional skill gate: the horizon's validation up-vs-down AUROC lower CI bound must exceed 0.5 (model card);
-     otherwise NO_TRADE "no validated directional skill"
+     otherwise NO_TRADE "no validated directional skill". Since D-057 the dashboard's callers also require the skill to
+     have replicated on 2020-2022 (`trading.skill_evidence.direction_gate`) and pass its reason as `skill_reason`;
+     research backtests call the planner exactly as before
   4  edge gate: |P(UP) - P(DOWN)| >= min_edge (chosen on validation, frozen in the risk config)
   5  weekly permission compatible with the side (E011-E018, decision-engine permission matrix)
   6  a daily setup on the same side supplies the structural invalidation and the first obstacle (E023/E027/E031/...)
@@ -46,9 +48,10 @@ class RiskConfig:
 def plan_trade(horizon: str, sessions: int, probs: dict | None, calibrated: bool, skill_validated: bool,
                levels_available: bool, weekly: dict, setups: list[dict], trigger_by_side: dict, atr: float | None,
                close: float | None, risk: RiskConfig, data_gate_reasons: list[str] | None = None,
-               side_override: str | None = None) -> TradePlan:
+               side_override: str | None = None, skill_reason: str | None = None) -> TradePlan:
     """side_override (research backtests only): take the side from a rule setup and skip the model gates 2-4; used for
-    the rule-only baseline P0. The live engine never sets it."""
+    the rule-only baseline P0. The live engine never sets it.
+    skill_reason: the reason reported when gate 3 is closed (default: the 2017-18 validation wording)."""
     cost = CostModel.from_scenario(risk.cost_scenario)
     reasons = list(data_gate_reasons or [])
     if reasons:
@@ -64,7 +67,8 @@ def plan_trade(horizon: str, sessions: int, probs: dict | None, calibrated: bool
         if not calibrated:
             reasons.append("forecast is not calibrated")
         if not skill_validated:
-            reasons.append("no validated directional skill at this horizon (validation up-vs-down AUROC interval includes 0.5)")
+            reasons.append(skill_reason or "no validated directional skill at this horizon (validation up-vs-down AUROC "
+                                           "interval includes 0.5)")
         edge = probs["up"] - probs["down"]
         side = "LONG" if edge > 0 else "SHORT"
         if abs(edge) < risk.min_edge:

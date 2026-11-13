@@ -95,7 +95,7 @@ The theme is in `.streamlit/config.toml`, and the visual sources are listed in `
 
 ## 4. Reading the output
 
-* **Probabilities** are calibrated per horizon on 2019 data. "Direction skill validated" is False when the model's up-versus-down ranking on 2017-2018 was not reliably better than chance; then the decision engine will not trade that horizon, whatever the probabilities say.
+* **Probabilities** are calibrated per horizon on 2019 data. "Direction skill validated" is False when the model's up-versus-down ranking on 2017-2018 was not reliably better than chance. "Replicated 2020-22" is False when the same test on 2020-2022 was not better than chance. The decision engine trades a horizon's direction only when both are True (D-057). Today no horizon of v1.1 or v2 qualifies, so every plan is NO TRADE; the dashed CONDITIONAL levels still show what a setup would look like.
 * **NO TRADE** with reasons is the normal, intended output. **NO SIGNAL** means the data were insufficient for numeric levels.
 * **Diagnostics** (leave-one-modality-out, chart occlusion) describe this model's sensitivity, not causes.
 * **RAG citations** point to a rulebook line or a book page; they explain concepts and never change probabilities.

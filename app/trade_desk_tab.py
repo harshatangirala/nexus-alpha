@@ -38,6 +38,7 @@ def _v2_frozen(bundle_id: str) -> bool:
 def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     """v2 forecast for the exact requested horizon, with the same deterministic risk engine."""
     from nexus_alpha.targets_v2 import HORIZONS_V2
+    from nexus_alpha.trading import skill_evidence as SE
     from nexus_alpha.trading.plan import plan_trade
     try:
         v2 = _v2()
@@ -63,8 +64,11 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     c[1].metric("P(up / sideways / down)", f"{f['p_up']:.2f} / {f['p_side']:.2f} / {f['p_down']:.2f}")
     td = v2.meta.get("test_diagnostic", {}).get(h, {})
     # A-31: 2017-18 holds fewer than 4 independent 6M windows and about one 1Y window, so no skill claim is possible there
+    rep_v2 = SE.replicated(SE.model_of_bundle(r.get("bundle_id")), h)       # None: never checked out of sample
     skill_txt = ("not validatable (too few independent windows in 2017-18)" if h in ("6M", "1Y")
-                 else "validated on 2017-18" if f["direction_skill_validated"] else "NOT validated")
+                 else "NOT validated" if not f["direction_skill_validated"]
+                 else "validated on 2017-18 (not checked out of sample)" if rep_v2 is None
+                 else "validated and replicated" if rep_v2 else "validated on 2017-18, NOT replicated on 2020-22")
     c[2].metric("Direction skill", skill_txt,
                 f"2020-22 AUROC {td['auroc_ud']:.2f}" if td.get("auroc_ud") is not None else None, delta_color="off")
     c[3].metric("Return range q10..q90", "-" if f["ret_q10"] is None else f"{f['ret_q10']:+.1%} .. {f['ret_q90']:+.1%}")
@@ -75,11 +79,15 @@ def _v2_section(tick, mode, asof, trade, swing, lt, company_news, res, risk):
     ev = res.evidence.get("rules", {})
     ind = res.evidence.get("indicators", {})
     if ind.get("atr14") and ev:
+        # D-057: gate 3 also requires the direction skill to have replicated on 2020-2022 (it did not for v2)
+        gate_open, gate_reason = SE.direction_gate(SE.model_of_bundle(r.get("bundle_id")), h,
+                                                   bool(f["direction_skill_validated"]))
         tp = plan_trade(h, HORIZONS_V2[h], {"up": f["p_up"], "down": f["p_down"], "side": f["p_side"]}, calibrated=True,
-                        skill_validated=f["direction_skill_validated"], levels_available=True,
+                        skill_validated=gate_open, levels_available=True,
                         weekly={"regime": ev.get("weekly_regime"), "permission": ev.get("weekly_permission")},
                         setups=ev.get("daily_setups", []), trigger_by_side=ev.get("hourly_triggers", {}),
-                        atr=float(ind["atr14"]), close=float(ind["close"]), risk=risk, data_gate_reasons=[])
+                        atr=float(ind["atr14"]), close=float(ind["close"]), risk=risk, data_gate_reasons=[],
+                        skill_reason=gate_reason)
         st.write(f"Risk engine on v2 probabilities: **{tp.decision}**")
         st.json({k: v for k, v in tp.model_dump().items() if v not in (None, [], {})})
     with st.expander("All v2 horizons"):
@@ -647,7 +655,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         rows.append({"horizon": k, "P(up)": f.up_probability, "P(sideways)": f.sideways_probability,
                      "P(down)": f.down_probability, "median return": f.expected_return, "q10": f.return_q10,
                      "q90": f.return_q90, "direction skill validated": f.direction_skill_validated,
-                     "selected": "<--" if k == h else ""})
+                     "replicated 2020-22": f.direction_skill_replicated, "selected": "<--" if k == h else ""})
     st.dataframe(pd.DataFrame(rows).style.format({c: "{:.3f}" for c in ("P(up)", "P(sideways)", "P(down)")}
                                                  | {c: "{:+.2%}" for c in ("median return", "q10", "q90")}, na_rep="-"),
                  width="stretch")
@@ -660,7 +668,10 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
         c = st.columns(4)
         c[0].metric("Lean", "UP" if f.up_probability > f.down_probability else "DOWN",
                     f"{(f.up_probability - f.down_probability):+.3f} (up - down)")
-        c[1].metric("Direction skill at this horizon", "validated" if f.direction_skill_validated else "NOT validated")
+        c[1].metric("Direction skill at this horizon",
+                    "NOT validated" if not f.direction_skill_validated
+                    else "validated (not checked out of sample)" if f.direction_skill_replicated is None
+                    else "validated + replicated" if f.direction_skill_replicated else "validated, NOT replicated")
         c[2].metric("Risk engine decision", p.decision)
         c[3].metric("Return range q10..q90", "-" if f.return_q10 is None else f"{f.return_q10:+.1%} .. {f.return_q90:+.1%}")
         st.subheader("3. Trade plan (deterministic risk engine): levels and the reasons for them")

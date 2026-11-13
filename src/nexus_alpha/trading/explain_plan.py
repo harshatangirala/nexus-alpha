@@ -54,6 +54,16 @@ def _rid(ids) -> str:
     return ", ".join(f"{r} ({t[r]})" if r in t and t[r] else r for r in ids)
 
 
+def _skill_words(forecast) -> str:
+    """Gate 3 in words: the frozen 2017-18 flag and, since D-057, whether it replicated on 2020-2022."""
+    if not forecast.direction_skill_validated:
+        return "NOT validated"
+    rep = getattr(forecast, "direction_skill_replicated", None)
+    if rep is None:
+        return "validated on 2017-18 (not checked out of sample)"
+    return "validated and replicated on 2020-22" if rep else "validated on 2017-18 but NOT replicated on 2020-22"
+
+
 def conditional_plans(evidence: dict, horizon: str, sessions: int, risk: RiskConfig) -> list[dict]:
     """The engine's geometry for each daily setup, computed as if the setup were taken (rule-only P0 path)."""
     rules = evidence.get("rules") or {}
@@ -159,7 +169,7 @@ def reason_card(plan: TradePlan, evidence: dict, forecast=None, conditional: lis
     if forecast is not None:
         card["Model"] = [f"P(up) {forecast.up_probability:.2f}, P(sideways) {forecast.sideways_probability:.2f}, "
                          f"P(down) {forecast.down_probability:.2f}; lean {forecast.up_probability - forecast.down_probability:+.3f}; "
-                         f"direction skill {'validated' if forecast.direction_skill_validated else 'NOT validated'} at this horizon"]
+                         f"direction skill {_skill_words(forecast)} at this horizon"]
     micro = []
     for n in evidence.get("news") or []:
         tone = n.get("lm_net_tone")

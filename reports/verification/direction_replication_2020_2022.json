@@ -1,0 +1,277 @@
+{
+ "statistic": "up-vs-down AUROC of P(UP) - P(DOWN) on rows that moved; month-block bootstrap, 500 resamples, seed 7; 95% percentile interval; replicated = lower bound above 0.5 (gate 3's own rule)",
+ "block": "test 2020-01-01 to 2022-12-01 (development test; the sealed 2023+ period is not read)",
+ "v1.1": {
+  "bundle": "E08 refit 2003-2018 (frozen v1.1)",
+  "rows": 35954,
+  "horizons": {
+   "1D": {
+    "test_up_vs_down_auroc": 0.5111,
+    "ci95": [
+     0.4986,
+     0.5271
+    ],
+    "n_moves": 18454,
+    "replicated": false
+   },
+   "2D": {
+    "test_up_vs_down_auroc": 0.5145,
+    "ci95": [
+     0.5001,
+     0.5317
+    ],
+    "n_moves": 19635,
+    "replicated": true
+   },
+   "5D": {
+    "test_up_vs_down_auroc": 0.5081,
+    "ci95": [
+     0.4832,
+     0.5364
+    ],
+    "n_moves": 20288,
+    "replicated": false
+   },
+   "10D": {
+    "test_up_vs_down_auroc": 0.4973,
+    "ci95": [
+     0.4641,
+     0.5313
+    ],
+    "n_moves": 20662,
+    "replicated": false
+   },
+   "20D": {
+    "test_up_vs_down_auroc": 0.4954,
+    "ci95": [
+     0.446,
+     0.5425
+    ],
+    "n_moves": 20907,
+    "replicated": false
+   },
+   "1M": {
+    "test_up_vs_down_auroc": 0.4944,
+    "ci95": [
+     0.4412,
+     0.5402
+    ],
+    "n_moves": 21096,
+    "replicated": false
+   }
+  }
+ },
+ "v2": {
+  "bundle": "E14 (frozen v2)",
+  "rows": 35954,
+  "horizons": {
+   "1D": {
+    "test_up_vs_down_auroc": 0.5104,
+    "ci95": [
+     0.4983,
+     0.5251
+    ],
+    "n_moves": 18454,
+    "replicated": false
+   },
+   "2D": {
+    "test_up_vs_down_auroc": 0.5152,
+    "ci95": [
+     0.4995,
+     0.5346
+    ],
+    "n_moves": 19635,
+    "replicated": false
+   },
+   "3D": {
+    "test_up_vs_down_auroc": 0.5115,
+    "ci95": [
+     0.4884,
+     0.5385
+    ],
+    "n_moves": 20041,
+    "replicated": false
+   },
+   "4D": {
+    "test_up_vs_down_auroc": 0.5139,
+    "ci95": [
+     0.4879,
+     0.5435
+    ],
+    "n_moves": 20221,
+    "replicated": false
+   },
+   "5D": {
+    "test_up_vs_down_auroc": 0.5091,
+    "ci95": [
+     0.4805,
+     0.5426
+    ],
+    "n_moves": 20288,
+    "replicated": false
+   },
+   "6D": {
+    "test_up_vs_down_auroc": 0.5094,
+    "ci95": [
+     0.4765,
+     0.5465
+    ],
+    "n_moves": 20564,
+    "replicated": false
+   },
+   "7D": {
+    "test_up_vs_down_auroc": 0.5021,
+    "ci95": [
+     0.4659,
+     0.5414
+    ],
+    "n_moves": 20605,
+    "replicated": false
+   },
+   "8D": {
+    "test_up_vs_down_auroc": 0.5065,
+    "ci95": [
+     0.469,
+     0.5462
+    ],
+    "n_moves": 20642,
+    "replicated": false
+   },
+   "9D": {
+    "test_up_vs_down_auroc": 0.4989,
+    "ci95": [
+     0.4578,
+     0.5432
+    ],
+    "n_moves": 20701,
+    "replicated": false
+   },
+   "10D": {
+    "test_up_vs_down_auroc": 0.5015,
+    "ci95": [
+     0.4614,
+     0.5446
+    ],
+    "n_moves": 20662,
+    "replicated": false
+   },
+   "11D": {
+    "test_up_vs_down_auroc": 0.4985,
+    "ci95": [
+     0.4567,
+     0.5436
+    ],
+    "n_moves": 20779,
+    "replicated": false
+   },
+   "12D": {
+    "test_up_vs_down_auroc": 0.5018,
+    "ci95": [
+     0.4616,
+     0.5445
+    ],
+    "n_moves": 20852,
+    "replicated": false
+   },
+   "13D": {
+    "test_up_vs_down_auroc": 0.5014,
+    "ci95": [
+     0.4541,
+     0.5469
+    ],
+    "n_moves": 20851,
+    "replicated": false
+   },
+   "14D": {
+    "test_up_vs_down_auroc": 0.492,
+    "ci95": [
+     0.4431,
+     0.5447
+    ],
+    "n_moves": 20871,
+    "replicated": false
+   },
+   "15D": {
+    "test_up_vs_down_auroc": 0.4853,
+    "ci95": [
+     0.4318,
+     0.5383
+    ],
+    "n_moves": 20889,
+    "replicated": false
+   },
+   "16D": {
+    "test_up_vs_down_auroc": 0.4822,
+    "ci95": [
+     0.4275,
+     0.5382
+    ],
+    "n_moves": 21007,
+    "replicated": false
+   },
+   "17D": {
+    "test_up_vs_down_auroc": 0.4852,
+    "ci95": [
+     0.43,
+     0.5433
+    ],
+    "n_moves": 21043,
+    "replicated": false
+   },
+   "18D": {
+    "test_up_vs_down_auroc": 0.4926,
+    "ci95": [
+     0.4365,
+     0.548
+    ],
+    "n_moves": 20992,
+    "replicated": false
+   },
+   "19D": {
+    "test_up_vs_down_auroc": 0.4864,
+    "ci95": [
+     0.4255,
+     0.547
+    ],
+    "n_moves": 20892,
+    "replicated": false
+   },
+   "20D": {
+    "test_up_vs_down_auroc": 0.4877,
+    "ci95": [
+     0.4246,
+     0.5478
+    ],
+    "n_moves": 20907,
+    "replicated": false
+   },
+   "3M": {
+    "test_up_vs_down_auroc": 0.4793,
+    "ci95": [
+     0.4102,
+     0.5664
+    ],
+    "n_moves": 19892,
+    "replicated": false
+   },
+   "6M": {
+    "test_up_vs_down_auroc": 0.5173,
+    "ci95": [
+     0.4307,
+     0.6139
+    ],
+    "n_moves": 18404,
+    "replicated": false
+   },
+   "1Y": {
+    "test_up_vs_down_auroc": 0.4176,
+    "ci95": [
+     0.3227,
+     0.5194
+    ],
+    "n_moves": 15907,
+    "replicated": false
+   }
+  }
+ }
+}

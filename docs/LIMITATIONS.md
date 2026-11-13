@@ -29,7 +29,7 @@
 19. **RAG gold pages are lexical**, which can favour BM25; five evaluation queries had no gold page.
 20. **The backtest** has no quotes (spreads bounded by cost scenarios), no market impact, no partial fills, no borrow availability; stops inside a bar assume the stop came first.
 21. **Calibration hurt on the test years.** The pre-registered calibration (temperature at 10D-1M, fitted on 2019) was slightly worse than none on 2020-2022. The procedure was not changed after seeing this.
-22. **The direction-skill gate is statistical.** It opens 5D-1M on 2017-2018 evidence, and that skill was absent at 10D-1M on 2020-2022. An economic gate is a candidate for the next pre-registration.
+22. **The direction-skill gate is statistical.** It opened 5D-1M on 2017-2018 evidence, and that skill was absent at every one of those horizons on 2020-2022. Since D-057 the dashboard requires both blocks, so no horizon trades direction until forward evidence re-opens it. An economic gate is a candidate for the next pre-registration.
 
 ## Engineering
 
@@ -46,3 +46,5 @@
     * **Effect on v3_alpha.** Its 1D/2D ranking agreement falls to 0.935/0.947, so those horizons are not deployed (D-049).
     * **Other models.** The F0 features of v1.1, v2 and v3_fund include volume-based indicators and face the same
       shift. It was not measured for them.
+28. **News coverage is not stationary (audit 9, A-99).** Company news exists for 30% of training stock-dates, 64% of 2017-2018 and 45% of 2020-2022 (37% in 2021): the news source thins out in the test years. Any test of the text branch on 2020-2022 rests on fewer rows than validation suggests, and the forward test has no live news at all (the text branch is never exercised there). Notebook section 13A shows coverage by year.
+29. **The charts add nothing once indicators are present (audit 9).** Adding the chart embeddings to indicators and language changes the mean log loss by +0.00000 on 2017-2018 and +0.00009 [-0.00123, +0.00143] on 2020-2022, well inside the seed spread. The vision branch is kept in the frozen models, which are never re-fitted.

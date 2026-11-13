@@ -78,7 +78,7 @@ md(r"""
 ## How to run it
 
 **On Colab Pro+ (recommended).** Runtime > Change runtime type > **A100 GPU** or **L4 GPU** (T4 also works), High-RAM
-on. Then Runtime > Run all. About 45-60 minutes on an A100 and roughly 1.5-2 times that on an L4. The GPU sections are
+on. Then Runtime > Run all. About 50-65 minutes on an A100 (13A trains five seeds per input set) and roughly 1.5-2 times that on an L4. The GPU sections are
 8, 8A, 8C and 10; without a GPU they run smaller versions (8A checks 400 filings instead of all 68,853), and the
 whole notebook takes a few hours on a CPU.
 
@@ -1033,13 +1033,19 @@ for name, P in PRED.items():
             TABLE.append({"model": name, "split": split, "horizon": h,
                           **metrics(P[ix, j], YE[ix, j], RETE[ix, j], DATES[ix])})
 TABLE = pd.DataFrame(TABLE)
+# A-90 (audit 9): v1.1 was refitted on 2003-2018, so its 2017-18 rows are in-sample; say so in the table itself
+IN_SAMPLE_VALID = {"v1.1 (E08 frozen)"}
+TABLE["note"] = np.where(TABLE.model.isin(IN_SAMPLE_VALID) & (TABLE.split == "valid"),
+                         "IN-SAMPLE (refit 2003-2018): not comparable", "")
 LABEL = {"prior": "class prior", "logistic": "logistic (trained here)", "lgbm": "LightGBM (trained here)",
          "fusion": "fusion network (trained here)", "fusion_cal": "fusion network, calibrated (trained here)",
          "fusion_mm": "vision + NLP fusion network (trained here)"}
 mean_ll = TABLE.pivot_table(index="model", columns="split", values="log loss", aggfunc="mean").sort_values("test")
+mean_ll["note"] = ["valid column in-sample (refit 2003-2018)" if i in IN_SAMPLE_VALID else "" for i in mean_ll.index]
 mean_ll.index = [LABEL.get(i, i) for i in mean_ll.index]
-display(Markdown("**Mean log loss over the six horizons (lower is better)**")); display(mean_ll.style.format("{:.5f}"))
-show = TABLE[TABLE.split == "test"].set_index(["model", "horizon"]).drop(columns=["split"])
+display(Markdown("**Mean log loss over the six horizons (lower is better)**"))
+display(mean_ll.style.format({"test": "{:.5f}", "valid": "{:.5f}"}))
+show = TABLE[TABLE.split == "test"].set_index(["model", "horizon"]).drop(columns=["split", "note"])
 display(Markdown("**All metrics on test (2020-2022)**")); display(show.style.format(precision=4))
 """)
 
@@ -1207,7 +1213,8 @@ and the first failure decides (every reason is reported):
 
 1. data sufficiency (exact levels need structured OHLCV; screenshots alone never give numbers);
 2. a calibrated forecast for the horizon;
-3. **validated direction skill** at the horizon (the validation up-vs-down AUROC interval must exclude 0.5);
+3. **validated and replicated direction skill** at the horizon: the up-vs-down AUROC interval must lie above 0.5 on
+   the 2017-18 validation block (the frozen flag) **and**, since decision D-057 (audit 9), on 2020-2022 as well;
 4. an edge |P(UP) - P(DOWN)| of at least 0.10;
 5. the weekly regime must permit the side (rulebook E011-E018);
 6. a daily setup on the same side supplies the structural invalidation and the first obstacle (E023/E027/E031...);
@@ -1223,10 +1230,14 @@ cell re-implements it and runs four cases:
 * the same setup at 1D, where v1.1's direction skill is not validated (gate 3);
 * the same setup at 5D with v1.1's typical edge: on the latest logged session, the median |P(UP) - P(DOWN)| was 0.04
   at 5D, and 2.6% of stocks reached the 0.10 minimum;
+* the same setup at 5D where the skill was validated on 2017-18 but did not replicate on 2020-22 (D-057);
 * a short when shorting is disabled.
 
-It then recomputes gate 3 from validation predictions and puts the frozen v1.1 flags next to it. On test (section 12)
-the direction AUROC is 0.49-0.51 at every horizon: the small validation skill did not replicate.
+It then recomputes gate 3 with the frozen flags' own statistic (P(UP) - P(DOWN) on rows that moved, month-block
+bootstrap) on validation, puts the frozen v1.1 flags next to it, and recomputes the same interval for v1.1 on test.
+**No horizon is both validated and replicated**: the 2017-18 skill at 5D-1M did not hold on 2020-22, so the
+dashboard's engine no longer trades direction on it (`src/nexus_alpha/trading/skill_evidence.py`). A horizon re-opens
+only with forward evidence (120 matured sessions). The frozen models and their logged flags are unchanged.
 """)
 
 code(r"""
@@ -1278,25 +1289,30 @@ cases = {
     "approved long (skill validated, edge 0.16)": plan_trade(.42, .26, True, "LONG_PREFERRED", setup, True, 3.10, 176.40, 5),
     "same setup at 1D (direction skill not validated)": plan_trade(.42, .26, False, "LONG_PREFERRED", setup, True, 3.10, 176.40, 1),
     "same setup at 5D with v1.1's typical edge (0.04)": plan_trade(.31, .27, True, "LONG_PREFERRED", setup, True, 3.10, 176.40, 5),
+    "same setup at 5D, validated 2017-18 but not replicated 2020-22 (D-057)": plan_trade(.42, .26, False, "LONG_PREFERRED", setup, True, 3.10, 176.40, 5),
     "short with shorting disabled": plan_trade(.25, .45, True, "SHORT_PREFERRED", None, True, 3.10, 176.40, 5, allow_short=False),
 }
 for k, v in cases.items():
     display(Markdown(f"**{k}**")); display(pd.Series({a: b for a, b in v.items()}, dtype=object).to_frame("value"))
 
+def ud_auc_ci(P, ix_all, j, B=500, seed=7):
+    # gate 3's statistic: AUROC of P(UP) - P(DOWN) on rows that moved; month-block bootstrap 95% interval
+    ok = (YE[ix_all, j] >= 0) & (YE[ix_all, j] != 1); ix = ix_all[ok]; y = YE[ix, j] == 2
+    s = P[ix, j, 2] - P[ix, j, 0]
+    m = pd.DatetimeIndex(DATES[ix]).to_period("M").astype(str).to_numpy()
+    groups = pd.Series(np.arange(len(ix))).groupby(m).indices; keys = list(groups)
+    r_ = np.random.default_rng(seed); bs = []
+    for _ in range(B):
+        pick = np.concatenate([groups[keys[k]] for k in r_.integers(0, len(keys), len(keys))])
+        bs.append(roc_auc_score(y[pick], s[pick]))
+    lo_, hi_ = np.percentile(bs, [2.5, 97.5])
+    return float(roc_auc_score(y, s)), float(lo_), float(hi_)
+
 skill = {}
 SK = "E03 gated (saved)" if "E03 gated (saved)" in PRED else "fusion"
 for j, h in enumerate(H6):                                 # the gate-3 check, recomputed from validation predictions
-    ok = (YE[P_VAL, j] >= 0) & (YE[P_VAL, j] != 1); ix = P_VAL[ok]; y = YE[ix, j] == 2
-    p = PRED[SK][ix, j]
-    s = p[:, 2] / (p[:, 0] + p[:, 2]); d = DATES[ix]
-    m = pd.DatetimeIndex(d).to_period("M"); um = np.unique(m)
-    bs = []
-    for b in range(300):
-        pick_m = np.random.default_rng(b).choice(um, len(um))
-        idx = np.concatenate([np.flatnonzero(m == q) for q in pick_m])
-        bs.append(roc_auc_score(y[idx], s[idx]))
-    lo_, hi_ = np.percentile(bs, [2.5, 97.5])
-    skill[h] = {"valid up-vs-down AUROC (recomputed)": roc_auc_score(y, s), "95% CI": f"[{lo_:.3f}, {hi_:.3f}]",
+    a_, lo_, hi_ = ud_auc_ci(PRED[SK], P_VAL, j, B=100 if QUICK else 500)
+    skill[h] = {"valid up-vs-down AUROC (recomputed)": a_, "95% CI": f"[{lo_:.3f}, {hi_:.3f}]",
                 "validated (recomputed)": lo_ > 0.5}
 SKT = pd.DataFrame(skill).T
 meta_f = WS / "nexus_artifacts" / "bundles" / "20261106T020411_e08_final_model_5c4327" / "bundle_meta.json"
@@ -1308,8 +1324,16 @@ if meta_f.exists():
     SKT["frozen v1.1: validated (the flag the engine uses)"] = [ds[h]["validated"] for h in SKT.index]
 test_auc = TABLE[(TABLE.model == "v1.1 (E08 frozen)") & (TABLE.split == "test")].set_index("horizon")["up-vs-down AUROC"]
 SKT["v1.1 test up-vs-down AUROC"] = test_auc.reindex(SKT.index).round(3)
+if "v1.1 (E08 frozen)" in PRED:                            # replication (D-057): the same statistic on 2020-22
+    rep_ = {h: ud_auc_ci(PRED["v1.1 (E08 frozen)"], P_TEST, j, B=100 if QUICK else 500) for j, h in enumerate(H6)}
+    SKT["v1.1 test AUROC [95% CI], gate statistic"] = [f"{rep_[h][0]:.3f} [{rep_[h][1]:.3f}, {rep_[h][2]:.3f}]"
+                                                       for h in SKT.index]
+    SKT["replicated on 2020-22"] = [rep_[h][1] > 0.5 for h in SKT.index]
+    if "frozen v1.1: validated (the flag the engine uses)" in SKT:
+        SKT["gate 3 open (validated and replicated)"] = (SKT["frozen v1.1: validated (the flag the engine uses)"].astype(bool)
+                                                        & SKT["replicated on 2020-22"].astype(bool))
 display(Markdown(f"**Gate 3, direction skill: recomputed on validation ({SK}, fitted 2003-2015, month-block "
-                 "bootstrap), the frozen v1.1 flags, and what happened on test**"))
+                 "bootstrap), the frozen v1.1 flags, and the same interval for v1.1 on test (D-057)**"))
 display(SKT)
 """)
 
@@ -1482,14 +1506,15 @@ md(r"""
 * Volatility regime (sideways vs moves) is predictable: the sideways AUROC is clearly above 0.5 at every horizon
   (section 12).
 * The frozen v1.1 probabilities beat the class prior on test at every horizon, significantly at the short horizons
-  after Holm (section 13), and calibration holds.
+  after Holm (section 13). Their calibration is looser on test than on validation (ECE up to about 0.04 at 10D-1M):
+  calibration fitted on 2019 does not fully transfer (audit finding A-85).
 * Cross-sectional ranking has a small positive rank IC, the part kept for the forward test.
 
 **What it does not support**
 * Single-stock direction at 1-20 sessions. On validation the up-vs-down AUROC was 0.51-0.54, with intervals just
   above 0.5 from 5D; on the 2020-2022 test years it was 0.49-0.51 (sections 12 and 15). The small validation skill did
-  not replicate. Because the probabilities stay close to the prior, the edge gate rejects most plans, and the risk
-  engine returns NO TRADE.
+  not replicate, at any horizon where it had been validated (section 15). Since decision D-057 the dashboard's risk
+  engine therefore requires both blocks and plans no directional trade; a horizon re-opens only with forward evidence.
 * Charts, news and filings add little beyond the indicators (section 14; E03's H1-H3 are not significant after Holm).
 * Transformer language does not change that (sections 8A-8C, E28). FinBERT news, ChronoBERT filing vectors and the SEC
   price-impact expert beat a within-date placebo on validation (+0.00023 [+0.00003, +0.00040]) but not the current six
@@ -1497,11 +1522,15 @@ md(r"""
   indicators. The SEC expert reproduces the SEC study inside NEXUS: filings predict whether a stock moves (AUC 0.656)
   but not which way (0.513).
 * Fine-tuning the vision network on charts does not beat the prior (section 10), as TriFrame found.
-* Vision, NLP and indicators separately and together (section 13A): in the documented E28 run the indicators carry most
-  of the gain, the charts alone beat the prior, and text alone helps least (it exists for about two thirds of rows).
-  Section 13A recomputes every metric for each input and its increments in this run; section 16A puts each input's
-  forecasts through the same entry, stop-loss and exit rule against random books. Both are descriptive: nothing is
-  selected from them.
+* Vision, NLP and indicators separately and together (section 13A). In the A100 run of 2026-11-13 (report committed in
+  `reports/verification/`) the indicators carried most of the gain (+0.010 over the prior on test), the charts alone
+  +0.004 and text alone +0.001 (not significant); the charts added nothing once indicators and text were present, and
+  text added less than the seed-to-seed spread. Direction stayed at chance for every input.
+* Entry, stop-loss and exit (section 16A). In the same run no input's long-short book had an expectancy interval above
+  zero after costs at any horizon. The indicator-based books lost less than random books: the ranking signal is real
+  but smaller than a 10 bps round trip. The volatility-matched null, the daily mark-to-market book and the sqrt-time
+  bracket added in audits 9-11 show whether that survives once volatility is controlled. Both sections are
+  descriptive: nothing is selected from them.
 * No backtest edge over equal-weight buy-and-hold after costs (section 16).
 
 **What comes next**

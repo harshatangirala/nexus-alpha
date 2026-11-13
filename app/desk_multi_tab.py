@@ -222,6 +222,15 @@ def _lean(f) -> float:
     return float((f.up_probability or 0) - (f.down_probability or 0))
 
 
+def _skill(f) -> str:
+    """Gate 3 in words (D-057): the 2017-18 flag and whether it replicated on 2020-22."""
+    if not f.direction_skill_validated:
+        return "not validated"
+    if f.direction_skill_replicated is None:                 # a research bundle: never checked out of sample
+        return "validated 2017-18 (not checked out of sample)"
+    return "validated and replicated" if f.direction_skill_replicated else "validated 2017-18, not replicated 2020-22"
+
+
 def _card(t: str, i: int, rec: dict, h: str | None) -> str:
     color = COLORS[i % len(COLORS)]
     if "error" in rec:
@@ -238,7 +247,7 @@ def _card(t: str, i: int, rec: dict, h: str | None) -> str:
             (f"P(up) / P(side) / P(down), {hh}",
              f"{f.up_probability:.2f} / {f.sideways_probability:.2f} / {f.down_probability:.2f}"),
             ("lean (up - down)", f"{_lean(f):+.3f}"),
-            ("direction skill at this horizon", "validated" if f.direction_skill_validated else "not validated"),
+            ("direction skill at this horizon", _skill(f)),
             ("return range q10..q90", "-" if f.return_q10 is None else f"{f.return_q10:+.1%} .. {f.return_q90:+.1%}"),
             ("news read by the model", f"{used} of {n_news}"), ("screenshots", f"{len(rec['inputs']['shots'])} of 3")]
     if p.decision in ("LONG", "SHORT"):
@@ -268,11 +277,14 @@ def _prob_chart(out: dict, h: str) -> None:
 def _lean_heatmap(out: dict) -> None:
     ok = [t for t, r in out.items() if "res" in r]
     z = np.array([[_lean(out[t]["res"].forecasts[h]) for h in H6] for t in ok])
-    sk = [[("*" if out[t]["res"].forecasts[h].direction_skill_validated else "") for h in H6] for t in ok]
+    fc = {t: out[t]["res"].forecasts for t in ok}           # the second * needs both (a replicated-only 2D is not starred)
+    sk = [[("*" if fc[t][h].direction_skill_validated else "")
+           + ("*" if fc[t][h].direction_skill_validated and fc[t][h].direction_skill_replicated else "")
+           for h in H6] for t in ok]
     fig = go.Figure(go.Heatmap(z=z, x=H6, y=ok, colorscale=[[0, UI.BAD], [0.5, "#0F1D2C"], [1, UI.GOOD]], zmid=0,
                                zmin=-0.15, zmax=0.15, text=[[f"{v:+.3f}{s}" for v, s in zip(r, q)] for r, q in zip(z, sk)],
                                texttemplate="%{text}", hovertemplate="%{y} %{x}: lean %{z:+.3f}<extra></extra>"))
-    fig.update_layout(title="Lean P(up) - P(down) by horizon (* = direction skill validated)",
+    fig.update_layout(title="Lean P(up) - P(down) by horizon (* validated 2017-18, ** also replicated 2020-22)",
                       yaxis=dict(autorange="reversed"))
     UI.plot(fig, height=110 + 48 * len(ok))
 
@@ -478,7 +490,8 @@ def render(predictor, universe: list[str], risk_defaults: dict) -> None:
         st.dataframe(pd.DataFrame(rows).set_index("ticker").style.format(na_rep="-").format(
             {c_: "{:,.2f}" for c_ in ("entry", "stop-loss", "target 1", "target 2", "net R:R")}
             | {"quantity": "{:,.0f}", "time exit (sessions)": "{:.0f}"}, na_rep="-"), width="stretch")
-        st.caption("Plans come from the deterministic risk engine: validated direction skill, an edge of at least 0.10, "
+        st.caption("Plans come from the deterministic risk engine: direction skill validated on 2017-18 and replicated "
+                   "on 2020-22 (D-057: so far no horizon of v1.1 qualifies), an edge of at least 0.10, "
                    "weekly permission, a daily setup, an hourly trigger, a stop beyond the setup's invalidation and a "
                    "net reward-to-risk of at least 1.5. NO_TRADE lists the first gate that failed.")
         st.subheader("3. Chronology: every text against the decision time")

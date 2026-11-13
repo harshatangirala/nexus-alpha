@@ -15,7 +15,7 @@ Implemented in `nexus_alpha/trading/plan.py` (planner), `costs.py` and `backtest
 |---|---|---|---|
 | 1 | Data sufficiency: >= 252 daily bars, structured OHLCV for the as-of session | E001, E003, E006, E007 | NO_SIGNAL |
 | 2 | Calibrated forecast for the horizon | E138 | NO_TRADE |
-| 3 | **Directional skill**: validation up-vs-down AUROC 95% month-block CI lower bound > 0.5 (stored in the bundle) | D-015 | NO_TRADE |
+| 3 | **Directional skill**: validation up-vs-down AUROC 95% month-block CI lower bound > 0.5 (stored in the bundle) **and**, since D-057, the same interval on 2020-2022 above 0.5 (`trading/skill_evidence.py`) | D-015, D-057 | NO_TRADE |
 | 4 | Edge: abs(P(UP) − P(DOWN)) >= min_edge (0.10; the backtest chooses it on validation) | | NO_TRADE |
 | 5 | Short selling allowed (if SHORT) | E010 | NO_TRADE |
 | 6 | Weekly permission compatible (BULL → long preferred; BEAR → short preferred; RANGE → edges; TRANSITION → with confirmation; HIGH_VOL / UNKNOWN → blocked) | E011-E018 | NO_TRADE |
@@ -38,6 +38,8 @@ Round trip 10 / 15 / 20 bps (base / stressed / severe) of entry value; shorts pa
 ## What the evidence says about the engine
 
 **v1.1 (deployed bundle E08).** The direction-skill gate (gate 3) is **closed at 1D and 2D** and **open at 5D, 10D, 20D and 1M**: validation up-vs-down AUROC was 0.522-0.542 with intervals above 0.5. Most decisions are still NO TRADE, because the edge, setup, trigger and reward-to-risk gates rarely all pass.
+
+**Replication (D-057, audit 9).** Recomputed with the same statistic on 2020-2022, the skill did not replicate at any validated horizon (v1.1 5D 0.508 [0.483, 0.536], 10D 0.497 [0.464, 0.531], 20D 0.495 [0.446, 0.543], 1M 0.494 [0.441, 0.540]; v2 at none of its 23 horizons). Gate 3 therefore requires both, and is **closed at every horizon** for both models on the dashboard; a horizon re-opens only with 120 matured forward sessions whose interval lies above 0.5. The research backtests and the frozen flags are unchanged.
 
 The backtest of the gated policy on 2020-2022 used the fixed engine (E04 v1.1: material prior-bar targets, corrected P&L, kill-switch, thresholds frozen with ≥ 30 validation trades):
 

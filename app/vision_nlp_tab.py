@@ -157,7 +157,8 @@ def _explorer(universe: list[str]) -> None:
                         f'<div style="font-size:12px">{html.escape(texts.get(r.event_id, "")[:300])}</div></div>',
                         unsafe_allow_html=True)
     st.caption("Only filings public before the selected one are searched (point in time). ChronoBERT's 2010 text cutoff "
-               "means it never read a filing from the validation or test years. Firm names are masked as [FIRM].")
+               "means it never read a filing from the validation or test years. One filing per firm is shown. The SEC study "
+               "masked firm names where it recognised them ([FIRM]); some names remain.")
 
 
 def _analogue_box() -> None:
@@ -175,7 +176,7 @@ def _analogue_box() -> None:
             st.warning("Nothing to compare with: the encoded filings are not on this machine, or the text was empty.")
             return
         c = st.columns(4)
-        c[0].metric("mean cosine of the 12 nearest", f"{summ['mean_cosine']:.3f}")
+        c[0].metric("mean cosine of the 12 nearest (one per firm)", f"{summ['mean_cosine']:.3f}")
         if summ.get("expert_p_move_mean") is not None:
             c[1].metric("SEC expert P(move), analogues", f"{summ['expert_p_move_mean']:.2f}")
         if summ.get("share_moved") is not None:

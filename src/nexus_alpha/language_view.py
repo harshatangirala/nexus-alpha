@@ -128,8 +128,24 @@ def encoded_filings(ticker: str) -> pd.DataFrame:
         .sort_values("available_utc", ascending=False)
 
 
-def similar_filings(event_id: str, k: int = 5, other_firms_only: bool = True) -> pd.DataFrame:
-    """The k filings most similar to `event_id` (cosine of ChronoBERT vectors) among filings public BEFORE it."""
+def _top_one_per_firm(ix: np.ndarray, sim: np.ndarray, tickers: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
+    """Best match per firm, then the k best firms (a firm's own quarterly filings are near-duplicates of each other)."""
+    order = np.argsort(-sim)
+    seen, keep = set(), []
+    for j in order:
+        t = tickers[ix[j]]
+        if t not in seen:
+            seen.add(t)
+            keep.append(j)
+            if len(keep) == k:
+                break
+    keep = np.array(keep, dtype=int)
+    return ix[keep], sim[keep]
+
+
+def similar_filings(event_id: str, k: int = 5, other_firms_only: bool = True, one_per_firm: bool = True) -> pd.DataFrame:
+    """The k filings most similar to `event_id` (cosine of ChronoBERT vectors) among filings public BEFORE it; by
+    default the best filing of each firm, so one firm's near-identical quarterly filings do not fill the list."""
     v = _vectors()
     if v is None:
         return pd.DataFrame()
@@ -142,9 +158,13 @@ def similar_filings(event_id: str, k: int = 5, other_firms_only: bool = True) ->
     if not len(ix):
         return pd.DataFrame()
     sim = E[ix] @ E[i]
-    top = ix[np.argsort(-sim)[:k]]
+    if one_per_firm:
+        top, best = _top_one_per_firm(ix, sim, meta.ticker.to_numpy(), k)
+    else:
+        o = np.argsort(-sim)[:k]
+        top, best = ix[o], sim[o]
     out = meta.iloc[top][["event_id", "ticker", "event_type", "available_utc"]].copy()
-    out["cosine"] = np.sort(sim)[::-1][:k]
+    out["cosine"] = best
     e = event_predictions()
     if e is not None:
         out["p_move_h1"] = e.p_move_h1.reindex(out.event_id).to_numpy()
@@ -187,7 +207,7 @@ def encode_text(text: str) -> np.ndarray | None:
 
 
 def analogues(vec: np.ndarray, k: int = 12) -> tuple[pd.DataFrame, dict]:
-    """The k historical filings nearest to `vec`, with the expert's P(move) and, where read (exits before 2019), what
+    """The k historical filings nearest to `vec` (the best one of each firm), with the expert's P(move) and, where read (exits before 2019), what
     each did: moved (UP or DOWN) or stayed SIDEWAYS over the next session. Descriptive evidence, not a forecast."""
     v = _vectors()
     if v is None or vec is None:
@@ -195,11 +215,10 @@ def analogues(vec: np.ndarray, k: int = 12) -> tuple[pd.DataFrame, dict]:
     meta, E, ok = v
     q = vec - _centre()
     q = q / (np.linalg.norm(q) or 1.0)
-    sim = E @ q
-    sim[~ok] = -np.inf
-    top = np.argsort(-sim)[:k]
+    ix = np.flatnonzero(ok)
+    top, best = _top_one_per_firm(ix, E[ix] @ q, meta.ticker.to_numpy(), k)   # firms, not near-duplicate filings
     out = meta.iloc[top][["event_id", "ticker", "event_type", "available_utc"]].copy()
-    out["cosine"] = sim[top]
+    out["cosine"] = best
     e = event_predictions()
     if e is not None:
         out["p_move_h1"] = e.p_move_h1.reindex(out.event_id).to_numpy()

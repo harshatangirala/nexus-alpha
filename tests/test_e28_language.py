@@ -156,8 +156,9 @@ def test_dashboard_language_view_is_point_in_time(monkeypatch):
     monkeypatch.setattr(LV, "_vectors", lambda: (meta, E, np.ones(4, bool)))
     preds = meta.set_index("event_id").assign(p_move_h1=[.5, .6, .7, .8], p_move_h5=.5, lean_h1=0.0, lean_h5=0.0)
     monkeypatch.setattr(LV, "event_predictions", lambda: preds.reset_index().set_index("event_id"))
-    sim = LV.similar_filings("d", k=3)
+    sim = LV.similar_filings("d", k=3, one_per_firm=False)
     assert list(sim.event_id) == ["a", "b", "c"] and (sim.available_utc < meta.available_utc[3]).all()
+    assert list(LV.similar_filings("d", k=3).event_id) == ["a", "b"]    # default: best filing per firm (c is AAA too)
     assert LV.similar_filings("a", k=3).empty                           # nothing was public before the first filing
     assert "a" not in set(LV.similar_filings("c", k=3).event_id)        # other firms only
     monkeypatch.setattr(LV, "event_predictions", lambda: preds.reset_index())

@@ -149,6 +149,8 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     adds less than the seed noise; no input predicts direction; no trading rule is profitable after costs.
   * **Gate 3 now requires replication (D-057):** the 2017-18 direction skill did not hold on 2020-22 at any
     validated horizon, so the desks plan no directional trade until the forward test shows it.
+  * **E29 pre-registered (D-058)**, forward only: v1.1 prior-shift recalibration and v1.1 with archived live news;
+    the live headline archive runs nightly (D-059).
   * **Notebook 13A/16A/20 hardened (A-90..A-104):** in-sample rows flagged, a volatility-matched null,
     honest p-values, gross and net R, a daily mark-to-market Sharpe ratio, five seeds with seed spreads, Holm.
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
@@ -184,7 +186,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb`, `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | one-pass Colab reproduction of E22/E23/E25; Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `RUN_DASHBOARD.cmd` | double-click to open the dashboard at `http://localhost:8501` |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 236 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash), text time zones and the news window, the paste component and Desk 1-5 |
+| `tests/` | 239 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash), text time zones and the news window, the paste component and Desk 1-5 |
 | `scripts/verify/run_all.py` | one-command, read-only audit of the whole project: tests, frozen-model hashes, forward-test chains, the sealed scorer's hash, no calendar time in any model input, secrets, the dependency lock, the notebook build and this README's test count; `--full` adds the E28 audit (audit 7) |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |

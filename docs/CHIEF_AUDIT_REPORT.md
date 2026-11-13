@@ -263,4 +263,7 @@ Additional findings logged during the fixes:
 | A-106 | Low | Desks (audit 10, Antigravity) | A research bundle with no out-of-sample check was labelled 'NOT replicated' | 'not checked out of sample'; tested | fixed |
 | A-107 | Low | Notebook conclusions (audit 10) | 'Calibration holds' for v1.1 (it does not transfer, A-85); gate 3 described without replication | Rewritten with the A100 13A/16A results | fixed |
 | A-108 | Low | Notebook and COLAB.md (audit 10) | Stated A100 time 45-60 min no longer holds with five seeds in 13A | 50-65 min | fixed |
+| A-109 | Low | Notebook report (v4 review) | A column name with a pipe split the Markdown header of the 16A tables (JSON correct) | Pipes in column names escaped | fixed |
+| A-110 | Low | Dashboard (v4 review) | `st.components.v1.html` is deprecated; its suggested replacement `st.iframe` gives HTML same-origin access to the app (components.html is sandboxed) | Not migrated (security); Streamlit pinned 1.66.1; before any upgrade use st.html or a sandboxed component | open (planned) |
+| A-111 | Medium | Signal stability (v4 review) | The gain over the prior shrinks across the test years (v1.1 +0.020, +0.009, +0.0045 in 2020-22): decay or regime | Documented; judged only forward (forward criteria, E29) | open (by nature) |
 | A-19 | Low | Quantile heads | Heads are unconstrained, so q10 > q90 was possible | measured crossing rate 0.0%; monotone rearrangement (sorting) added in inference and in the coverage check | fixed |

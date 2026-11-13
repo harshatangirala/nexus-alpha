@@ -51,6 +51,9 @@ Status words: **passed** (ran and passed), **done** (built and exercised), **par
 | v3 | E28 vision + NLP fusion (FinBERT news, ChronoBERT-2010 filings, SEC price-impact expert; pre-registered D-053) | done: NOT KEPT (record run `20261113T035556_e28_vision_nlp_fusion_b1f899`; first run superseded, D-054) | `docs/V3_RESEARCH.md` (E28), `scripts/experiments/e28_vision_nlp_fusion.py`, `scripts/verify/audit_e28.py` (17 checks) |
 | App + notebook | Tab O "Vision + NLP"; notebook sections 8A-8C (GPU re-encoding with parity, expert refit, MM vs placebo) | done | `app/vision_nlp_tab.py`, `src/nexus_alpha/language_view.py`, `scripts/colab/nb_sections_nlp.py` |
 | Audit 7 | End-to-end audit with SWOT; time-proxy and type guards on every model input | done | `docs/AUDIT_7_2026-11-13.md`, `scripts/verify/time_proxy_scan.py` |
+| App | Desk 1-5: one to five stocks, each with three screenshots (upload or Ctrl+V paste) and 1-7 dated news articles, an optional SEC filing and shared macro texts; board, side-by-side charts, plans, a chronology of every text against the decision time; date/time/zone fields in every desk | done | `app/desk_multi_tab.py`, `app/paste_image.py`, `src/nexus_alpha/text_time.py`, `tests/test_text_time.py`, `tests/test_paste_image.py`, `tests/test_app.py` |
+| Notebook | 13A vision vs NLP vs indicators (every metric, increments), 16A entry / stop-loss / exit per modality against random books, 20 full report to Drive (descriptive, D-056) | done; numbers await the owner's A100 run | `scripts/colab/nb_sections_eval.py` |
+| Audit 8 | Review of the A100 run; A-82 (news window at inference) and A-87 (text time zones) fixed; A-83 to A-86 model-level, E29 proposed | done | `docs/AUDIT_8_2026-11-13.md` |
 | — | GitHub repository | done, **public** | `harshatangirala/nexus-alpha` (made public by the owner; data, caches, weights and secrets are never committed) |
 
 ## Next steps, in order

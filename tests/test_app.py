@@ -24,7 +24,37 @@ def test_app_runs_an_analysis():
     assert "res" in at.session_state
     res = at.session_state["res"]
     assert set(res.forecasts) == {"1D", "2D", "5D", "10D", "20D", "1M"}
-    assert len(at.tabs) == 18 and at.tabs[0].label == "Mission Control" and at.tabs[1].label == "Trade Desk"
-    assert at.tabs[2].label == "Compare 1-5"
-    assert at.tabs[15].label == "M LLM committee" and at.tabs[16].label == "N Options"
-    assert at.tabs[17].label == "O Vision + NLP"
+    # at.tabs also lists nested tabs (Desk 1-5 has one inputs tab per stock): check the 19 top-level tabs in order
+    nested = {"Macro and market (shared)"}
+    top = [t.label for t in at.tabs if not t.label.endswith(" inputs") and t.label not in nested]
+    assert top == ["Mission Control", "Trade Desk", "Compare 1-5", "Desk 1-5", "A Forecast", "B Charts", "C News", "D SEC",
+                   "E Indicators", "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting",
+                   "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options", "O Vision + NLP"]
+
+
+
+@source_data
+@pytest.mark.slow
+@pytest.mark.skipif(latest_bundle() is None, reason="no inference bundle built")
+def test_desk_1_to_5_reads_dated_news():
+    """Desk 1-5: one stock, one article stamped in New York time, a historical as-of date -> board, plan, chronology."""
+    import datetime as dt
+    from streamlit.testing.v1 import AppTest
+    at = AppTest.from_file(str(APP), default_timeout=600)
+    at.run()
+    at.multiselect(key="dk_picks").set_value(["MSFT"])
+    at.radio(key="dk_mode").set_value("historical")
+    at.run()                                       # the as-of date is enabled only in historical mode
+    at.date_input(key="dk_asof").set_value(dt.date(2021, 6, 15))
+    at.run()
+    at.text_input(key="dk_MSFT_n0_head").set_value("Microsoft wins a large cloud contract")
+    at.date_input(key="dk_MSFT_n0_date").set_value(dt.date(2021, 6, 15))
+    at.time_input(key="dk_MSFT_n0_time").set_value(dt.time(17, 30))
+    at.selectbox(key="dk_MSFT_n0_tz").set_value("ET (New York)")
+    at.button(key="dk_run").click().run()
+    assert not at.exception, at.exception
+    rec = at.session_state["dk_result"]["out"]["MSFT"]
+    assert "res" in rec, rec.get("error")
+    ch = rec["chrono"]
+    assert len(ch) == 1 and ch.status.iloc[0] == "model input (news branch)"      # 17:30 ET, before 09:00 next day
+    assert ch["published (UTC)"].iloc[0] == __import__("pandas").Timestamp("2021-06-15 21:30", tz="UTC")

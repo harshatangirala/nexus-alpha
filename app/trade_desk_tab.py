@@ -8,9 +8,12 @@ Rendered by app/streamlit_app.py. What is validated and what is not is stated on
 """
 from __future__ import annotations
 
+import datetime as dt
+
 import pandas as pd
 import streamlit as st
 
+from nexus_alpha import text_time as TX
 from nexus_alpha import trade_desk as TD
 from nexus_alpha.llm import gemini as GM
 from nexus_alpha.trading.plan import RiskConfig
@@ -605,10 +608,16 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
                 kind = st.selectbox("Type", KINDS, key=f"desk_kind{i}")
                 head = st.text_input("Headline / title", key=f"desk_head{i}")
                 body = st.text_area("Text", key=f"desk_body{i}", height=100)
-                when = st.text_input("Published (UTC, e.g. 2026-11-05 21:30)", key=f"desk_when{i}")
+                cc = st.columns([1.1, 0.9, 0.7, 1.3])
+                day = cc[0].date_input("Published date", value=dt.date.today(), key=f"desk_day{i}")
+                clock = cc[1].time_input("time", value=dt.time(9, 0), key=f"desk_clock{i}", step=60)
+                known = cc[2].checkbox("time known", value=True, key=f"desk_known{i}")
+                tz = cc[3].selectbox("time zone", list(TX.TIMEZONES), key=f"desk_tz{i}")
                 src = st.text_input("Source", key=f"desk_src{i}")
                 if head or body:
-                    texts.append({"kind": kind, "headline": head, "text": body, "published_utc": when, "source": src})
+                    when = TX.to_utc(day, clock if known else None, tz)
+                    texts.append({"kind": kind, "headline": head, "text": body, "published_utc": when.isoformat(),
+                                  "time_known": known, "source": src})
         use_llm = st.checkbox("Ask Gemini for a read of the texts and screenshots", value=GM.available(),
                               disabled=not GM.available(),
                               help=None if GM.available() else "Set GEMINI_API_KEY in your environment to enable.")
@@ -618,7 +627,7 @@ def render(predictor, tickers: list[str], risk_defaults: dict) -> None:
 
     picked = [x for i, x in enumerate(st.session_state.get("desk_fetched", []))
               if st.session_state.get(f"desk_pick_{i}") and x.get("ticker") == tick]
-    texts = (texts + [{"kind": x["kind"], "headline": x["headline"], "text": x["text"],
+    texts = (texts + [{"kind": x["kind"], "headline": x["headline"], "text": x["text"], "time_known": True,
                        "published_utc": x["published_utc"], "source": x["source"]} for x in picked])[:10]
     choice = TD.choose_horizon(trade, swing_days=swing, long_term=lt)
     st.subheader("1. What the model is asked")

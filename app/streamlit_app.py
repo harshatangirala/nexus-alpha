@@ -80,16 +80,23 @@ cost_sc = st.sidebar.selectbox("Cost scenario", ["base", "stressed", "severe"])
 occl = st.sidebar.checkbox("Chart occlusion attribution (slower)", False)
 
 st.sidebar.subheader("News articles (1-7, optional)")
+import datetime as _dt  # noqa: E402
+from nexus_alpha import text_time as _TX  # noqa: E402
 n_art = st.sidebar.number_input("Number of articles", 0, 7, 0)
 articles = []
 for i in range(int(n_art)):
     with st.sidebar.expander(f"Article {i + 1}"):
         h = st.text_input("Headline", key=f"h{i}")
         t = st.text_area("Text", key=f"t{i}", height=80)
-        when = st.text_input("Published (UTC, e.g. 2021-06-14 21:30)", key=f"w{i}")
+        day = st.date_input("Published date", key=f"wd{i}",
+                            value=_dt.date(2021, 6, 14) if mode == "historical" else _dt.date.today())
+        known = st.checkbox("time known", value=True, key=f"wk{i}")
+        clock = st.time_input("time", value=_dt.time(16, 30), key=f"wt{i}", step=60, disabled=not known)
+        tz = st.selectbox("time zone", list(_TX.TIMEZONES), key=f"wz{i}")
         src = st.text_input("Source", key=f"s{i}")
-        if h or t:
-            articles.append({"headline": h, "text": t, "published_utc": when, "source": src})
+        if (h or t) and day is not None:
+            articles.append({"headline": h, "text": t, "published_utc": _TX.to_utc(day, clock if known else None, tz)
+                             .isoformat(), "time_known": known, "source": src})
 shots = st.sidebar.file_uploader("Chart screenshots (weekly, daily, hourly; shown only)", type=["png", "jpg"],
                                  accept_multiple_files=True)
 go = st.sidebar.button("Run analysis", type="primary", disabled=not bundle_ok)
@@ -112,19 +119,19 @@ if go:
             st.error(f"Analysis failed: {type(e).__name__}: {e}")
 
 res = st.session_state.get("res")
-all_tabs = st.tabs(["Mission Control", "Trade Desk", "Compare 1-5", "A Forecast", "B Charts", "C News", "D SEC",
+all_tabs = st.tabs(["Mission Control", "Trade Desk", "Compare 1-5", "Desk 1-5", "A Forecast", "B Charts", "C News", "D SEC",
                     "E Indicators", "F Explain", "G Trade planner", "H Model diagnostics", "I Backtesting",
                     "J Knowledge base", "K Configuration", "L Audit", "M LLM committee", "N Options",
                     "O Vision + NLP"])
 RISK_DEFAULTS = dict(account_capital=capital, risk_pct_per_trade=risk_pct, max_position_pct=max_pos,
                      allow_short=allow_short, cost_scenario=cost_sc)
-with all_tabs[15]:
+with all_tabs[16]:
     import committee_tab  # noqa: E402
     committee_tab.render(universe())
-with all_tabs[16]:
+with all_tabs[17]:
     import options_tab  # noqa: E402
     options_tab.render(universe())
-with all_tabs[17]:
+with all_tabs[18]:
     import vision_nlp_tab  # noqa: E402
     vision_nlp_tab.render(universe())
 with all_tabs[0]:
@@ -136,7 +143,10 @@ with all_tabs[1]:
 with all_tabs[2]:
     import compare_tab  # noqa: E402
     compare_tab.render(universe(), predictor if bundle_ok else None, RISK_DEFAULTS)
-tabs = all_tabs[3:]
+with all_tabs[3]:
+    import desk_multi_tab  # noqa: E402
+    desk_multi_tab.render(predictor if bundle_ok else None, universe(), RISK_DEFAULTS)
+tabs = all_tabs[4:]
 
 with tabs[0]:
     st.header("Forecast overview")

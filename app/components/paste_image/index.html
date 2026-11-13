@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paste a screenshot</title>
+<style>
+  :root { --bg: #0C1622; --line: #1B2B3D; --accent: #3FD0E0; --text: #D5E3EE; --muted: #8098AE; --good: #3DDC97; }
+  html, body { margin: 0; padding: 0; background: transparent; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  #zone { box-sizing: border-box; min-height: 64px; padding: 10px 12px; border: 1px dashed var(--line); background: var(--bg);
+          color: var(--muted); font-size: 12.5px; line-height: 1.4; cursor: text; outline: none; position: relative; }
+  #zone:focus { border-color: var(--accent); color: var(--text); box-shadow: 0 0 0 1px rgba(63,208,224,.25) inset; }
+  #zone.has { border-style: solid; border-color: var(--good); }
+  #zone b { color: var(--accent); font-weight: 600; }
+  #thumb { display: none; max-width: 100%; max-height: 120px; margin-top: 8px; border: 1px solid var(--line); }
+  #row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  #clear { display: none; background: none; border: 1px solid var(--line); color: var(--muted); font-size: 11px;
+           padding: 2px 8px; cursor: pointer; }
+  #clear:hover { color: var(--text); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div id="zone" tabindex="0" role="textbox" aria-label="Paste a screenshot here">
+  <div id="row"><span id="msg"><b>Click here, then press Ctrl+V</b> (Cmd+V on a Mac) to paste a screenshot.</span>
+    <button id="clear" type="button">clear</button></div>
+  <img id="thumb" alt="pasted screenshot">
+</div>
+<script>
+  // Minimal Streamlit component (protocol version 1) without the npm library: the page tells Streamlit it is ready,
+  // receives "render" events, and sends the pasted image back as a data URL.
+  const zone = document.getElementById("zone"), msg = document.getElementById("msg");
+  const thumb = document.getElementById("thumb"), clear = document.getElementById("clear");
+  const MAX_BYTES = 8 * 1024 * 1024;
+  function post(type, extra) { window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type: type }, extra || {}), "*"); }
+  function height() { post("streamlit:setFrameHeight", { height: document.body.scrollHeight + 4 }); }
+  function setValue(v) { post("streamlit:setComponentValue", { value: v, dataType: "json" }); }
+  function show(dataUrl, note) {
+    thumb.src = dataUrl; thumb.style.display = "block"; zone.classList.add("has"); clear.style.display = "inline-block";
+    msg.textContent = note; thumb.onload = height; height();
+  }
+  window.addEventListener("message", function (e) {
+    if (!e.data || e.data.type !== "streamlit:render") return;
+    const a = e.data.args || {};
+    if (a.label && !zone.classList.contains("has")) {
+      msg.innerHTML = "<b>Click here, then press Ctrl+V</b> to paste the " + String(a.label).replace(/[<>&]/g, "") + ".";
+    }
+    height();
+  });
+  zone.addEventListener("click", function () { zone.focus(); });
+  zone.addEventListener("paste", function (ev) {
+    const items = (ev.clipboardData && ev.clipboardData.items) || [];
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (it.kind === "file" && it.type.indexOf("image/") === 0) {
+        const f = it.getAsFile();
+        ev.preventDefault();
+        if (f.size > MAX_BYTES) { msg.textContent = "That image is larger than 8 MB; crop it or upload a file instead."; height(); return; }
+        const r = new FileReader();
+        r.onload = function () {
+          show(r.result, "Pasted (" + Math.round(f.size / 1024) + " KB). Paste again to replace it.");
+          setValue({ data: r.result, mime: it.type, bytes: f.size, ts: Date.now() });
+        };
+        r.readAsDataURL(f);
+        return;
+      }
+    }
+    msg.textContent = "The clipboard holds no image. Copy a screenshot first (Win+Shift+S on Windows), then paste.";
+    height();
+  });
+  clear.addEventListener("click", function (ev) {
+    ev.stopPropagation(); thumb.style.display = "none"; thumb.removeAttribute("src"); zone.classList.remove("has");
+    clear.style.display = "none"; msg.innerHTML = "<b>Click here, then press Ctrl+V</b> to paste a screenshot.";
+    setValue(null); height();
+  });
+  post("streamlit:componentReady", { apiVersion: 1 });
+  height();
+</script>
+</body>
+</html>

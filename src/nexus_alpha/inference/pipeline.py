@@ -186,8 +186,13 @@ def _fetch_live_uncached(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def _articles_frame(articles: list[dict], ticker: str, decision_utc: pd.Timestamp) -> tuple[pd.DataFrame, list[dict]]:
-    """User articles -> rows for the shared aggregation. Each needs headline (or text) and published_utc."""
+    """User articles -> rows for the shared aggregation. Each needs headline (or text) and published_utc.
+
+    The same window as training (`news_select.select_for_samples`): an article enters only if it was available at the
+    decision time and less than LOOKBACK (5 days) before it. Older articles never appeared in a training sample, so their
+    features (counts, hours since the latest article) would lie outside what the model learnt (audit 8, A-82)."""
     from ..data import news as N
+    from ..data.news_select import LOOKBACK
     rows, listing = [], []
     for i, a in enumerate(articles or []):
         txt = (a.get("text") or "").strip()
@@ -195,11 +200,21 @@ def _articles_frame(articles: list[dict], ticker: str, decision_utc: pd.Timestam
         pub = pd.to_datetime(a.get("published_utc"), utc=True, errors="coerce")
         precision = "minute" if a.get("time_known", True) else "day"
         _, avail, eff = N.availability(pd.Series([pub]), pd.Series([precision]))
-        ok = pd.notna(pub) and avail.iloc[0] <= decision_utc
+        before = pd.notna(pub) and avail.iloc[0] <= decision_utc
+        recent = before and avail.iloc[0] > decision_utc - LOOKBACK
+        ok = bool(before and recent)
+        if pd.isna(pub):
+            reason = "no valid publication time"
+        elif not before:
+            reason = "published after the decision time: excluded"
+        elif not recent:
+            reason = f"older than the {LOOKBACK.days}-day news window the model was trained with: excluded"
+        else:
+            reason = f"available before the decision time, inside the {LOOKBACK.days}-day window"
+        hours = (decision_utc - avail.iloc[0]).total_seconds() / 3600 if pd.notna(pub) else None
         listing.append({"index": i, "headline": head, "source": a.get("source"), "published_utc": str(pub),
-                        "available_utc": str(avail.iloc[0]), "used": bool(ok),
-                        "reason": "available before the decision time" if ok else
-                        ("no valid publication time" if pd.isna(pub) else "published after the decision time: excluded"),
+                        "available_utc": str(avail.iloc[0]), "hours_before_decision": hours, "used": ok,
+                        "reason": reason,
                         "ticker_match": a.get("ticker_match", "user-asserted"), "input_type": "inference-time (user supplied)"})
         if ok:
             rows.append({"sample_id": "live", "available_utc": avail.iloc[0], "decision_utc": decision_utc,

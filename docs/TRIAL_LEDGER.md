@@ -29,6 +29,7 @@ the selection data. Placebo sets are counted, because they are evaluated the sam
 | **Selection trials since v2 (E11-E25)** | | | | **<= 665** | |
 | E28 | Vision + NLP fusion (FinBERT news, ChronoBERT filings, SEC price-impact expert) | 2017-18 | 1 eligible comparison (MM vs BASE, guarded by a placebo) + 6 descriptive configurations, 3 seeds each; run twice (the first run's SEC expert read timestamps, D-054) | 16 | not kept in either run (record: MM vs BASE -0.00029 [-0.00082, +0.00025]) |
 | **Selection trials on 2017-18 including E28** | | | | **<= 681** | |
+| Audit 8 notebook sections 13A, 16A | Vision vs NLP vs indicators (7 input sets, every metric); one fixed entry / stop-loss / exit rule on each set's forecasts | 2017-18 and 2020-22 | descriptive: reported, nothing selected or frozen from them (D-056) | 0 | descriptive |
 | E26 | NEXUS vs implied volatility | forward only | 2 models x 2 horizons x 2 endpoints, Holm across endpoint 2 (D-051) | 8 | running from 2026-11-10 |
 | E27 | LLM committee | forward only | descriptive | - | running, on demand |
 | Forward criteria | v3_fund, v3_alpha vs ranker_v3 | forward only | 2 candidates x 2 conditions, Holm across candidates (D-051) | 2 | after 120 sessions |

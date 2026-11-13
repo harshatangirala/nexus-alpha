@@ -133,6 +133,16 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     * a point-in-time filing explorer;
     * a ChronoBERT box: paste any filing or news text to find its historical analogues.
   * **Notebook** sections 8A-8C reproduce the language branch on a Colab GPU.
+* **Audit 8 (2026-11-13)** ([`docs/AUDIT_8_2026-11-13.md`](docs/AUDIT_8_2026-11-13.md)): the A100 run reviewed.
+  * **Notebook section 13A:** vision vs NLP vs indicators and their combinations, every metric for each.
+  * **Section 16A:** one entry / stop-loss / exit rule on each input's forecasts, against random books.
+  * **Section 20:** a full report of the run, written to Drive. All three are descriptive (D-056).
+  * **Dashboard tab Desk 1-5:** one to five stocks, each with screenshots (upload or paste) and 1-7 dated news
+    articles; a chronology of every text against the decision time.
+  * **Two fixes:** pasted news follows the 5-day window the model was trained with (A-82); every text time is
+    entered with its time zone (A-87).
+  * **Model-level findings:** direction skill did not replicate on 2020-22 (A-83), and seed noise is as large as
+    the effects tested (A-84). E29 is proposed, forward-only.
 * **External integrations (D-046, [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)).**
   * **Qlib Alpha158 (E25).** Microsoft Qlib's Alpha158 factor library, re-implemented (157 of 158 features) and
     checked against Qlib's own engine: identical definitions on 122,797 stock-days. Tested as **E25** under the pre-registered rule: kept for cross-sectional ranking only (LightGBM long-horizon rank-IC gain +0.0134 [+0.0071, +0.0215] on 2017-18; no placebo passes), with no gain in probabilities and a partial 2020-22 replication. `v3_alpha` (LightGBM on F0 + A158) is frozen and in the forward test from session 2026-11-09, at 5D-1Y only: there its live Yahoo inputs reproduce the vendor inputs it was trained on, and at 1D/2D they do not (D-049). The forward test decides.
@@ -166,7 +176,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
 | `notebooks/NEXUS_Alpha_Colab_RunAll.ipynb`, `notebooks/NEXUS_Alpha_Colab_Orchestrator.ipynb` | one-pass Colab reproduction of E22/E23/E25; Colab front end (Drive persistence, Colab Secrets, run profiles) |
 | `RUN_DASHBOARD.cmd` | double-click to open the dashboard at `http://localhost:8501` |
 | `configs/` | YAML settings (tested against the code) |
-| `tests/` | 189 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash) |
+| `tests/` | 197 tests: seal, leakage, labels, splits, news timing, rules, fusion masking, training curves, calibration, trading (P&L path, kill-switch), schema, inference (incl. return ranges), app, comparison and reason cards, fundamentals (point in time, share basis, vendor data contract), forward-test runner, done marker and keep-awake helper, the E28 language branch (point in time, placebo, type guards, pinned run and pre-registration hash), text time zones and the news window, the paste component and Desk 1-5 |
 | `scripts/verify/run_all.py` | one-command, read-only audit of the whole project: tests, frozen-model hashes, forward-test chains, the sealed scorer's hash, no calendar time in any model input, secrets, the dependency lock, the notebook build and this README's test count; `--full` adds the E28 audit (audit 7) |
 | `docs/` | **chief audit report (findings, SWOT, optimisation, results after fixes)**, audit, coverage, specification and pre-registration, point-in-time policy, labels, architecture, fusion, RAG, risk engine, registry, validation, decision log, experiment log, model card, limitations, user guide, status |
 | `data_manifests/`, `model_registry/`, `reports/`, `experiments/` | audit outputs, catalogues, compiled results (`reports/RESULTS.md`), the visual audit report (`reports/NEXUS_Audit_Report.html`, 27 figures and tables), run manifests |

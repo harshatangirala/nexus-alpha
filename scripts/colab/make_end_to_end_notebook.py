@@ -56,12 +56,15 @@ This notebook holds the code of every step, with a short explanation above each 
 | 11 | Calibration | temperature scaling, reliability diagrams, ECE |
 | 12 | Evaluation | log loss, Brier, accuracy, balanced accuracy, macro-F1, AUROC, **confusion matrices**, ROC curves |
 | 13 | Statistics | month-block bootstrap confidence intervals, placebo, Holm correction, rank IC |
+| 13A | Modality scorecard (GPU) | **vision vs NLP vs indicators vs combinations**: every metric for each input on its own and together, the quantile ranges as stop distances, and what each input adds |
 | 14 | Comparison | every model side by side, with the frozen models' saved predictions and the reproduction check |
 | 15 | Risk engine | entry, stop, targets and size with the reasons, for real setups |
 | 16 | Backtest | equity, drawdown and Sharpe intervals of the documented backtest |
+| 16A | Entry, stop-loss, exit | one fixed bracket rule (next-open entry, 1.5 ATR stop, 3 ATR target, time exit) on every modality's forecasts: win rate, expectancy in R, profit factor, MFE/MAE, against random books |
 | 17 | Knowledge base (RAG) | BM25, dense and hybrid retrieval over the books and rulebooks, with page citations |
 | 18 | Forward test | the public, hash-chained forward test, verified from GitHub |
 | 19 | Conclusions | what works, what does not, and what comes next |
+| 20 | Full report | every key table of the run written to Google Drive as one Markdown and one JSON file |
 
 **Honest summary before you start.** Volatility regime (sideways or not) is predictable; the cross-sectional ranking of
 stocks has a small positive rank IC on validation; the direction of a single stock over 1-20 sessions is close to chance;
@@ -1130,6 +1133,11 @@ display(ST.style.format({"LL gain vs prior": "{:+.5f}", "placebo gain": "{:+.5f}
                          "p (one-sided)": "{:.3f}", "p Holm": "{:.3f}", "rank IC": "{:+.4f}"}))
 """)
 
+# ---------------------------------------------------------------------------------------------------------- 13A
+import nb_sections_eval  # noqa: E402  (13A modality scorecard, 16A trading evaluation, 20 full report)
+
+nb_sections_eval.add_scorecard(md, code)
+
 # ---------------------------------------------------------------------------------------------------------- comparison
 md(r"""
 ## 14. Comparison: every model side by side, and the reproduction check
@@ -1185,6 +1193,7 @@ if e03.exists():
                           "committed metrics.json": M[nm][key]["mean_log_loss"]})
     R = pd.DataFrame(repro)
     R["abs diff"] = (R["recomputed here"] - R["committed metrics.json"]).abs()
+    REPRO = R                                                    # kept for the report (section 20)
     display(R.style.format({"recomputed here": "{:.5f}", "committed metrics.json": "{:.5f}", "abs diff": "{:.1e}"}))
     print("all within 2e-4 (float16 storage of the saved probabilities):", bool((R["abs diff"] < 2e-4).all()))
 """)
@@ -1331,11 +1340,14 @@ if bt.exists() and eq.exists():
     t = pd.DataFrame(b["test_final"]).T
     cols = [c for c in ["trades", "sharpe", "sharpe_ci95_month_blocks", "cagr", "max_drawdown", "win_rate",
                         "profit_factor", "expectancy_R", "psr_vs_0"] if c in t]
-    display(t[cols])
+    BT_TEST, BT_JSON = t[cols], b                                # kept for the report (section 20)
+    display(BT_TEST)
     print("benchmark (equal-weight survivors), test:", b["benchmark_ew_survivors"]["test"], "| PBO:", b.get("pbo"))
 else:
     print("Backtest reports not found in the repository clone.")
 """)
+
+nb_sections_eval.add_trading(md, code)
 
 # ---------------------------------------------------------------------------------------------------------- RAG
 md(r"""
@@ -1454,7 +1466,8 @@ if (REPO_DIR / "shadow").exists():
         out.append({"model": v, "sessions logged": ch.asof_session.nunique(), "first": ch.asof_session.min(),
                     "latest": ch.asof_session.max(), "late rows": int(ch.late_rows.astype(int).sum()),
                     "chain": "intact" if not probs else "; ".join(probs[:2])})
-    display(pd.DataFrame(out))
+    FWD = pd.DataFrame(out)                                      # kept for the report (section 20)
+    display(FWD)
     print("The promotion rule needs about 120 sessions before any claim (docs/FORWARD_SHADOW_TEST.md).")
 """)
 
@@ -1484,6 +1497,11 @@ md(r"""
   indicators. The SEC expert reproduces the SEC study inside NEXUS: filings predict whether a stock moves (AUC 0.656)
   but not which way (0.513).
 * Fine-tuning the vision network on charts does not beat the prior (section 10), as TriFrame found.
+* Vision, NLP and indicators separately and together (section 13A): in the documented E28 run the indicators carry most
+  of the gain, the charts alone beat the prior, and text alone helps least (it exists for about two thirds of rows).
+  Section 13A recomputes every metric for each input and its increments in this run; section 16A puts each input's
+  forecasts through the same entry, stop-loss and exit rule against random books. Both are descriptive: nothing is
+  selected from them.
 * No backtest edge over equal-weight buy-and-hold after costs (section 16).
 
 **What comes next**
@@ -1496,6 +1514,8 @@ code(r"""
 print(f"notebook finished in {(time.time() - T_START) / 60:.1f} minutes on {DEVICE}"
       + (" (QUICK mode: small samples)" if QUICK else ""))
 """)
+
+nb_sections_eval.add_report(md, code)
 
 
 def build() -> dict:

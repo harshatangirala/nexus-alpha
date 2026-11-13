@@ -320,6 +320,7 @@ if (E28_DIR / "metrics.json").exists():
                       **{{f"valid (reported): {{k}}": v for k, v in M28["reported_validation"].items()}},
                       **{{f"test: {{k}}": v for k, v in M28["test_after_decision"].items()}}}}).T
     D = D.assign(low=D.ci95.map(lambda c: c[0]), high=D.ci95.map(lambda c: c[1]))[["estimate", "low", "high"]]
+    E28_D = D                                                    # kept for the report (section 20)
     display(D.style.format("{{:+.5f}}"))
     RIC = pd.DataFrame({{k: {{"BASE": v["BASE"]["estimate"], "MM": v["MM"]["estimate"],
                             "MM - BASE": v["MM_minus_BASE"]["estimate"], "low": v["MM_minus_BASE"]["ci95"][0],

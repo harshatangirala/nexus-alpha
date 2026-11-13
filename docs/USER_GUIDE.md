@@ -38,6 +38,23 @@ logged appears at once:
 
 "Run the full model and trade plans" then scores each stock live and draws its plan with the reasons.
 
+**Desk 1-5** (fourth tab): your own inputs for one to five stocks at once.
+1. Pick the stocks, live or historical data, the trade type, and your time zone (IST by default).
+2. In each stock's inputs tab, add up to three chart screenshots (weekly, daily, hourly). Upload a file, or click a
+   "paste" box and press Ctrl+V after copying a screenshot (Win+Shift+S on Windows).
+3. Add 1-7 news articles per stock, each with its date, time and time zone ("Fetch Yahoo headlines" fills them in UTC).
+   Untick "time known" when you only know the date. Optionally add an SEC filing per stock and, in the last tab, macro
+   texts shared by every stock.
+4. Press "Analyse". You get a board (probabilities, lean, return range, decision, entry, stop-loss, targets, time
+   exit), side-by-side charts, the trade plans with their reasons, a chronology chart of every text against the as-of
+   close, the 5-day news window and the decision time, and each stock in detail (plan chart, texts in time order,
+   screenshot checks, optional Gemini read and ChronoBERT analogues of a pasted filing).
+
+How your inputs are used: the model renders its own charts from real bars and never reads screenshot pixels; the
+legend values you type (or Gemini reads) check a screenshot against real bars. Company news enters the model only if it
+was public before the decision time (09:00 New York, the session after the as-of close) and inside the 5-day window the
+model was trained with. SEC filing and macro texts are context: timed and scored, not model inputs.
+
 **Vision + NLP** (tab O): the E28 result and how much each input feeds the network. Below it:
 * the SEC price-impact expert's view of every filing of a stock;
 * a filing explorer that finds the most similar earlier filings of other firms (point in time);

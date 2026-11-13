@@ -31,6 +31,8 @@ rem v3_alpha (E25 kept, D-049): F0 rows from tonight's v2 run + Alpha158 from to
 .venv\Scripts\python.exe -B scripts\shadow\shadow_score.py --version v3_alpha >> artifacts\logs\shadow_daily.log 2>&1
 rem Forward promotion criteria of v3_fund and v3_alpha vs ranker_v3, Holm-corrected (D-051); progress until 120 sessions
 .venv\Scripts\python.exe -B scripts\shadow\forward_criteria.py >> artifacts\logs\shadow_daily.log 2>&1
+rem E29a and E29b (D-058): forward scores from the logs (progress until 120 sessions); non-fatal, artifacts\e29
+.venv\Scripts\python.exe -B scripts\shadow\e29_score.py >> artifacts\logs\shadow_daily.log 2>&1
 rem E26 (D-050): option-implied volatility snapshot via OpenBB/CBOE (data private; SHA-256 chained); non-fatal
 .venv\Scripts\python.exe -B scripts\shadow\iv_snapshot.py >> artifacts\logs\shadow_daily.log 2>&1
 .venv\Scripts\python.exe -B scripts\shadow\iv_benchmark_score.py >> artifacts\logs\shadow_daily.log 2>&1
@@ -47,3 +49,8 @@ if "%FOK%"=="1" .venv\Scripts\python.exe -B scripts\shadow\preflight.py --mark >
 rem Audit 11 (D-059): live headline archive for a later forward test of the text branch (E29b). Runs last, after the
 rem push and the done marker, so it can never delay a forecast; git-ignored output (artifacts\live_news); non-fatal
 .venv\Scripts\python.exe -B scripts\shadow\news_snapshot.py >> artifacts\logs\shadow_daily.log 2>&1
+rem E29b (D-058): the frozen v1.1 WITH the archived headlines (stocks with news only), own hash chain; after the
+rem archive so tonight's headlines count; pushed long before 09:00 New York; a failure here cannot touch the main logs
+.venv\Scripts\python.exe -B scripts\shadow\news_on_forecast.py >> artifacts\logs\shadow_daily.log 2>&1
+git add shadow\v1.1_news >> artifacts\logs\shadow_daily.log 2>&1
+git diff --cached --quiet -- shadow\v1.1_news || (git -c user.name="Krishna Harsha Tangirala" -c user.email="70001399+harshatangirala@users.noreply.github.com" commit -q -m "Forward test: E29b news-on log of %DATE%" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -- shadow\v1.1_news >> artifacts\logs\shadow_daily.log 2>&1 && git push -q origin HEAD >> artifacts\logs\shadow_daily.log 2>&1)

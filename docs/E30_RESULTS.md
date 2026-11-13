@@ -32,7 +32,7 @@ one per month, then averaged. Interval and p: moving-block bootstrap over months
 
 The pre-registration expected about 215 months from January 2005. SEC XBRL company facts only exist from 2009, when
 XBRL filing was phased in. The pre-registered rule "at least 100 stocks per date for the date to count" therefore
-excluded every month before April 2009. **164 months counted, April 2009 to November 2022.** No definition, statistic or
+excluded every month before April 2009. **164 month-ends were available, April 2009 to November 2022; each composite's test uses the months with at least 100 stocks that have its score and a return: 137 to 151 months (Beneish fewest, because of tag coverage; see `months` in `reports/e30/e30_results.json`).** No definition, statistic or
 threshold was changed. The "2005-2011" sub-period below is in practice 2009-2011.
 
 ## Descriptive (decides nothing)

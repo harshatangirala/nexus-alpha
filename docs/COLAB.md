@@ -19,6 +19,10 @@ There are two notebooks:
      blocks per sample;
    * the saved predictions of the documented runs;
    * the knowledge base.
+   * for notebook v5 (section 13B, E30), also run `python -I scripts/colab/stage_e30_inputs.py` once: it writes
+     `fundamentals/e30_stock_months.parquet` (23 MB, built from the sealed development stores) next to the other
+     inputs and copies it to Drive. Without it section 13B stops with a clear message; every other section is
+     unaffected.
 
    It is private (book text). Wait until Google Drive for desktop has synced it.
 2. In Colab: File > Open notebook > GitHub, then enter `harshatangirala/nexus-alpha` and pick the notebook.

@@ -621,7 +621,7 @@ def add_report(md, code) -> None:
 The last cell collects the tables of every section (data, splits, labels, E28, the language branch, the SEC expert,
 optimisation, fine-tuning, calibration, every metric, the statistics, the modality scorecard with seeds, coverage and
 year-by-year stability, the trading evaluation with both null tests and both brackets, the backtest, the knowledge base
-and the forward test) and writes them to Google Drive as one Markdown file and one JSON file:
+the fundamentals replication and the forward test) and writes them to Google Drive as one Markdown file and one JSON file:
 `antigravity_workspace/nexus_artifacts/notebook_reports/NOTEBOOK_REPORT_<UTC time>.md` (and `.json`).
 
 Open the Markdown file on Drive, or share it, to review the whole run without scrolling through the notebook. A section
@@ -707,7 +707,7 @@ SECTIONS = [
              "gpu": torch.cuda.get_device_name(0) if DEVICE == "cuda" else "none", "python": platform.python_version(),
              "torch": torch.__version__, "lightgbm": lgb.__version__, "pandas": pd.__version__, "numpy": np.__version__,
              "repository commit": _git("rev-parse", "--short", "HEAD"), "commit date": _git("log", "-1", "--format=%cI"),
-             "notebook build": "audits 9-11 (2026-11-13)", "seeds (sections 8, 8C)": SEEDS,
+             "notebook build": "v5, audit 12 (2026-11-14)", "seeds (sections 8, 8C)": SEEDS,
              "seeds (section 13A)": g("SEEDS13")}),
     ("How to read this report", NOTES),
     ("2. Data", {"rows": len(FR), "stocks": int(FR.ticker.nunique()), "first": str(FR.asof_date.min().date()),
@@ -741,6 +741,8 @@ SECTIONS = [
     ("13A. What each input adds", g("SC_INC")),
     ("13A. Gain over the prior, year by year", g("SC_YEAR")),
     ("13A. Verdict", g("SC_VERDICT")),
+    ("13B. E30: do the published fundamental scores rank returns? (pre-registered, Holm over six)", g("E30_TABLE")),
+    ("13B. E30: parity with the documented result", g("E30_PARITY")),
     ("14. Mean log-loss gain over the prior on test (every model and saved run)", g("gain")),
     ("14. Reproduction of the documented E03 numbers", g("REPRO")),
     ("15. Gate 3: direction skill on validation vs test (replication, D-057)", g("SKT")),

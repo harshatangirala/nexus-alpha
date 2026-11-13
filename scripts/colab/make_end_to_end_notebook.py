@@ -29,7 +29,7 @@ def code(s: str) -> None:
 
 # =====================================================================================================================
 md(r"""
-# NEXUS Alpha: the end-to-end research pipeline in one notebook
+# NEXUS Alpha: the end-to-end research pipeline in one notebook (v5)
 
 **Neural Exchange for Unified Signal Intelligence.** A multimodal research system for US stocks. It reads weekly, daily
 and hourly charts, technical indicators, company news and SEC filings, and forecasts six horizons (1, 2, 5, 10, 20 and
@@ -57,12 +57,13 @@ This notebook holds the code of every step, with a short explanation above each 
 | 12 | Evaluation | log loss, Brier, accuracy, balanced accuracy, macro-F1, AUROC, **confusion matrices**, ROC curves |
 | 13 | Statistics | month-block bootstrap confidence intervals, placebo, Holm correction, rank IC |
 | 13A | Modality scorecard (GPU) | **vision vs NLP vs indicators vs combinations**: every metric for each input on its own and together, the quantile ranges as stop distances, and what each input adds |
+| 13B | Fundamentals (CPU) | the published scores (Beneish M, Montier C, gross profitability, magic formula, QMJ-style quality) from SEC XBRL, and the pre-registered **E30** test of whether any of them ranks returns |
 | 14 | Comparison | every model side by side, with the frozen models' saved predictions and the reproduction check |
 | 15 | Risk engine | entry, stop, targets and size with the reasons, for real setups |
 | 16 | Backtest | equity, drawdown and Sharpe intervals of the documented backtest |
 | 16A | Entry, stop-loss, exit | one fixed bracket rule (next-open entry, 1.5 ATR stop, 3 ATR target, time exit) on every modality's forecasts: win rate, expectancy in R, profit factor, MFE/MAE, against random books |
 | 17 | Knowledge base (RAG) | BM25, dense and hybrid retrieval over the books and rulebooks, with page citations |
-| 18 | Forward test | the public, hash-chained forward test, verified from GitHub |
+| 18 | Forward test | the public, hash-chained forward test, verified from GitHub, now with the E29b news-on log and the v1.2 refit (E31) |
 | 19 | Conclusions | what works, what does not, and what comes next |
 | 20 | Full report | every key table of the run written to Google Drive as one Markdown and one JSON file |
 
@@ -83,7 +84,7 @@ on. Then Runtime > Run all. About 50-65 minutes on an A100 (13A trains five seed
 whole notebook takes a few hours on a CPU.
 
 **Inputs (on your Google Drive, under `MyDrive/antigravity_workspace/`):**
-* `nexus_artifacts/notebook/`: the compact input set staged by `scripts/colab/stage_notebook_inputs.py` (about 1 GB):
+* `nexus_artifacts/notebook/`: the compact input set staged by `scripts/colab/stage_notebook_inputs.py` (about 1 GB; section 13B also reads `fundamentals/e30_stock_months.parquet`, 23 MB, from `scripts/colab/stage_e30_inputs.py`):
   the sample frame, chart-embedding components, news/SEC/rule features, the language inputs of sections 8A-8C (SEC
   filing text and vectors, the SEC expert's table), saved predictions of the documented runs and the knowledge base. **Keep this folder private:** the knowledge base contains book text.
 * `us_stocks_ohlcv/final/1day/`: daily bars, read only up to 2022-12-30 (needed by sections 5 and 10).
@@ -1144,6 +1145,10 @@ import nb_sections_eval  # noqa: E402  (13A modality scorecard, 16A trading eval
 
 nb_sections_eval.add_scorecard(md, code)
 
+import nb_sections_v5  # noqa: E402  (13B: extended fundamentals and the E30 replication)
+
+nb_sections_v5.add_fundamentals(md, code)
+
 # ---------------------------------------------------------------------------------------------------------- comparison
 md(r"""
 ## 14. Comparison: every model side by side, and the reproduction check
@@ -1463,6 +1468,8 @@ the previous row), and the chain is pushed to GitHub, which fixes its time publi
 without breaking the chain. The cell recomputes every chain from the clone and lists what has been logged.
 """)
 
+md(nb_sections_v5.FORWARD_MD)
+
 code(r"""
 FIELDS = ["run_utc", "asof_session", "file", "file_sha256", "n_rows", "n_failed", "late_rows"]
 def verify_chain(version):
@@ -1483,7 +1490,7 @@ def verify_chain(version):
 
 if (REPO_DIR / "shadow").exists():
     out = []
-    for v in ["v1.1", "v2", "market_e19", "v3_fund", "v3_alpha"]:
+    for v in ["v1.1", "v2", "market_e19", "v3_fund", "v3_alpha", "v1.1_news", "v1.2"]:
         if not (REPO_DIR / "shadow" / v / "chain.csv").exists():
             continue
         ch, probs = verify_chain(v)
@@ -1532,9 +1539,16 @@ md(r"""
   bracket added in audits 9-11 show whether that survives once volatility is controlled. Both sections are
   descriptive: nothing is selected from them.
 * No backtest edge over equal-weight buy-and-hold after costs (section 16).
+* Published fundamental scores (section 13B, E30). Value, QMJ-style quality, gross profitability, the magic formula,
+  Piotroski and Beneish were tested once, point in time, on 164 month-ends (137-151 months per composite, 2009-2022): none ranks the
+  next 20-session return after Holm correction (the closest, gross profitability, has a mean IC of +0.018 with a
+  95% interval that includes zero). They describe a company; they do not predict this universe's month.
 
 **What comes next**
-* The forward test runs nightly; about 120 sessions are needed before any promotion (section 18).
+* The forward test runs nightly; about 120 sessions are needed before any promotion (section 18). It now also logs
+  the E29b news-on forecasts (does live news help?) and v1.2 (does refitting on recent data help?).
+* The honest ceiling: the edge that exists is about the size of trading costs. Making it profitable needs evidence the
+  forward test has not yet produced, survivorship-free data, dividend-adjusted returns and a realistic cost model.
 * The sealed 2023+ period is opened once, by the owner, after the final freeze.
 * `docs/LIMITATIONS.md` lists every known limit (survivorship, vendor differences, reused test years).
 """)

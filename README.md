@@ -158,7 +158,7 @@ These replicate the two parent projects on a new, six-horizon, multimodal design
     profitability, Greenblatt's magic formula, QMJ-style quality, PEG, EV/EBIT, DuPont, DSO/DIO, quick and cash
     ratios. These come on top of the 31 ratios and 7 multiples (P/E, EV/EBITDA, ...) that already existed.
   * **E30 (D-060): pre-registered, one shot, nothing fitted.** No published composite ranks 20-session returns after
-    Holm, over 164 monthly point-in-time cross-sections from 2009 to 2022 ([`docs/E30_RESULTS.md`](docs/E30_RESULTS.md)).
+    Holm, over 164 month-ends (137-151 months per composite after the 100-stock rule) from 2009 to 2022 ([`docs/E30_RESULTS.md`](docs/E30_RESULTS.md)).
     Fundamentals are shown as description and risk flags, not as signals.
   * **New dashboard tab, P Fundamentals:** valuation tiles, score rings, a percentile radar, Beneish drivers, the
     point-in-time history, industry peers and the E30 result.

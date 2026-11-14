@@ -2,25 +2,27 @@
  "v1.1": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 5,
-   "p_bar": 0.0056,
-   "ucl": 0.015611769074444337,
-   "dpmo": 5600.0,
-   "out_of_control": []
+   "sessions": 6,
+   "p_bar": 0.011,
+   "ucl": 0.02499364141315619,
+   "dpmo": 11000.0,
+   "out_of_control": [
+    "2026-11-13"
+   ]
   },
   "late_rows_total": 0,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 4,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
-    "n": 1,
+    "n": 2,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -28,21 +30,23 @@
  "v2": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 5,
-   "p_bar": 0.0048,
-   "ucl": 0.014072824812321215,
-   "dpmo": 4800.0,
-   "out_of_control": []
+   "sessions": 6,
+   "p_bar": 0.010333333333333333,
+   "ucl": 0.023900868113093436,
+   "dpmo": 10333.333333333334,
+   "out_of_control": [
+    "2026-11-13"
+   ]
   },
   "late_rows_total": 0,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 4,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "3D": {
@@ -50,10 +54,14 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "4D": {
-    "n": 2,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
+    "n": 2,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "6D": {
     "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
@@ -62,7 +70,7 @@
  "market_e19": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 5,
+   "sessions": 6,
    "p_bar": 0.0,
    "ucl": 3e-06,
    "dpmo": 0.0,
@@ -74,11 +82,13 @@
  "v3_fund": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 4,
-   "p_bar": 0.0055,
-   "ucl": 0.015422474489763126,
-   "dpmo": 5500.0,
-   "out_of_control": []
+   "sessions": 5,
+   "p_bar": 0.012,
+   "ucl": 0.02660849068179187,
+   "dpmo": 12000.0,
+   "out_of_control": [
+    "2026-11-13"
+   ]
   },
   "late_rows_total": 0,
   "acknowledged": [
@@ -86,11 +96,15 @@
   ],
   "log_loss_gain_xmr": {
    "1D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 2,
+    "n": 3,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "5D": {
+    "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -98,14 +112,21 @@
  "v3_alpha": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 3,
-   "p_bar": 0.006666666666666667,
-   "ucl": 0.01758454191783161,
-   "dpmo": 6666.666666666667,
-   "out_of_control": []
+   "sessions": 4,
+   "p_bar": 0.0145,
+   "ucl": 0.030537939393824882,
+   "dpmo": 14500.0,
+   "out_of_control": [
+    "2026-11-13"
+   ]
   },
   "late_rows_total": 0,
   "acknowledged": []
  },
- "alerts": []
+ "alerts": [
+  "v1.1: coverage out of control on ['2026-11-13']",
+  "v2: coverage out of control on ['2026-11-13']",
+  "v3_fund: coverage out of control on ['2026-11-13']",
+  "v3_alpha: coverage out of control on ['2026-11-13']"
+ ]
 }

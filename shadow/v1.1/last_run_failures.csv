@@ -1,4 +1,4 @@
 ticker,error
 BZH,ValueError('only 66 usable daily bars from Yahoo for BZH: insufficient history')
 ROKU,ValueError('only 2 usable daily bars from Yahoo for ROKU: insufficient history')
-TCBI,ValueError('only 3 usable daily bars from Yahoo for TCBI: insufficient history')
+TCBI,ValueError('only 4 usable daily bars from Yahoo for TCBI: insufficient history')

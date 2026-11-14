@@ -1,0 +1,2 @@
+run_utc,asof_session,file,file_sha256,n_rows,n_failed,late_rows,prev_hash,row_hash
+2026-11-14T03:22:00+00:00,2026-11-13,forecasts/2026-11-13.csv,6ecb8dfe1b13a96f9c42319d04195841c723e3e094b8b4c4f863b96967210659,2982,3,0,GENESIS,bd45ac00a2d4d00044666f1d5955044a6e4b192bd106f0a647fe4cc2de66033f

@@ -1,0 +1,30 @@
+{
+  "version": "v3_alpha",
+  "scored_rows": 1489,
+  "first_asof": "2026-11-09",
+  "last_asof": "2026-11-12",
+  "by_horizon": {
+    "5D": {
+      "n": 1489,
+      "n_dates": 3,
+      "log_loss": 1.0978510522830622,
+      "log_loss_prior": 1.1278404487459657,
+      "gain_vs_prior": 0.02998939646290344,
+      "auroc_up_vs_down": 0.5856611422970686,
+      "hit_rate_argmax": 0.39691067830758897,
+      "class_freq": [
+        0.5198119543317663,
+        0.4022834116856951,
+        0.07790463398253862
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 3,
+        "mean_rank_ic": 0.19243710643498804,
+        "mean_quintile_spread_gross": 0.020720150332931474,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    }
+  }
+}

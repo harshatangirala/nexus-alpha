@@ -1,72 +1,72 @@
 {
   "version": "v3_fund",
-  "scored_rows": 3975,
+  "scored_rows": 6908,
   "first_asof": "2026-11-06",
-  "last_asof": "2026-11-12",
+  "last_asof": "2026-11-13",
   "by_horizon": {
     "1D": {
-      "n": 1988,
-      "n_dates": 4,
-      "log_loss": 0.9857464441206164,
-      "log_loss_prior": 1.0003466924360258,
-      "gain_vs_prior": 0.014600248315409403,
-      "auroc_up_vs_down": 0.45549719045277137,
-      "hit_rate_argmax": 0.5573440643863179,
+      "n": 2463,
+      "n_dates": 5,
+      "log_loss": 0.9991370128953898,
+      "log_loss_prior": 1.0098974518682586,
+      "gain_vs_prior": 0.010760438972868824,
+      "auroc_up_vs_down": 0.43739434759640783,
+      "hit_rate_argmax": 0.5473000406008932,
       "class_freq": [
-        0.21177062374245473,
-        0.5598591549295775,
-        0.2283702213279678
+        0.2561916362159968,
+        0.5489240763296792,
+        0.19488428745432398
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 5,
+        "mean_rank_ic": 0.051453311015082714,
+        "mean_quintile_spread_gross": 0.0004533329528629591,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "2D": {
+      "n": 2463,
+      "n_dates": 5,
+      "log_loss": 1.0252500275498575,
+      "log_loss_prior": 1.0454811425206296,
+      "gain_vs_prior": 0.020231114970772124,
+      "auroc_up_vs_down": 0.611535686569336,
+      "hit_rate_argmax": 0.5148193260251726,
+      "class_freq": [
+        0.3158749492488835,
+        0.511977263499797,
+        0.17214778725131952
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 5,
+        "mean_rank_ic": 0.1168395795189445,
+        "mean_quintile_spread_gross": 0.010988357509595894,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "5D": {
+      "n": 1982,
+      "n_dates": 4,
+      "log_loss": 1.085596976523862,
+      "log_loss_prior": 1.1020169442933776,
+      "gain_vs_prior": 0.016419967769515598,
+      "auroc_up_vs_down": 0.5909855079693697,
+      "hit_rate_argmax": 0.44803229061553984,
+      "class_freq": [
+        0.4303733602421796,
+        0.4510595358224016,
+        0.11856710393541876
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
         "dates": 4,
-        "mean_rank_ic": 0.053208747645293236,
-        "mean_quintile_spread_gross": 0.0015381494106706708,
-        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
-      }
-    },
-    "2D": {
-      "n": 1490,
-      "n_dates": 3,
-      "log_loss": 0.9566802547673764,
-      "log_loss_prior": 0.992005704087744,
-      "gain_vs_prior": 0.03532544932036763,
-      "auroc_up_vs_down": 0.5955911913163889,
-      "hit_rate_argmax": 0.5959731543624162,
-      "class_freq": [
-        0.16375838926174496,
-        0.5899328859060403,
-        0.24630872483221478
-      ],
-      "gain_ci95": null,
-      "note": "fewer than 20 scored dates: no interval yet",
-      "rank": {
-        "dates": 3,
-        "mean_rank_ic": 0.1328871084171714,
-        "mean_quintile_spread_gross": 0.014139686174580281,
-        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
-      }
-    },
-    "5D": {
-      "n": 497,
-      "n_dates": 1,
-      "log_loss": 0.9786588359206603,
-      "log_loss_prior": 1.004550798911044,
-      "gain_vs_prior": 0.025891962990383766,
-      "auroc_up_vs_down": 0.5601557696249232,
-      "hit_rate_argmax": 0.5895372233400402,
-      "class_freq": [
-        0.16498993963782696,
-        0.5955734406438632,
-        0.23943661971830985
-      ],
-      "gain_ci95": null,
-      "note": "fewer than 20 scored dates: no interval yet",
-      "rank": {
-        "dates": 1,
-        "mean_rank_ic": 0.018287142654976284,
-        "mean_quintile_spread_gross": 0.013583228746529431,
+        "mean_rank_ic": 0.05368558426316744,
+        "mean_quintile_spread_gross": 0.006712962094069721,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     }

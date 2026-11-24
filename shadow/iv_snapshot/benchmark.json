@@ -6,31 +6,31 @@
  ],
  "results": {
   "v1.1|5D": {
-   "rows": 491,
-   "sessions": 2,
-   "move_rate": 0.615071283095723,
+   "rows": 636,
+   "sessions": 3,
+   "move_rate": 0.6823899371069182,
    "endpoint1_ll_iv_minus_nexus": {
-    "mean": -0.02094777643322746,
+    "mean": -0.04223555813986868,
     "ci95": [
-     -0.03170893152170577,
-     -0.017113000172416123
+     -0.09188332768839642,
+     -0.017111609320972714
     ]
    },
    "endpoint2_ll_ivonly_minus_both": {
-    "mean": 0.01713581280959506,
+    "mean": 0.022622118586364332,
     "ci95": [
-     0.01713581280959506,
-     0.01713581280959506
+     0.0212740072282673,
+     0.02411541116764104
     ],
     "p_one_sided": 0.0,
     "train_sessions": 1,
-    "test_sessions": 1,
+    "test_sessions": 2,
     "coef_both": [
-     0.36383134274670703,
-     1.0088761663892594
+     0.36378078733848646,
+     1.0089281236286436
     ]
    },
-   "decision": "insufficient: 2 scored sessions (needs 120); figures are progress only"
+   "decision": "insufficient: 3 scored sessions (needs 120); figures are progress only"
   },
   "v1.1|20D": {
    "rows": 0,
@@ -39,31 +39,31 @@
    "decision": "insufficient: 0 scored sessions (needs 120)"
   },
   "v2|5D": {
-   "rows": 491,
-   "sessions": 2,
-   "move_rate": 0.615071283095723,
+   "rows": 636,
+   "sessions": 3,
+   "move_rate": 0.6823899371069182,
    "endpoint1_ll_iv_minus_nexus": {
-    "mean": -0.017343043694153404,
+    "mean": -0.03349284747763335,
     "ci95": [
-     -0.02820757256829866,
-     -0.01347142981358783
+     -0.06917979190884863,
+     -0.013470038962144423
     ]
    },
    "endpoint2_ll_ivonly_minus_both": {
-    "mean": 0.008175735352839369,
+    "mean": 0.014780388652697055,
     "ci95": [
-     0.008175735352839367,
-     0.008175735352839367
+     0.014368367430720256,
+     0.015152352255870555
     ],
     "p_one_sided": 0.0,
     "train_sessions": 1,
-    "test_sessions": 1,
+    "test_sessions": 2,
     "coef_both": [
-     0.43738376838542803,
-     1.0368424586487408
+     0.43732786868340945,
+     1.0369099925532328
     ]
    },
-   "decision": "insufficient: 2 scored sessions (needs 120); figures are progress only"
+   "decision": "insufficient: 3 scored sessions (needs 120); figures are progress only"
   },
   "v2|20D": {
    "rows": 0,

@@ -1,21 +1,65 @@
 {
   "version": "v2",
-  "scored_rows": 20797,
+  "scored_rows": 26733,
   "first_asof": "2026-11-05",
   "last_asof": "2026-11-13",
   "by_horizon": {
     "10D": {
-      "n": 496,
-      "n_dates": 1,
-      "log_loss": 1.013514594091252,
-      "log_loss_prior": 1.0489979876584155,
-      "gain_vs_prior": 0.03548339356716346,
-      "auroc_up_vs_down": 0.48289713937918444,
-      "hit_rate_argmax": 0.5584677419354839,
+      "n": 1490,
+      "n_dates": 3,
+      "log_loss": 1.105651576335836,
+      "log_loss_prior": 1.1270391856295954,
+      "gain_vs_prior": 0.02138760929375927,
+      "auroc_up_vs_down": 0.42228209288797725,
+      "hit_rate_argmax": 0.4355704697986577,
       "class_freq": [
-        0.3125,
-        0.5806451612903226,
-        0.10685483870967742
+        0.49261744966442955,
+        0.4476510067114094,
+        0.059731543624161075
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 2,
+        "mean_rank_ic": 0.08749608025142697,
+        "mean_quintile_spread_gross": 0.013482450773167943,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "11D": {
+      "n": 994,
+      "n_dates": 2,
+      "log_loss": 1.0838717359834575,
+      "log_loss_prior": 1.1162429677889514,
+      "gain_vs_prior": 0.03237123180549384,
+      "auroc_up_vs_down": 0.3752355890615554,
+      "hit_rate_argmax": 0.4647887323943662,
+      "class_freq": [
+        0.46378269617706236,
+        0.47484909456740443,
+        0.0613682092555332
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 1,
+        "mean_rank_ic": -0.015612280748528317,
+        "mean_quintile_spread_gross": -0.005060985014941684,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "12D": {
+      "n": 497,
+      "n_dates": 1,
+      "log_loss": 1.0136080902424,
+      "log_loss_prior": 1.0646039872201052,
+      "gain_vs_prior": 0.050995896977705124,
+      "auroc_up_vs_down": 0.4683132530120482,
+      "hit_rate_argmax": 0.545271629778672,
+      "class_freq": [
+        0.33400402414486924,
+        0.5653923541247485,
+        0.1006036217303823
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
@@ -87,134 +131,134 @@
       }
     },
     "4D": {
-      "n": 2964,
+      "n": 2965,
       "n_dates": 6,
-      "log_loss": 1.0782614615561017,
-      "log_loss_prior": 1.096533178121809,
-      "gain_vs_prior": 0.018271716565707363,
-      "auroc_up_vs_down": 0.6383250184393654,
-      "hit_rate_argmax": 0.42813765182186236,
+      "log_loss": 1.0849210130522104,
+      "log_loss_prior": 1.1016381154435169,
+      "gain_vs_prior": 0.016717102391306415,
+      "auroc_up_vs_down": 0.6447704999640141,
+      "hit_rate_argmax": 0.41854974704890385,
       "class_freq": [
-        0.3815789473684211,
-        0.4230769230769231,
-        0.19534412955465588
+        0.393929173693086,
+        0.41349072512647556,
+        0.19258010118043845
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
         "dates": 5,
-        "mean_rank_ic": 0.12285955819722783,
-        "mean_quintile_spread_gross": 0.011063287331944633,
+        "mean_rank_ic": 0.13060748264847613,
+        "mean_quintile_spread_gross": 0.012306917336715694,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     },
     "5D": {
-      "n": 2483,
-      "n_dates": 5,
-      "log_loss": 1.0566308232290873,
-      "log_loss_prior": 1.0810893146968161,
-      "gain_vs_prior": 0.024458491467728827,
-      "auroc_up_vs_down": 0.6544644824705708,
-      "hit_rate_argmax": 0.4599275070479259,
+      "n": 2965,
+      "n_dates": 6,
+      "log_loss": 1.1047744049331967,
+      "log_loss_prior": 1.1175721921383486,
+      "gain_vs_prior": 0.0127977872051519,
+      "auroc_up_vs_down": 0.6509576139201417,
+      "hit_rate_argmax": 0.393929173693086,
       "class_freq": [
-        0.3588401127668143,
-        0.46476037051953284,
-        0.17639951671365284
+        0.45059021922428333,
+        0.39898819561551435,
+        0.15042158516020235
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 5,
+        "mean_rank_ic": 0.17183232783207938,
+        "mean_quintile_spread_gross": 0.0182211478923059,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "6D": {
+      "n": 2965,
+      "n_dates": 6,
+      "log_loss": 1.112421951797556,
+      "log_loss_prior": 1.1240386940411584,
+      "gain_vs_prior": 0.01161674224360243,
+      "auroc_up_vs_down": 0.6922664387647409,
+      "hit_rate_argmax": 0.396964586846543,
+      "class_freq": [
+        0.4741989881956155,
+        0.4003372681281619,
+        0.1254637436762226
+      ],
+      "gain_ci95": null,
+      "note": "fewer than 20 scored dates: no interval yet",
+      "rank": {
+        "dates": 5,
+        "mean_rank_ic": 0.16223053037529025,
+        "mean_quintile_spread_gross": 0.02274885876905,
+        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
+      }
+    },
+    "7D": {
+      "n": 2484,
+      "n_dates": 5,
+      "log_loss": 1.1090466140143393,
+      "log_loss_prior": 1.1155816490130803,
+      "gain_vs_prior": 0.006535034998740974,
+      "auroc_up_vs_down": 0.6220341267033874,
+      "hit_rate_argmax": 0.42351046698872785,
+      "class_freq": [
+        0.46497584541062803,
+        0.43156199677938806,
+        0.1034621578099839
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
         "dates": 4,
-        "mean_rank_ic": 0.13485061546118432,
-        "mean_quintile_spread_gross": 0.013366403009864825,
+        "mean_rank_ic": 0.13222170531380284,
+        "mean_quintile_spread_gross": 0.017152192039956486,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     },
-    "6D": {
-      "n": 1986,
+    "8D": {
+      "n": 1987,
       "n_dates": 4,
-      "log_loss": 1.0521281761650092,
-      "log_loss_prior": 1.0808157180173406,
-      "gain_vs_prior": 0.028687541852331355,
-      "auroc_up_vs_down": 0.7157278727503792,
-      "hit_rate_argmax": 0.46827794561933533,
+      "log_loss": 1.0770408223811623,
+      "log_loss_prior": 1.1000784000216752,
+      "gain_vs_prior": 0.023037577640512952,
+      "auroc_up_vs_down": 0.5938819159115214,
+      "hit_rate_argmax": 0.46753900352289884,
       "class_freq": [
-        0.3549848942598187,
-        0.47079556898288016,
-        0.17421953675730112
+        0.43885254151987924,
+        0.4791142425767489,
+        0.08203321590337191
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
         "dates": 3,
-        "mean_rank_ic": 0.12821190624165194,
-        "mean_quintile_spread_gross": 0.017525128944473577,
-        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
-      }
-    },
-    "7D": {
-      "n": 1490,
-      "n_dates": 3,
-      "log_loss": 1.0176802713825204,
-      "log_loss_prior": 1.0498030253550648,
-      "gain_vs_prior": 0.03212275397254438,
-      "auroc_up_vs_down": 0.5791231977493846,
-      "hit_rate_argmax": 0.5355704697986577,
-      "class_freq": [
-        0.30134228187919465,
-        0.5456375838926174,
-        0.15302013422818792
-      ],
-      "gain_ci95": null,
-      "note": "fewer than 20 scored dates: no interval yet",
-      "rank": {
-        "dates": 2,
-        "mean_rank_ic": 0.0365886160064294,
-        "mean_quintile_spread_gross": 0.009117561813536157,
-        "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
-      }
-    },
-    "8D": {
-      "n": 1489,
-      "n_dates": 3,
-      "log_loss": 1.0297790828839959,
-      "log_loss_prior": 1.0623095638327114,
-      "gain_vs_prior": 0.03253048094871547,
-      "auroc_up_vs_down": 0.5468660005509228,
-      "hit_rate_argmax": 0.5332437877770315,
-      "class_freq": [
-        0.35057085292142376,
-        0.5466756212222968,
-        0.10275352585627938
-      ],
-      "gain_ci95": null,
-      "note": "fewer than 20 scored dates: no interval yet",
-      "rank": {
-        "dates": 2,
-        "mean_rank_ic": -0.024141483311832697,
-        "mean_quintile_spread_gross": -0.013720500852741797,
+        "mean_rank_ic": 0.03838184640713578,
+        "mean_quintile_spread_gross": -0.0034140854892448073,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     },
     "9D": {
-      "n": 993,
-      "n_dates": 2,
-      "log_loss": 1.0380195839348558,
-      "log_loss_prior": 1.0599839785597927,
-      "gain_vs_prior": 0.021964394624936823,
-      "auroc_up_vs_down": 0.42245762711864404,
-      "hit_rate_argmax": 0.5317220543806647,
+      "n": 1490,
+      "n_dates": 3,
+      "log_loss": 1.1281766729839027,
+      "log_loss_prior": 1.1225372053626594,
+      "gain_vs_prior": -0.005639467621243233,
+      "auroc_up_vs_down": 0.5172511433089713,
+      "hit_rate_argmax": 0.42416107382550333,
       "class_freq": [
-        0.3323262839879154,
-        0.5488418932527693,
-        0.11883182275931521
+        0.47583892617449663,
+        0.4355704697986577,
+        0.08859060402684564
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
-        "dates": 1,
-        "mean_rank_ic": -0.07326480879411366,
-        "mean_quintile_spread_gross": -0.030496482753184118,
+        "dates": 2,
+        "mean_rank_ic": 0.07000032826005961,
+        "mean_quintile_spread_gross": 0.005685100216511257,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     }

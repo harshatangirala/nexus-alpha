@@ -2,23 +2,23 @@
  "v1.1": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 6,
-   "p_bar": 0.011,
-   "ucl": 0.02499364141315619,
-   "dpmo": 11000.0,
+   "sessions": 9,
+   "p_bar": 0.12,
+   "ucl": 0.16359816509900388,
+   "dpmo": 120000.0,
    "out_of_control": [
-    "2026-11-13"
+    "2026-11-19"
    ]
   },
-  "late_rows_total": 0,
+  "late_rows_total": 6,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "10D": {
-    "n": 1,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "1D": {
-    "n": 6,
+    "n": 7,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
@@ -26,7 +26,7 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
-    "n": 5,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -34,10 +34,10 @@
  "v2": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 6,
-   "p_bar": 0.010333333333333333,
-   "ucl": 0.023900868113093436,
-   "dpmo": 10333.333333333334,
+   "sessions": 7,
+   "p_bar": 0.01,
+   "ucl": 0.02334915727677219,
+   "dpmo": 10000.0,
    "out_of_control": [
     "2026-11-13"
    ]
@@ -46,6 +46,14 @@
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "10D": {
+    "n": 3,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "11D": {
+    "n": 2,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "12D": {
     "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
@@ -66,23 +74,23 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
-    "n": 5,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "6D": {
-    "n": 4,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "7D": {
-    "n": 3,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "8D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "9D": {
-    "n": 2,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -90,7 +98,7 @@
  "market_e19": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 8,
+   "sessions": 9,
    "p_bar": 0.0,
    "ucl": 3e-06,
    "dpmo": 0.0,
@@ -102,10 +110,10 @@
  "v3_fund": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 5,
-   "p_bar": 0.012,
-   "ucl": 0.02660849068179187,
-   "dpmo": 12000.0,
+   "sessions": 6,
+   "p_bar": 0.011333333333333334,
+   "ucl": 0.025535023373606712,
+   "dpmo": 11333.333333333334,
    "out_of_control": [
     "2026-11-13"
    ]
@@ -115,6 +123,10 @@
    "A-50: 1-stock 2026-11-05 file from the stale-cache run of 2026-11-07; every row late, never scored (2026-11-05)"
   ],
   "log_loss_gain_xmr": {
+   "10D": {
+    "n": 2,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
    "1D": {
     "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
@@ -124,7 +136,7 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
-    "n": 4,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -132,10 +144,10 @@
  "v3_alpha": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 4,
-   "p_bar": 0.0145,
-   "ucl": 0.030537939393824882,
-   "dpmo": 14500.0,
+   "sessions": 5,
+   "p_bar": 0.0132,
+   "ucl": 0.028512206895153942,
+   "dpmo": 13200.0,
    "out_of_control": [
     "2026-11-13"
    ]
@@ -143,8 +155,12 @@
   "late_rows_total": 0,
   "acknowledged": [],
   "log_loss_gain_xmr": {
+   "10D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
    "5D": {
-    "n": 3,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -159,10 +175,21 @@
    "out_of_control": []
   },
   "late_rows_total": 0,
-  "acknowledged": []
+  "acknowledged": [],
+  "log_loss_gain_xmr": {
+   "1D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "2D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   }
+  }
  },
  "alerts": [
-  "v1.1: coverage out of control on ['2026-11-13']",
+  "v1.1: 6 late rows (forecasts after decision time)",
+  "v1.1: coverage out of control on ['2026-11-19']",
   "v2: coverage out of control on ['2026-11-13']",
   "market_e19: 2 late rows (forecasts after decision time)",
   "v3_fund: coverage out of control on ['2026-11-13']",

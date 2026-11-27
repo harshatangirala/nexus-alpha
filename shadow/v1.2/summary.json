@@ -1,37 +1,37 @@
 {
   "version": "v1.2",
-  "scored_rows": 1491,
+  "scored_rows": 2483,
   "first_asof": "2026-11-13",
-  "last_asof": "2026-11-13",
+  "last_asof": "2026-11-23",
   "by_horizon": {
     "1D": {
-      "n": 497,
-      "n_dates": 1,
-      "log_loss": 1.0270836873783444,
-      "log_loss_prior": 1.0424176537698424,
-      "gain_vs_prior": 0.015333966391497977,
-      "auroc_up_vs_down": 0.3900462962962963,
-      "hit_rate_argmax": 0.5050301810865191,
+      "n": 993,
+      "n_dates": 2,
+      "log_loss": 1.0552989210470982,
+      "log_loss_prior": 1.0737721649452021,
+      "gain_vs_prior": 0.018473243898103897,
+      "auroc_up_vs_down": 0.5453422583472787,
+      "hit_rate_argmax": 0.44511581067472306,
       "class_freq": [
-        0.4346076458752515,
-        0.5090543259557344,
-        0.056338028169014086
+        0.283987915407855,
+        0.4471299093655589,
+        0.2688821752265861
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
     },
     "2D": {
-      "n": 497,
-      "n_dates": 1,
-      "log_loss": 1.1232967242885619,
-      "log_loss_prior": 1.1493898923733936,
-      "gain_vs_prior": 0.026093168084831753,
-      "auroc_up_vs_down": 0.49440894568690097,
-      "hit_rate_argmax": 0.3460764587525151,
+      "n": 993,
+      "n_dates": 2,
+      "log_loss": 1.0980623073338345,
+      "log_loss_prior": 1.1207405153367862,
+      "gain_vs_prior": 0.022678208002951727,
+      "auroc_up_vs_down": 0.6790507007583277,
+      "hit_rate_argmax": 0.3564954682779456,
       "class_freq": [
-        0.6297786720321932,
-        0.3460764587525151,
-        0.02414486921529175
+        0.35850956696878145,
+        0.3564954682779456,
+        0.2849949647532729
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"

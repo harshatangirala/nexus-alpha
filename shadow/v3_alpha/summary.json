@@ -1,28 +1,28 @@
 {
   "version": "v3_alpha",
-  "scored_rows": 2467,
+  "scored_rows": 3459,
   "first_asof": "2026-11-09",
   "last_asof": "2026-11-13",
   "by_horizon": {
     "10D": {
-      "n": 496,
-      "n_dates": 1,
-      "log_loss": 1.0645226349177914,
-      "log_loss_prior": 1.1085309665021972,
-      "gain_vs_prior": 0.04400833158440576,
-      "auroc_up_vs_down": 0.5077597840755735,
-      "hit_rate_argmax": 0.48588709677419356,
+      "n": 1488,
+      "n_dates": 3,
+      "log_loss": 1.055118706210181,
+      "log_loss_prior": 1.0956629960192266,
+      "gain_vs_prior": 0.040544289809045564,
+      "auroc_up_vs_down": 0.5611287758346581,
+      "hit_rate_argmax": 0.4939516129032258,
       "class_freq": [
-        0.4596774193548387,
-        0.4879032258064516,
-        0.05241935483870968
+        0.4227150537634409,
+        0.5033602150537635,
+        0.0739247311827957
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet",
       "rank": {
-        "dates": 1,
-        "mean_rank_ic": 0.0451871542057821,
-        "mean_quintile_spread_gross": 0.0038947657753632473,
+        "dates": 3,
+        "mean_rank_ic": 0.14205019836658275,
+        "mean_quintile_spread_gross": 0.026956498743500534,
         "note": "validation IC (2017-18) for this ranker: 1D 0.009, 5D 0.019, 10D 0.020, 20D 0.032"
       }
     },

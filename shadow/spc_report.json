@@ -14,15 +14,15 @@
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "10D": {
-    "n": 3,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "1D": {
-    "n": 7,
+    "n": 8,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 6,
+    "n": 8,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
@@ -46,27 +46,39 @@
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "10D": {
-    "n": 3,
+    "n": 5,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "11D": {
-    "n": 2,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "12D": {
+    "n": 3,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "13D": {
+    "n": 3,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "14D": {
+    "n": 2,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "15D": {
     "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "1D": {
-    "n": 6,
+    "n": 7,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 6,
+    "n": 7,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "3D": {
-    "n": 6,
+    "n": 7,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "4D": {
@@ -82,15 +94,15 @@
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "7D": {
-    "n": 5,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "8D": {
-    "n": 4,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "9D": {
-    "n": 3,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
@@ -98,13 +110,13 @@
  "market_e19": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 9,
+   "sessions": 10,
    "p_bar": 0.0,
    "ucl": 3e-06,
    "dpmo": 0.0,
    "out_of_control": []
   },
-  "late_rows_total": 2,
+  "late_rows_total": 3,
   "acknowledged": []
  },
  "v3_fund": {
@@ -124,15 +136,15 @@
   ],
   "log_loss_gain_xmr": {
    "10D": {
-    "n": 2,
+    "n": 4,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "1D": {
-    "n": 5,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "2D": {
-    "n": 5,
+    "n": 6,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
@@ -156,7 +168,7 @@
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "10D": {
-    "n": 1,
+    "n": 3,
     "status": "fewer than 20 matured sessions: chart not yet defined"
    },
    "5D": {
@@ -168,13 +180,15 @@
  "v1.2": {
   "chain_intact": true,
   "coverage": {
-   "sessions": 1,
-   "p_bar": 0.006,
-   "ucl": 0.016361081024680774,
-   "dpmo": 6000.0,
-   "out_of_control": []
+   "sessions": 3,
+   "p_bar": 0.3373333333333333,
+   "ucl": 0.4007660693613496,
+   "dpmo": 337333.3333333333,
+   "out_of_control": [
+    "2026-11-06"
+   ]
   },
-  "late_rows_total": 0,
+  "late_rows_total": 6,
   "acknowledged": [],
   "log_loss_gain_xmr": {
    "1D": {
@@ -184,6 +198,10 @@
    "2D": {
     "n": 1,
     "status": "fewer than 20 matured sessions: chart not yet defined"
+   },
+   "5D": {
+    "n": 1,
+    "status": "fewer than 20 matured sessions: chart not yet defined"
    }
   }
  },
@@ -191,8 +209,10 @@
   "v1.1: 6 late rows (forecasts after decision time)",
   "v1.1: coverage out of control on ['2026-11-19']",
   "v2: coverage out of control on ['2026-11-13']",
-  "market_e19: 2 late rows (forecasts after decision time)",
+  "market_e19: 3 late rows (forecasts after decision time)",
   "v3_fund: coverage out of control on ['2026-11-13']",
-  "v3_alpha: coverage out of control on ['2026-11-13']"
+  "v3_alpha: coverage out of control on ['2026-11-13']",
+  "v1.2: 6 late rows (forecasts after decision time)",
+  "v1.2: coverage out of control on ['2026-11-06']"
  ]
 }

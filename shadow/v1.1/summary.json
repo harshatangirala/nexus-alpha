@@ -1,53 +1,53 @@
 {
   "version": "v1.1",
-  "scored_rows": 10874,
+  "scored_rows": 13354,
   "first_asof": "2026-11-05",
-  "last_asof": "2026-11-20",
+  "last_asof": "2026-11-23",
   "by_horizon": {
     "10D": {
-      "n": 1488,
-      "n_dates": 3,
-      "log_loss": 1.1086916324031866,
-      "log_loss_prior": 1.1270555443663384,
-      "gain_vs_prior": 0.01836391196315179,
-      "auroc_up_vs_down": 0.4354354124193326,
-      "hit_rate_argmax": 0.4314516129032258,
+      "n": 2480,
+      "n_dates": 5,
+      "log_loss": 1.0927695689974906,
+      "log_loss_prior": 1.1139408628348737,
+      "gain_vs_prior": 0.021171293837383143,
+      "auroc_up_vs_down": 0.5303480681324855,
+      "hit_rate_argmax": 0.4536290322580645,
       "class_freq": [
-        0.49260752688172044,
-        0.4475806451612903,
-        0.05981182795698925
+        0.46169354838709675,
+        0.4693548387096774,
+        0.06895161290322581
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
     },
     "1D": {
-      "n": 3460,
-      "n_dates": 7,
-      "log_loss": 0.9935340265038946,
-      "log_loss_prior": 1.0098497624129241,
-      "gain_vs_prior": 0.01631573590902957,
-      "auroc_up_vs_down": 0.4710722565655865,
-      "hit_rate_argmax": 0.5508670520231214,
+      "n": 3956,
+      "n_dates": 8,
+      "log_loss": 1.0060471869438439,
+      "log_loss_prior": 1.0216513878744804,
+      "gain_vs_prior": 0.015604200930636525,
+      "auroc_up_vs_down": 0.5055485798658342,
+      "hit_rate_argmax": 0.5303336703741153,
       "class_freq": [
-        0.22803468208092487,
-        0.5502890173410404,
-        0.22167630057803467
+        0.2161274014155713,
+        0.5295753286147624,
+        0.25429726996966634
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
     },
     "2D": {
-      "n": 2963,
-      "n_dates": 6,
-      "log_loss": 1.0417114684814042,
-      "log_loss_prior": 1.0591878946913533,
-      "gain_vs_prior": 0.01747642620994916,
-      "auroc_up_vs_down": 0.5396544822257842,
-      "hit_rate_argmax": 0.4775565305433682,
+      "n": 3955,
+      "n_dates": 8,
+      "log_loss": 1.0477950714135298,
+      "log_loss_prior": 1.0649741909107677,
+      "gain_vs_prior": 0.017179119497237938,
+      "auroc_up_vs_down": 0.6054253197251442,
+      "hit_rate_argmax": 0.45714285714285713,
       "class_freq": [
-        0.27573405332433343,
-        0.4735065811677354,
-        0.25075936550793115
+        0.24171934260429837,
+        0.4543615676359039,
+        0.3039190897597977
       ],
       "gain_ci95": null,
       "note": "fewer than 20 scored dates: no interval yet"
